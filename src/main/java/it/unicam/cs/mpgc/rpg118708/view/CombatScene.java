@@ -1,0 +1,230 @@
+package it.unicam.cs.mpgc.rpg118708.view;
+
+import it.unicam.cs.mpgc.rpg118708.controller.CombatController;
+import it.unicam.cs.mpgc.rpg118708.model.CombatActionType;
+import it.unicam.cs.mpgc.rpg118708.model.Enemy;
+import it.unicam.cs.mpgc.rpg118708.model.Player;
+import it.unicam.cs.mpgc.rpg118708.model.Stats;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+
+public class CombatScene {
+
+    private Scene scene;
+    private Label logLabel;
+    private Label playerHpLabel;
+    private Label enemyHpLabel;
+    private Label playerStatsLabel;
+    private Label enemyStatsLabel;
+    private Label turnLabel;
+    private Button attackButton;
+    private Button specialButton;
+    private Button healButton;
+    private Button fleeButton;
+    private Canvas playerCanvas;
+    private Canvas enemyCanvas;
+    private final CombatController controller;
+
+    public CombatScene(CombatController controller) {
+        this.controller = controller;
+        buildScene();
+    }
+
+    private void buildScene() {
+        VBox root = new VBox(0);
+        root.setStyle("-fx-background-color: #0d0d14;");
+
+        HBox hudRow = buildHudRow();
+        HBox battleArea = buildBattleArea();
+        VBox logArea = buildLogArea();
+        HBox actionArea = buildActionArea();
+
+        root.getChildren().addAll(hudRow, battleArea, logArea, actionArea);
+        scene = new Scene(root, 800, 600);
+    }
+
+    private HBox buildHudRow() {
+        turnLabel = new Label("turno del ladro");
+        turnLabel.setFont(new Font("Monospaced", 12));
+        turnLabel.setStyle("-fx-text-fill: #AFA9EC;");
+
+        HBox hud = new HBox(turnLabel);
+        hud.setAlignment(Pos.CENTER_LEFT);
+        hud.setPadding(new Insets(10, 20, 10, 20));
+        hud.setStyle("-fx-background-color: #13131f; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0;");
+        return hud;
+    }
+
+    private HBox buildBattleArea() {
+        playerCanvas = new Canvas(120, 160);
+        enemyCanvas = new Canvas(120, 160);
+        drawPlayerSprite(playerCanvas.getGraphicsContext2D());
+        drawEnemySprite(enemyCanvas.getGraphicsContext2D());
+
+        playerHpLabel = new Label("HP: 30 / 30");
+        playerHpLabel.setFont(new Font("Monospaced", 12));
+        playerHpLabel.setStyle("-fx-text-fill: #7F77DD;");
+
+        playerStatsLabel = new Label("ATK: 10  DEF: 3  LV: 1");
+        playerStatsLabel.setFont(new Font("Monospaced", 11));
+        playerStatsLabel.setStyle("-fx-text-fill: #555;");
+
+        enemyHpLabel = new Label("HP: ?? / ??");
+        enemyHpLabel.setFont(new Font("Monospaced", 12));
+        enemyHpLabel.setStyle("-fx-text-fill: #D85A30;");
+
+        enemyStatsLabel = new Label("ATK: ?  DEF: ?");
+        enemyStatsLabel.setFont(new Font("Monospaced", 11));
+        enemyStatsLabel.setStyle("-fx-text-fill: #555;");
+
+        VBox playerBox = new VBox(8, playerCanvas, playerHpLabel, playerStatsLabel);
+        playerBox.setAlignment(Pos.CENTER);
+
+        VBox enemyBox = new VBox(8, enemyCanvas, enemyHpLabel, enemyStatsLabel);
+        enemyBox.setAlignment(Pos.CENTER);
+
+        Label vsLabel = new Label("VS");
+        vsLabel.setFont(new Font("Monospaced", 24));
+        vsLabel.setStyle("-fx-text-fill: #3a3a55;");
+
+        HBox battle = new HBox(60, playerBox, vsLabel, enemyBox);
+        battle.setAlignment(Pos.CENTER);
+        battle.setPadding(new Insets(30));
+        battle.setStyle("-fx-background-color: #11111c; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0;");
+        battle.setPrefHeight(260);
+        return battle;
+    }
+
+    private VBox buildLogArea() {
+        logLabel = new Label("Il nemico ti fissa. Cosa fai?");
+        logLabel.setFont(new Font("Monospaced", 13));
+        logLabel.setStyle("-fx-text-fill: #ccc;");
+        logLabel.setWrapText(true);
+
+        VBox log = new VBox(logLabel);
+        log.setPadding(new Insets(16, 20, 16, 20));
+        log.setPrefHeight(80);
+        log.setStyle("-fx-background-color: #0f0f1a; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0;");
+        return log;
+    }
+
+    private HBox buildActionArea() {
+        attackButton = buildButton("Attacca", "#534AB7", "#EEEDFE");
+        specialButton = buildButton("Lama d'ombra", "#854F0B", "#EF9F27");
+        healButton = buildButton("Usa pozione", "#0F6E56", "#5DCAA5");
+        fleeButton = buildButton("Fuggi", "#993C1D", "#F0997B");
+
+        attackButton.setOnAction(e -> handleAction(CombatActionType.ATTACK));
+        specialButton.setOnAction(e -> handleAction(CombatActionType.SPECIAL));
+        healButton.setOnAction(e -> handleAction(CombatActionType.HEAL));
+        fleeButton.setOnAction(e -> handleAction(CombatActionType.FLEE));
+
+        HBox actions = new HBox(12, attackButton, specialButton, healButton, fleeButton);
+        actions.setAlignment(Pos.CENTER);
+        actions.setPadding(new Insets(16));
+        actions.setStyle("-fx-background-color: #0d0d14;");
+        return actions;
+    }
+
+    private Button buildButton(String text, String bg, String fg) {
+        Button btn = new Button(text);
+        btn.setPrefWidth(160);
+        btn.setStyle(String.format("""
+                -fx-background-color: %s;
+                -fx-text-fill: %s;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 13px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px;
+                -fx-cursor: hand;
+                """, bg, fg));
+        return btn;
+    }
+
+    private void handleAction(CombatActionType type) {
+        setButtonsDisabled(true);
+        String msg = controller.handlePlayerAction(type);
+        if (!msg.isEmpty()) logLabel.setText(msg);
+        refresh();
+
+        if (controller.getCombatManager().getLastResult().name().startsWith("VICTORY")
+                || controller.getCombatManager().getLastResult().name().equals("DEFEAT")
+                || controller.getCombatManager().getLastResult().name().equals("FLED")) {
+            return;
+        }
+
+        javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(
+                javafx.util.Duration.seconds(1));
+        pause.setOnFinished(e -> {
+            String enemyMsg = controller.handleEnemyTurn();
+            if (!enemyMsg.isEmpty()) logLabel.setText(enemyMsg);
+            refresh();
+            setButtonsDisabled(false);
+        });
+        pause.play();
+    }
+
+    private void setButtonsDisabled(boolean disabled) {
+        attackButton.setDisable(disabled);
+        specialButton.setDisable(disabled);
+        healButton.setDisable(disabled);
+        fleeButton.setDisable(disabled);
+    }
+
+    public void refresh() {
+        Player player = controller.getCombatManager().getPlayer();
+        Enemy enemy = controller.getCombatManager().getEnemy();
+        if (player == null || enemy == null) return;
+
+        Stats ps = player.getStats();
+        Stats es = enemy.getStats();
+
+        playerHpLabel.setText("HP: " + ps.getCurrentHp() + " / " + ps.getMaxHp());
+        playerStatsLabel.setText("ATK: " + ps.getAttack() + "  DEF: " + ps.getDefense() + "  LV: " + ps.getLevel());
+        enemyHpLabel.setText("HP: " + es.getCurrentHp() + " / " + es.getMaxHp());
+        enemyStatsLabel.setText("ATK: " + es.getAttack() + "  DEF: " + es.getDefense());
+        turnLabel.setText(controller.getCombatManager().isPlayerTurn() ? "turno del ladro" : "turno del nemico");
+    }
+
+    private void drawPlayerSprite(GraphicsContext gc) {
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillRoundRect(40, 20, 40, 40, 8, 8);
+        gc.setFill(Color.web("#EEEDFE"));
+        gc.fillOval(52, 32, 8, 8);
+        gc.setFill(Color.web("#534AB7"));
+        gc.fillRoundRect(30, 60, 60, 50, 6, 6);
+        gc.setFill(Color.web("#3C3489"));
+        gc.fillRoundRect(35, 110, 20, 36, 4, 4);
+        gc.fillRoundRect(65, 110, 20, 36, 4, 4);
+        gc.setFill(Color.web("#EF9F27"));
+        gc.fillRoundRect(84, 68, 30, 8, 4, 4);
+    }
+
+    private void drawEnemySprite(GraphicsContext gc) {
+        gc.setFill(Color.web("#993C1D"));
+        gc.fillRoundRect(38, 10, 44, 40, 6, 6);
+        gc.setFill(Color.web("#FAECE7"));
+        gc.fillOval(44, 22, 10, 10);
+        gc.fillOval(66, 22, 10, 10);
+        gc.setFill(Color.web("#D85A30"));
+        gc.fillRoundRect(24, 50, 72, 56, 6, 6);
+        gc.setFill(Color.web("#993C1D"));
+        gc.fillRoundRect(30, 106, 22, 36, 4, 4);
+        gc.fillRoundRect(68, 106, 22, 36, 4, 4);
+        gc.setFill(Color.web("#EF9F27"));
+        gc.fillPolygon(new double[]{60, 48, 72}, new double[]{0, 18, 18}, 3);
+    }
+
+    public Scene getScene() { return scene; }
+    public Label getLogLabel() { return logLabel; }
+}
