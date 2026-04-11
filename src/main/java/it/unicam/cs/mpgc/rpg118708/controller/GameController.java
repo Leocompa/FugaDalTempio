@@ -41,22 +41,7 @@ public class GameController {
 
         startScene.getLoadGameButton().setOnAction(e -> {
             if (loader.saveExists()) {
-                String savedName = loader.loadPlayerName();
-                if (savedName.isEmpty()) savedName = "Ladro";
-                Player player = new Player(savedName);
-                List<Zone> zones = WorldBuilder.buildWorld();
-                int roomIndex = 0;
-                for (Zone zone : zones) {
-                    for (Room room : zone.getRooms()) {
-                        for (Enemy enemy : room.getEnemies()) {
-                            WorldBuilder.scaleEnemy(enemy, roomIndex);
-                        }
-                        roomIndex++;
-                    }
-                }
-                gameManager = new GameManager(player, zones);
-                loader.load(gameManager);
-                startExploration();
+                loadGame();
             } else {
                 startScene.getLoadGameButton().setText("Nessun salvataggio trovato");
             }
@@ -106,9 +91,30 @@ public class GameController {
             });
 
             combatController.setOnDefeat(() -> {
-                gameManager.respawn();
+                Player player = new Player(gameManager.getPlayer().getName());
+                List<Zone> zones = WorldBuilder.buildWorld();
+                int roomIndex = 0;
+                for (Zone zone : zones) {
+                    for (Room room : zone.getRooms()) {
+                        for (Enemy enemy : room.getEnemies()) {
+                            WorldBuilder.scaleEnemy(enemy, roomIndex);
+                        }
+                        roomIndex++;
+                    }
+                }
+                gameManager = new GameManager(player, zones);
                 startExploration();
             });
+
+            combatController.setOnLoad(() -> {
+                if (loader.saveExists()) {
+                    loadGame();
+                } else {
+                    gameManager.respawn();
+                    startExploration();
+                }
+            });
+
             combatController.setOnFlee(() -> {
                 gameManager.endCombat();
                 startExploration();
@@ -128,6 +134,7 @@ public class GameController {
             saver.save(gameManager);
             explorationScene.showSaveMessage();
         });
+
         explorationScene.setOnExit(() -> {
             explorationScene.stop();
             start();
@@ -183,5 +190,24 @@ public class GameController {
         javafx.scene.Scene victoryScene = new javafx.scene.Scene(
                 overlay, screen.getWidth(), screen.getHeight());
         stage.setScene(victoryScene);
+    }
+
+    private void loadGame() {
+        String name = loader.loadPlayerName();
+        if (name.isEmpty()) name = "Ladro";
+        Player player = new Player(name);
+        List<Zone> zones = WorldBuilder.buildWorld();
+        int roomIndex = 0;
+        for (Zone zone : zones) {
+            for (Room room : zone.getRooms()) {
+                for (Enemy enemy : room.getEnemies()) {
+                    WorldBuilder.scaleEnemy(enemy, roomIndex);
+                }
+                roomIndex++;
+            }
+        }
+        gameManager = new GameManager(player, zones);
+        loader.load(gameManager);
+        startExploration();
     }
 }

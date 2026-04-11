@@ -177,6 +177,7 @@ public class ExplorationScene {
         int trapX = W / 4;
         for (Trap trap : room.getTraps()) {
             trap.setTrapX(trapX);
+            trap.setTrapY(GROUND_Y + PLAYER_H - 14);
             trap.trigger(player);
         }
         if (!player.isAlive()) {

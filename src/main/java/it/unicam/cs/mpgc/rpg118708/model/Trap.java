@@ -10,6 +10,8 @@ public class Trap {
     private static final int COOLDOWN = 90;
     private int cooldownTimer = 0;
     private int trapX = 200;
+    private int trapY = 488;
+
 
     public Trap(String id, int damage) {
         this.id = id;
@@ -31,7 +33,6 @@ public class Trap {
         int pw = 24;
         int ph = 32;
 
-        int trapY = 488;
         int trapH = 14;
 
         boolean overlapsX = px + pw > trapX + 4 && px < trapX + TRAP_WIDTH - 4;
@@ -47,4 +48,5 @@ public class Trap {
     public boolean isActive() { return active; }
     public String getId() { return id; }
     public int getDamage() { return damage; }
+    public void setTrapY(int y) { this.trapY = y; }
 }

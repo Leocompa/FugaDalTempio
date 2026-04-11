@@ -421,22 +421,37 @@ public class CombatScene {
         statsLabel.setFont(new Font("Monospaced", 13));
         statsLabel.setStyle("-fx-text-fill: #ccc;");
 
-        Button retryBtn = new Button("Riprova  ▶");
+        Button retryBtn = new Button("Ricomincia dall'inizio");
         retryBtn.setStyle("""
-            -fx-background-color: #A32D2D;
-            -fx-text-fill: #FCEBEB;
-            -fx-font-family: Monospaced;
-            -fx-font-size: 14px;
-            -fx-background-radius: 4;
-            -fx-padding: 10px 24px;
-            -fx-cursor: hand;
-            """);
+        -fx-background-color: #A32D2D;
+        -fx-text-fill: #FCEBEB;
+        -fx-font-family: Monospaced;
+        -fx-font-size: 14px;
+        -fx-background-radius: 4;
+        -fx-padding: 10px 24px;
+        -fx-cursor: hand;
+        """);
         retryBtn.setOnAction(e -> {
             Runnable onD = controller.getOnDefeat();
             if (onD != null) onD.run();
         });
 
-        overlay.getChildren().addAll(title, msg, statsLabel, retryBtn);
+        Button loadBtn = new Button("Carica ultimo salvataggio");
+        loadBtn.setStyle("""
+        -fx-background-color: #534AB7;
+        -fx-text-fill: #EEEDFE;
+        -fx-font-family: Monospaced;
+        -fx-font-size: 14px;
+        -fx-background-radius: 4;
+        -fx-padding: 10px 24px;
+        -fx-cursor: hand;
+        """);
+        loadBtn.setOnAction(e -> {
+            Runnable onL = controller.getOnLoad();
+            if (onL != null) onL.run();
+        });
+
+        overlay.getChildren().addAll(title, msg, statsLabel, retryBtn, loadBtn);
 
         if (stage != null) {
             javafx.geometry.Rectangle2D screen =

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <savegame>
-    <player attack="14" defense="7" hp="55" level="4" maxHp="55" name="prova" xp="30" xpToNextLevel="80"/>
+    <player attack="12" defense="6" hp="50" level="3" maxHp="50" name="prova" xp="0" xpToNextLevel="60"/>
     <progress roomIndex="2" zoneIndex="0"/>
     <zones>
         <zone completed="false" id="zone1">
@@ -9,19 +9,17 @@
                 <enemy alive="false" hp="0" id="e_r2"/>
             </room>
             <room id="r3" puzzleSolved="false">
-                <enemy alive="false" hp="0" id="e_r3"/>
+                <enemy alive="true" hp="41" id="e_r3"/>
             </room>
             <room id="r4" puzzleSolved="false">
                 <enemy alive="true" hp="60" id="e_r4"/>
             </room>
             <room id="r5" puzzleSolved="false">
                 <enemy alive="true" hp="89" id="boss_finale"/>
-                <item id="amulet1"/>
             </room>
         </zone>
     </zones>
     <inventory>
         <item id="potion1" name="Pozione" type="POTION" value="15"/>
-        <item id="potion2" name="Pozione" type="POTION" value="15"/>
     </inventory>
 </savegame>

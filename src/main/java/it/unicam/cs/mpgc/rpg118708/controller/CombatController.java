@@ -45,6 +45,10 @@ public class CombatController {
             case ONGOING        -> "";
         };
     }
+    private Runnable onLoad;
+
+    public void setOnLoad(Runnable onLoad) { this.onLoad = onLoad; }
+    public Runnable getOnLoad() { return onLoad; }
 
     public void setOnVictory(Runnable onVictory) { this.onVictory = onVictory; }
     public void setOnDefeat(Runnable onDefeat) { this.onDefeat = onDefeat; }
