@@ -1,8 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.persistence;
 
 import it.unicam.cs.mpgc.rpg118708.engine.GameManager;
-import it.unicam.cs.mpgc.rpg118708.model.Player;
-import it.unicam.cs.mpgc.rpg118708.model.Stats;
+import it.unicam.cs.mpgc.rpg118708.model.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -47,6 +46,44 @@ public class GameSaver {
             progressEl.setAttribute("roomIndex", String.valueOf(
                     gameManager.getCurrentZone().getCurrentRoomIndex()));
             root.appendChild(progressEl);
+
+            Element zonesEl = doc.createElement("zones");
+            for (Zone zone : gameManager.getZones()) {
+                Element zoneEl = doc.createElement("zone");
+                zoneEl.setAttribute("id", zone.getId());
+                zoneEl.setAttribute("completed", String.valueOf(zone.isCompleted()));
+                for (Room room : zone.getRooms()) {
+                    Element roomEl = doc.createElement("room");
+                    roomEl.setAttribute("id", room.getId());
+                    roomEl.setAttribute("puzzleSolved", String.valueOf(room.isPuzzleSolved()));
+                    for (Enemy enemy : room.getEnemies()) {
+                        Element enemyEl = doc.createElement("enemy");
+                        enemyEl.setAttribute("id", enemy.getId());
+                        enemyEl.setAttribute("alive", String.valueOf(enemy.isAlive()));
+                        enemyEl.setAttribute("hp", String.valueOf(enemy.getStats().getCurrentHp()));
+                        roomEl.appendChild(enemyEl);
+                    }
+                    for (Item item : room.getItems()) {
+                        Element itemEl = doc.createElement("item");
+                        itemEl.setAttribute("id", item.getId());
+                        roomEl.appendChild(itemEl);
+                    }
+                    zoneEl.appendChild(roomEl);
+                }
+                zonesEl.appendChild(zoneEl);
+            }
+            root.appendChild(zonesEl);
+
+            Element inventoryEl = doc.createElement("inventory");
+            for (Item item : player.getInventory().getItems()) {
+                Element itemEl = doc.createElement("item");
+                itemEl.setAttribute("id", item.getId());
+                itemEl.setAttribute("name", item.getName());
+                itemEl.setAttribute("type", item.getType().name());
+                itemEl.setAttribute("value", String.valueOf(item.getValue()));
+                inventoryEl.appendChild(itemEl);
+            }
+            root.appendChild(inventoryEl);
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");

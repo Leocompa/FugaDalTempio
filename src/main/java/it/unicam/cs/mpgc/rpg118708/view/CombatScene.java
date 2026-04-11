@@ -285,7 +285,6 @@ public class CombatScene {
     }
 
     private void showVictoryScreen() {
-        System.out.println("showVictoryScreen() - rootBox children prima: " + rootBox.getChildren().size());
         Player player = controller.getCombatManager().getPlayer();
         Enemy enemy = controller.getCombatManager().getEnemy();
         Stats ps = player.getStats();
@@ -353,12 +352,9 @@ public class CombatScene {
             rootBox.getChildren().clear();
             rootBox.getChildren().add(overlay);
         }
-        System.out.println("showVictoryScreen() - rootBox children dopo: " + rootBox.getChildren().size());
     }
 
     private void showDefeatScreen() {
-        System.out.println("showDefeatScreen() - rootBox children prima: " + rootBox.getChildren().size());
-        System.out.println("showDefeatScreen() chiamato");
         Player player = controller.getCombatManager().getPlayer();
         Stats ps = player.getStats();
 
@@ -405,7 +401,6 @@ public class CombatScene {
             rootBox.getChildren().clear();
             rootBox.getChildren().add(overlay);
         }
-        System.out.println("showDefeatScreen() - rootBox children dopo: " + rootBox.getChildren().size());
     }
 
 

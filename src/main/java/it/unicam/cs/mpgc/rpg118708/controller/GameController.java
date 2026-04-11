@@ -41,9 +41,20 @@ public class GameController {
 
         startScene.getLoadGameButton().setOnAction(e -> {
             if (loader.saveExists()) {
-                String name = startScene.getPlayerName();
-                if (name.isEmpty()) name = "Ladro";
-                startNewGame(name);
+                String savedName = loader.loadPlayerName();
+                if (savedName.isEmpty()) savedName = "Ladro";
+                Player player = new Player(savedName);
+                List<Zone> zones = WorldBuilder.buildWorld();
+                int roomIndex = 0;
+                for (Zone zone : zones) {
+                    for (Room room : zone.getRooms()) {
+                        for (Enemy enemy : room.getEnemies()) {
+                            WorldBuilder.scaleEnemy(enemy, roomIndex);
+                        }
+                        roomIndex++;
+                    }
+                }
+                gameManager = new GameManager(player, zones);
                 loader.load(gameManager);
                 startExploration();
             } else {
@@ -71,7 +82,6 @@ public class GameController {
     }
 
     private void startExploration() {
-        saver.save(gameManager);
 
         if (explorationScene != null) explorationScene.stop();
 
