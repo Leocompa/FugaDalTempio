@@ -43,6 +43,8 @@ public class ExplorationScene {
     private static final int JUMP_FORCE = -14;
     private int enemyWarningTimer = 0;
     private boolean nearEntrance = false;
+    private String saveMessage = "";
+    private int saveMessageTimer = 0;
 
     private Runnable onEnterCombat;
     private Runnable onZoneComplete;
@@ -77,6 +79,11 @@ public class ExplorationScene {
                 render();
             }
         };
+    }
+
+    public void showSaveMessage() {
+        saveMessage = "Partita salvata!";
+        saveMessageTimer = 120;
     }
 
     public void setOnSave(Runnable onSave) { this.onSave = onSave; }
@@ -210,6 +217,14 @@ public class ExplorationScene {
             gc.fillText("! NEMICO !", W / 2.0 - 80, H / 2.0);
             gc.setFont(new Font("Monospaced", 14));
             gc.fillText("preparati al combattimento...", W / 2.0 - 120, H / 2.0 + 36);
+        }
+        if (saveMessageTimer > 0) {
+            saveMessageTimer--;
+            gc.setFill(Color.web("#1D9E75", 0.90));
+            gc.fillRoundRect(W / 2.0 - 100, 50, 200, 36, 8, 8);
+            gc.setFill(Color.web("#E1F5EE"));
+            gc.setFont(new Font("Monospaced", 13));
+            gc.fillText(saveMessage, W / 2.0 - 60, 73);
         }
         renderHUD();
 

@@ -116,7 +116,7 @@ public class GameController {
 
         explorationScene.setOnSave(() -> {
             saver.save(gameManager);
-            System.out.println("Partita salvata.");
+            explorationScene.showSaveMessage();
         });
 
         stage.setScene(explorationScene.getScene());

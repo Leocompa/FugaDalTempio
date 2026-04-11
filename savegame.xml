@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <savegame>
-    <player attack="12" defense="6" hp="50" level="3" maxHp="50" name="Ciao" xp="0" xpToNextLevel="60"/>
+    <player attack="8" defense="4" hp="40" level="1" maxHp="40" name="prova" xp="0" xpToNextLevel="20"/>
     <progress roomIndex="0" zoneIndex="0"/>
 </savegame>
