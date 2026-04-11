@@ -18,6 +18,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 public class CombatScene {
 
@@ -35,12 +36,15 @@ public class CombatScene {
     private Canvas playerCanvas;
     private Canvas enemyCanvas;
     private VBox rootBox;
+    private Stage stage;
     private final CombatController controller;
 
     public CombatScene(CombatController controller) {
         this.controller = controller;
         buildScene();
     }
+
+    public void setStage(Stage stage) { this.stage = stage; }
 
     private void buildScene() {
         VBox root = new VBox(0);
@@ -174,17 +178,16 @@ public class CombatScene {
         CombatResult result = controller.getCombatManager().getLastResult();
 
         if (result == CombatResult.VICTORY || result == CombatResult.VICTORY_LEVELUP) {
-            Stats ps = player.getStats();
             logLabel.setText(enemy.getName() + " sconfitto! +" + enemy.getXpReward() + " XP");
             turnLabel.setText("vittoria!");
             refresh();
-            showEndButtons(true);
+            javafx.application.Platform.runLater(() -> showEndButtons(true));
             return;
         }
 
         if (result == CombatResult.FLED) {
             logLabel.setText("Sei fuggito dal combattimento.");
-            showEndButtons(false);
+            javafx.application.Platform.runLater(() -> showEndButtons(false));
             return;
         }
 
@@ -207,7 +210,7 @@ public class CombatScene {
             if (afterResult == CombatResult.DEFEAT) {
                 turnLabel.setText("sconfitta");
                 refresh();
-                showEndButtons(false);
+                javafx.application.Platform.runLater(() -> showEndButtons(false));
                 return;
             }
 
@@ -269,7 +272,6 @@ public class CombatScene {
     }
 
     private void showEndButtons(boolean victory) {
-        System.out.println("showEndButtons() chiamato, victory=" + victory);
         attackButton.setDisable(true);
         specialButton.setDisable(true);
         healButton.setDisable(true);
@@ -283,6 +285,7 @@ public class CombatScene {
     }
 
     private void showVictoryScreen() {
+        System.out.println("showVictoryScreen() - rootBox children prima: " + rootBox.getChildren().size());
         Player player = controller.getCombatManager().getPlayer();
         Enemy enemy = controller.getCombatManager().getEnemy();
         Stats ps = player.getStats();
@@ -344,11 +347,17 @@ public class CombatScene {
 
         overlay.getChildren().add(continueBtn);
 
-        rootBox.getChildren().clear();
-        rootBox.getChildren().add(overlay);
+        if (stage != null) {
+            stage.setScene(new Scene(overlay, 800, 600));
+        } else {
+            rootBox.getChildren().clear();
+            rootBox.getChildren().add(overlay);
+        }
+        System.out.println("showVictoryScreen() - rootBox children dopo: " + rootBox.getChildren().size());
     }
 
     private void showDefeatScreen() {
+        System.out.println("showDefeatScreen() - rootBox children prima: " + rootBox.getChildren().size());
         System.out.println("showDefeatScreen() chiamato");
         Player player = controller.getCombatManager().getPlayer();
         Stats ps = player.getStats();
@@ -390,8 +399,13 @@ public class CombatScene {
 
         overlay.getChildren().addAll(title, msg, statsLabel, retryBtn);
 
-        rootBox.getChildren().clear();
-        rootBox.getChildren().add(overlay);
+        if (stage != null) {
+            stage.setScene(new Scene(overlay, 800, 600));
+        } else {
+            rootBox.getChildren().clear();
+            rootBox.getChildren().add(overlay);
+        }
+        System.out.println("showDefeatScreen() - rootBox children dopo: " + rootBox.getChildren().size());
     }
 
 

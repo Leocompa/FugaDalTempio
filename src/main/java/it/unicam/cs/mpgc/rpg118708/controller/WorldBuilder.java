@@ -82,6 +82,20 @@ public class WorldBuilder {
 
         if (roomNumber == 5) {
             room.addItem(new Item("amulet1", "Amuleto del Tempio", ItemType.AMULET, 0));
+            room.addNpc(new NPC("npc3", "Voce del Tempio",
+                    "Hai raggiunto il cuore del tempio... ma il Dio Serpente non ti lascerà passare."));
+
+            Boss boss = new Boss(
+                    "boss_finale", "Dio Serpente Apep", "Signore del Caos",
+                    new Stats(80, 14, 6, 6),
+                    300,
+                    List.of(
+                            new CombatAction("attack",  "Morso del Caos",  CombatActionType.ATTACK,  0),
+                            new CombatAction("special", "Maledizione",     CombatActionType.SPECIAL, 6),
+                            new CombatAction("heal",    "Rigenerazione",   CombatActionType.HEAL,    15)
+                    )
+            );
+            room.addEnemy(boss);
         }
 
         return room;
