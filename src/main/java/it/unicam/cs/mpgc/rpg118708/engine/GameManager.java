@@ -35,7 +35,8 @@ public class GameManager {
     }
 
     public void enterCombat(Enemy enemy) {
-        combatManager.startCombat(enemy);
+        int enemyCount = getCurrentRoom().getEnemies().size();
+        combatManager.startCombat(enemy, enemyCount);
         state = GameState.COMBAT;
     }
 

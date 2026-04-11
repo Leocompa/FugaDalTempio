@@ -164,6 +164,17 @@ public class CombatScene {
         if (!controller.getCombatManager().isPlayerTurn()) return;
         setButtonsDisabled(true);
 
+        if (type == CombatActionType.SPECIAL) {
+            if (controller.getCombatManager().getSpecialUsesLeft() <= 0) {
+                logLabel.setText("Hai esaurito le mosse speciali per questo combattimento!");
+                setButtonsDisabled(false);
+                return;
+            }
+            int usesLeft = controller.getCombatManager().getSpecialUsesLeft() - 1;
+            int usesMax = controller.getCombatManager().getMaxSpecialUses();
+            logLabel.setText("Usi mosse speciale! (" + usesLeft + "/" + usesMax + " rimasti)");
+        }
+
         Player player = controller.getCombatManager().getPlayer();
         Enemy enemy = controller.getCombatManager().getEnemy();
         int hpBefore = enemy.getStats().getCurrentHp();
@@ -242,6 +253,34 @@ public class CombatScene {
         enemyHpLabel.setText("HP: " + es.getCurrentHp() + " / " + es.getMaxHp());
         enemyStatsLabel.setText("ATK: " + es.getAttack() + "  DEF: " + es.getDefense());
         turnLabel.setText(controller.getCombatManager().isPlayerTurn() ? "turno del ladro" : "turno del nemico");
+
+        int specialLeft = controller.getCombatManager().getSpecialUsesLeft();
+        int specialMax = controller.getCombatManager().getMaxSpecialUses();
+        if (specialLeft <= 0) {
+            specialButton.setDisable(true);
+            specialButton.setText("Lama d'ombra");
+            specialButton.setStyle(String.format("""
+            -fx-background-color: %s;
+            -fx-text-fill: %s;
+            -fx-font-family: Monospaced;
+            -fx-font-size: 13px;
+            -fx-background-radius: 4;
+            -fx-padding: 10px;
+            -fx-cursor: hand;
+            """, "#2a2a40", "#555"));
+        } else {
+            specialButton.setDisable(false);
+            specialButton.setText("Lama d'ombra");
+            specialButton.setStyle(String.format("""
+            -fx-background-color: %s;
+            -fx-text-fill: %s;
+            -fx-font-family: Monospaced;
+            -fx-font-size: 13px;
+            -fx-background-radius: 4;
+            -fx-padding: 10px;
+            -fx-cursor: hand;
+            """, "#854F0B", "#EF9F27"));
+        }
     }
 
     private void drawPlayerSprite(GraphicsContext gc) {

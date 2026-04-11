@@ -14,6 +14,8 @@ public class CombatManager {
     private Enemy enemy;
     private boolean playerTurn;
     private CombatResult lastResult;
+    private int specialUsesLeft;
+    private int maxSpecialUses;
 
     public CombatManager(Player player) {
         this.player = player;
@@ -21,10 +23,12 @@ public class CombatManager {
         this.lastResult = CombatResult.ONGOING;
     }
 
-    public void startCombat(Enemy enemy) {
+    public void startCombat(Enemy enemy, int roomIndex) {
         this.enemy = enemy;
         this.playerTurn = true;
         this.lastResult = CombatResult.ONGOING;
+        this.maxSpecialUses = Math.max(1, roomIndex);
+        this.specialUsesLeft = this.maxSpecialUses;
     }
 
     public CombatResult executePlayerAction(CombatAction action) {
@@ -37,8 +41,10 @@ public class CombatManager {
                 checkBossEnrage();
             }
             case SPECIAL -> {
+                if (specialUsesLeft <= 0) break;
                 int damage = computeDamage((int)(player.getStats().getAttack() * 1.5), action.getPower());
                 enemy.takeDamage(damage);
+                specialUsesLeft--;
                 checkBossEnrage();
             }
             case HEAL -> {
@@ -116,4 +122,6 @@ public class CombatManager {
     public Enemy getEnemy() { return enemy; }
     public boolean isPlayerTurn() { return playerTurn; }
     public CombatResult getLastResult() { return lastResult; }
+    public int getSpecialUsesLeft() { return specialUsesLeft; }
+    public int getMaxSpecialUses() { return maxSpecialUses; }
 }
