@@ -57,8 +57,8 @@ public class ExplorationScene {
         javafx.geometry.Rectangle2D screen =
                 javafx.stage.Screen.getPrimary().getVisualBounds();
         this.W = (int) screen.getWidth();
-        this.H = (int) screen.getHeight();
-        this.GROUND_Y = this.H - 80;
+        this.H = (int) (screen.getHeight() * 0.80);
+        this.GROUND_Y = this.H - 100;
         this.gameManager = gameManager;
         buildScene();
     }
@@ -67,11 +67,14 @@ public class ExplorationScene {
         canvas = new Canvas(W, H);
         gc = canvas.getGraphicsContext2D();
 
-        VBox root = new VBox(canvas);
-        scene = new Scene(root, W, H);
+        javafx.scene.layout.VBox root = new javafx.scene.layout.VBox();
+        root.setStyle("-fx-background-color: #0d0d14;");
+        root.getChildren().add(canvas);
 
-        scene.setOnKeyPressed(e -> keysPressed.add(e.getCode()));
-        scene.setOnKeyReleased(e -> keysPressed.remove(e.getCode()));
+        javafx.geometry.Rectangle2D screen =
+                javafx.stage.Screen.getPrimary().getVisualBounds();
+        scene = new Scene(root, screen.getWidth(), screen.getHeight());
+
         scene.setOnKeyPressed(e -> {
             keysPressed.add(e.getCode());
             if (e.getCode() == KeyCode.S && e.isMetaDown()) {
@@ -81,14 +84,7 @@ public class ExplorationScene {
                 if (onExit != null) onExit.run();
             }
         });
-        scene.setOnKeyPressed(e -> {
-            keysPressed.add(e.getCode());
-            if (e.getCode() == KeyCode.S && e.isMetaDown()) {
-                if (onSave != null) onSave.run();
-            }
-
-        });
-
+        scene.setOnKeyReleased(e -> keysPressed.remove(e.getCode()));
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -150,7 +146,9 @@ public class ExplorationScene {
 
         Room room = gameManager.getCurrentRoom();
 
+        int trapX = W / 4;
         for (Trap trap : room.getTraps()) {
+            trap.setTrapX(trapX);
             trap.trigger(player);
         }
         if (!player.isAlive()) {
@@ -158,8 +156,9 @@ public class ExplorationScene {
             return;
         }
 
+        int enemyX = (int)(W * 0.55);
         for (Enemy enemy : room.getEnemies()) {
-            if (enemy.isAlive() && collides(px, py, PLAYER_W, PLAYER_H, 500, GROUND_Y, 32, 40)) {
+            if (enemy.isAlive() && collides(px, py, PLAYER_W, PLAYER_H, enemyX, GROUND_Y, 32, 40)) {
                 enemyWarningTimer = 60;
                 javafx.animation.PauseTransition pause =
                         new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1));
@@ -186,13 +185,15 @@ public class ExplorationScene {
         }
 
         if (keysPressed.contains(KeyCode.E)) {
+            int itemX = W / 2;
+            int npcX = (int)(W * 0.65);
             for (Item item : new ArrayList<>(room.getItems())) {
-                if (Math.abs(px - 400) < INTERACT_RANGE) {
+                if (Math.abs(px - itemX) < INTERACT_RANGE) {
                     gameManager.collectItem(item);
                 }
             }
             for (NPC npc : room.getNpcs()) {
-                if (Math.abs(px - 600) < INTERACT_RANGE) {
+                if (Math.abs(px - npcX) < INTERACT_RANGE) {
                     showDialogue(npc.getName() + ": \"" + npc.getDialogue() + "\"");
                 }
             }
@@ -290,12 +291,17 @@ public class ExplorationScene {
         int px = player.getX();
         Room room = gameManager.getCurrentRoom();
 
+        int trapX = W / 4;
+        int itemX = W / 2;
+        int npcX = (int)(W * 0.65);
+        int enemyX = (int)(W * 0.55);
+
         for (Trap trap : room.getTraps()) {
             gc.setFill(trap.isActive() ? Color.web("#EF9F27") : Color.web("#BA7517"));
-            gc.fillRect(200, GROUND_Y + PLAYER_H - 14, 32, 14);
+            gc.fillRect(trapX, GROUND_Y + PLAYER_H - 14, 32, 14);
             gc.setFill(Color.web("#fff"));
             gc.fillPolygon(
-                    new double[]{204, 210, 216, 222, 228},
+                    new double[]{trapX+4, trapX+10, trapX+16, trapX+22, trapX+28},
                     new double[]{GROUND_Y + PLAYER_H - 14,
                             GROUND_Y + PLAYER_H - 26,
                             GROUND_Y + PLAYER_H - 14,
@@ -307,49 +313,49 @@ public class ExplorationScene {
         for (Item item : room.getItems()) {
             double bob = Math.sin(frame * 0.05) * 3;
             gc.setFill(Color.web("#EF9F27"));
-            gc.fillOval(400, GROUND_Y + PLAYER_H - 40 + bob, 16, 16);
+            gc.fillOval(itemX, GROUND_Y + PLAYER_H - 40 + bob, 16, 16);
             gc.setFill(Color.web("#FCDE5A"));
-            gc.fillOval(403, GROUND_Y + PLAYER_H - 37 + bob, 6, 6);
-            if (Math.abs(px - 400) < INTERACT_RANGE) {
+            gc.fillOval(itemX+3, GROUND_Y + PLAYER_H - 37 + bob, 6, 6);
+            if (Math.abs(px - itemX) < INTERACT_RANGE) {
                 gc.setFill(Color.web("#EF9F27"));
                 gc.setFont(new Font("Monospaced", 11));
-                gc.fillText("[E] raccogli", 390, GROUND_Y + PLAYER_H - 50 + bob);
+                gc.fillText("[E] raccogli", itemX - 10, GROUND_Y + PLAYER_H - 50 + bob);
             }
         }
 
         for (NPC npc : room.getNpcs()) {
             gc.setFill(Color.web("#1D9E75"));
-            gc.fillRoundRect(600, GROUND_Y + PLAYER_H - 40, 20, 32, 4, 4);
+            gc.fillRoundRect(npcX, GROUND_Y + PLAYER_H - 40, 20, 32, 4, 4);
             gc.setFill(Color.web("#E1F5EE"));
-            gc.fillOval(604, GROUND_Y + PLAYER_H - 48, 14, 14);
-            if (Math.abs(px - 600) < INTERACT_RANGE) {
+            gc.fillOval(npcX+4, GROUND_Y + PLAYER_H - 48, 14, 14);
+            if (Math.abs(px - npcX) < INTERACT_RANGE) {
                 gc.setFill(Color.web("#5DCAA5"));
                 gc.setFont(new Font("Monospaced", 11));
-                gc.fillText("[E] parla", 594, GROUND_Y + PLAYER_H - 56);
+                gc.fillText("[E] parla", npcX - 4, GROUND_Y + PLAYER_H - 56);
             }
         }
 
         for (Enemy enemy : room.getEnemies()) {
             if (!enemy.isAlive()) continue;
             gc.setFill(Color.web("#D85A30"));
-            gc.fillRoundRect(500, GROUND_Y + PLAYER_H - 40, 28, 40, 4, 4);
+            gc.fillRoundRect(enemyX, GROUND_Y + PLAYER_H - 40, 28, 40, 4, 4);
             gc.setFill(Color.web("#FAECE7"));
-            gc.fillOval(504, GROUND_Y + PLAYER_H - 36, 8, 8);
-            gc.fillOval(516, GROUND_Y + PLAYER_H - 36, 8, 8);
+            gc.fillOval(enemyX+4, GROUND_Y + PLAYER_H - 36, 8, 8);
+            gc.fillOval(enemyX+16, GROUND_Y + PLAYER_H - 36, 8, 8);
         }
 
         gc.setFill(Color.web("#534AB7"));
-        gc.fillRoundRect(W - 40, GROUND_Y + PLAYER_H - 60, 28, 60, 4, 4);
+        gc.fillRoundRect(W - 60, GROUND_Y + PLAYER_H - 60, 28, 60, 4, 4);
         gc.setFill(Color.web("#AFA9EC"));
         gc.setFont(new Font("Monospaced", 10));
-        gc.fillText("USCITA", W - 42, GROUND_Y + PLAYER_H - 65);
+        gc.fillText("USCITA", W - 62, GROUND_Y + PLAYER_H - 65);
 
         if (nearExit) {
             gc.setFill(Color.web("#534AB7", 0.85));
-            gc.fillRoundRect(W - 120, GROUND_Y + PLAYER_H - 90, 100, 20, 4, 4);
+            gc.fillRoundRect(W - 160, GROUND_Y + PLAYER_H - 90, 100, 20, 4, 4);
             gc.setFill(Color.web("#AFA9EC"));
             gc.setFont(new Font("Monospaced", 11));
-            gc.fillText("[E] avanza", W - 112, GROUND_Y + PLAYER_H - 75);
+            gc.fillText("[E] avanza", W - 152, GROUND_Y + PLAYER_H - 75);
         }
 
         gc.setFill(Color.web("#534AB7"));
@@ -360,7 +366,7 @@ public class ExplorationScene {
             gc.fillText("INDIETRO", 4, GROUND_Y + PLAYER_H - 65);
             if (nearEntrance) {
                 gc.setFill(Color.web("#534AB7", 0.85));
-                gc.fillRoundRect(12, GROUND_Y + PLAYER_H - 90, 100, 20, 4, 4);
+                gc.fillRoundRect(12, GROUND_Y + PLAYER_H - 90, 120, 20, 4, 4);
                 gc.setFill(Color.web("#AFA9EC"));
                 gc.setFont(new Font("Monospaced", 11));
                 gc.fillText("[E] torna indietro", 16, GROUND_Y + PLAYER_H - 75);

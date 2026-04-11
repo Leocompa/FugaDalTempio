@@ -9,12 +9,15 @@ public class Trap {
     private static final int TRAP_WIDTH = 16;
     private static final int COOLDOWN = 90;
     private int cooldownTimer = 0;
+    private int trapX = 200;
 
     public Trap(String id, int damage) {
         this.id = id;
         this.damage = damage;
         this.active = true;
     }
+
+    public void setTrapX(int x) { this.trapX = x; }
 
     public void trigger(Player player) {
         if (!active) return;
@@ -31,7 +34,7 @@ public class Trap {
         int trapY = 488;
         int trapH = 14;
 
-        boolean overlapsX = px + pw > TRAP_X + 4 && px < TRAP_X + TRAP_WIDTH - 4;
+        boolean overlapsX = px + pw > trapX + 4 && px < trapX + TRAP_WIDTH - 4;
         boolean overlapsY = py + ph > trapY && py < trapY + trapH;
 
         if (overlapsX && overlapsY) {
