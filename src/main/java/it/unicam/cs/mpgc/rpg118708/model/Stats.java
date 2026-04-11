@@ -21,7 +21,7 @@ public class Stats {
     }
 
     private int computeXpThreshold(int level) {
-        return 100 * level;
+        return 20 * level;
     }
 
     public void takeDamage(int amount) {
@@ -39,20 +39,21 @@ public class Stats {
 
     public boolean gainXp(int amount) {
         currentXp += amount;
-        if (currentXp >= xpToNextLevel) {
+        boolean leveled = false;
+        while (currentXp >= xpToNextLevel) {
             levelUp();
-            return true;
+            leveled = true;
         }
-        return false;
+        return leveled;
     }
 
     private void levelUp() {
         level++;
         currentXp = currentXp - xpToNextLevel;
         xpToNextLevel = computeXpThreshold(level);
-        maxHp += 10;
+        maxHp += 5;
         currentHp = maxHp;
-        attack += 3;
+        attack += 2;
         defense += 1;
     }
 

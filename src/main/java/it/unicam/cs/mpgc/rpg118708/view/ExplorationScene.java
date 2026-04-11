@@ -14,6 +14,7 @@ import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ExplorationScene {
@@ -25,6 +26,7 @@ public class ExplorationScene {
     private static final int PLAYER_W = 24;
     private static final int PLAYER_H = 32;
     private static final int GROUND_Y = H - 80;
+    private static final int INTERACT_RANGE = 60;
 
     private final GameManager gameManager;
     private Scene scene;
@@ -34,9 +36,17 @@ public class ExplorationScene {
     private AnimationTimer gameLoop;
     private long frame = 0;
     private String dialogueText = "";
+    private boolean nearExit = false;
+    private int playerVY = 0;
+    private boolean onGround = true;
+    private static final int GRAVITY = 1;
+    private static final int JUMP_FORCE = -14;
+    private int enemyWarningTimer = 0;
+    private boolean nearEntrance = false;
 
     private Runnable onEnterCombat;
     private Runnable onZoneComplete;
+    private Runnable onSave;
 
     public ExplorationScene(GameManager gameManager) {
         this.gameManager = gameManager;
@@ -52,6 +62,12 @@ public class ExplorationScene {
 
         scene.setOnKeyPressed(e -> keysPressed.add(e.getCode()));
         scene.setOnKeyReleased(e -> keysPressed.remove(e.getCode()));
+        scene.setOnKeyPressed(e -> {
+            keysPressed.add(e.getCode());
+            if (e.getCode() == KeyCode.S && e.isMetaDown()) {
+                if (onSave != null) onSave.run();
+            }
+        });
 
         gameLoop = new AnimationTimer() {
             @Override
@@ -62,6 +78,8 @@ public class ExplorationScene {
             }
         };
     }
+
+    public void setOnSave(Runnable onSave) { this.onSave = onSave; }
 
     private void update() {
         if (gameManager.getState() == GameState.GAME_OVER) {
@@ -87,8 +105,22 @@ public class ExplorationScene {
             player.setDirection(Direction.RIGHT);
         }
 
+        if ((keysPressed.contains(KeyCode.UP) || keysPressed.contains(KeyCode.W)
+                || keysPressed.contains(KeyCode.SPACE)) && onGround) {
+            playerVY = JUMP_FORCE;
+            onGround = false;
+        }
+
+        playerVY += GRAVITY;
+        py = player.getY() + playerVY;
+
+        if (py >= GROUND_Y) {
+            py = GROUND_Y;
+            playerVY = 0;
+            onGround = true;
+        }
+
         px = Math.max(0, Math.min(W - PLAYER_W, px));
-        py = GROUND_Y;
         player.moveTo(px, py);
 
         Room room = gameManager.getCurrentRoom();
@@ -102,28 +134,58 @@ public class ExplorationScene {
         }
 
         for (Enemy enemy : room.getEnemies()) {
-            if (enemy.isAlive() && collides(px, py, PLAYER_W, PLAYER_H,
-                    500, GROUND_Y, 32, 40)) {
-                gameManager.enterCombat(enemy);
-                if (onEnterCombat != null) onEnterCombat.run();
+            if (enemy.isAlive() && collides(px, py, PLAYER_W, PLAYER_H, 500, GROUND_Y, 32, 40)) {
+                enemyWarningTimer = 60;
+                javafx.animation.PauseTransition pause =
+                        new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1));
+                pause.setOnFinished(e -> {
+                    gameManager.enterCombat(enemy);
+                    if (onEnterCombat != null) onEnterCombat.run();
+                });
+                pause.play();
+                gameManager.setState(GameState.COMBAT);
                 return;
             }
         }
 
-        if (keysPressed.contains(KeyCode.E)) {
-            for (Item item : new ArrayList<>(room.getItems())) {
-                gameManager.collectItem(item);
-            }
-            for (NPC npc : room.getNpcs()) {
-                showDialogue(npc.getDialogue());
-            }
-        }
-
-        if (px >= W - PLAYER_W - 10 && room.isCleared()) {
+        if (nearExit && keysPressed.contains(KeyCode.E)) {
+            keysPressed.clear();
+            nearExit = false;
             if (!gameManager.advanceRoom()) {
                 if (onZoneComplete != null) onZoneComplete.run();
+            } else {
+                gameManager.getPlayer().moveTo(40, GROUND_Y);
+                dialogueText = "";
             }
+            return;
         }
+
+        if (keysPressed.contains(KeyCode.E)) {
+            for (Item item : new ArrayList<>(room.getItems())) {
+                if (Math.abs(px - 400) < INTERACT_RANGE) {
+                    gameManager.collectItem(item);
+                }
+            }
+            for (NPC npc : room.getNpcs()) {
+                if (Math.abs(px - 600) < INTERACT_RANGE) {
+                    showDialogue(npc.getName() + ": \"" + npc.getDialogue() + "\"");
+                }
+            }
+            keysPressed.remove(KeyCode.E);
+        }
+
+        nearExit = px >= W - PLAYER_W - 80 && room.isCleared();
+
+        nearEntrance = px <= 50 && gameManager.getCurrentZone().getCurrentRoomIndex() > 0;
+
+        if (nearEntrance && keysPressed.contains(KeyCode.E)) {
+            keysPressed.clear();
+            nearEntrance = false;
+            gameManager.goBackRoom();
+            gameManager.getPlayer().moveTo(W - 80, GROUND_Y);
+            return;
+        }
+
     }
 
     private boolean collides(int ax, int ay, int aw, int ah,
@@ -139,6 +201,16 @@ public class ExplorationScene {
         renderGround();
         renderRoom();
         renderPlayer();
+        if (enemyWarningTimer > 0) {
+            enemyWarningTimer--;
+            gc.setFill(Color.web("#D85A30", 0.85));
+            gc.fillRect(0, 0, W, H);
+            gc.setFill(Color.WHITE);
+            gc.setFont(new Font("Monospaced", 28));
+            gc.fillText("! NEMICO !", W / 2.0 - 80, H / 2.0);
+            gc.setFont(new Font("Monospaced", 14));
+            gc.fillText("preparati al combattimento...", W / 2.0 - 120, H / 2.0 + 36);
+        }
         renderHUD();
 
         if (gameManager.getState() == GameState.DIALOGUE && !dialogueText.isEmpty()) {
@@ -158,6 +230,7 @@ public class ExplorationScene {
         if (gameManager.getState() == GameState.VICTORY) {
             renderOverlay("VITTORIA!", "hai completato il tempio!", "#1D9E75");
         }
+
     }
 
     private void renderGrid() {
@@ -179,6 +252,8 @@ public class ExplorationScene {
     }
 
     private void renderRoom() {
+        Player player = gameManager.getPlayer();
+        int px = player.getX();
         Room room = gameManager.getCurrentRoom();
 
         for (Trap trap : room.getTraps()) {
@@ -201,6 +276,11 @@ public class ExplorationScene {
             gc.fillOval(400, GROUND_Y + PLAYER_H - 40 + bob, 16, 16);
             gc.setFill(Color.web("#FCDE5A"));
             gc.fillOval(403, GROUND_Y + PLAYER_H - 37 + bob, 6, 6);
+            if (Math.abs(px - 400) < INTERACT_RANGE) {
+                gc.setFill(Color.web("#EF9F27"));
+                gc.setFont(new Font("Monospaced", 11));
+                gc.fillText("[E] raccogli", 390, GROUND_Y + PLAYER_H - 50 + bob);
+            }
         }
 
         for (NPC npc : room.getNpcs()) {
@@ -208,9 +288,11 @@ public class ExplorationScene {
             gc.fillRoundRect(600, GROUND_Y + PLAYER_H - 40, 20, 32, 4, 4);
             gc.setFill(Color.web("#E1F5EE"));
             gc.fillOval(604, GROUND_Y + PLAYER_H - 48, 14, 14);
-            gc.setFill(Color.web("#5DCAA5"));
-            gc.setFont(new Font("Monospaced", 11));
-            gc.fillText("[E]", 598, GROUND_Y + PLAYER_H - 52);
+            if (Math.abs(px - 600) < INTERACT_RANGE) {
+                gc.setFill(Color.web("#5DCAA5"));
+                gc.setFont(new Font("Monospaced", 11));
+                gc.fillText("[E] parla", 594, GROUND_Y + PLAYER_H - 56);
+            }
         }
 
         for (Enemy enemy : room.getEnemies()) {
@@ -227,6 +309,33 @@ public class ExplorationScene {
         gc.setFill(Color.web("#AFA9EC"));
         gc.setFont(new Font("Monospaced", 10));
         gc.fillText("USCITA", W - 42, GROUND_Y + PLAYER_H - 65);
+
+        if (nearExit) {
+            gc.setFill(Color.web("#534AB7", 0.85));
+            gc.fillRoundRect(W - 120, GROUND_Y + PLAYER_H - 90, 100, 20, 4, 4);
+            gc.setFill(Color.web("#AFA9EC"));
+            gc.setFont(new Font("Monospaced", 11));
+            gc.fillText("[E] avanza", W - 112, GROUND_Y + PLAYER_H - 75);
+        }
+
+        gc.setFill(Color.web("#534AB7"));
+        gc.fillRoundRect(12, GROUND_Y + PLAYER_H - 60, 28, 60, 4, 4);
+        if (gameManager.getCurrentZone().getCurrentRoomIndex() > 0) {
+            gc.setFill(Color.web("#AFA9EC"));
+            gc.setFont(new Font("Monospaced", 10));
+            gc.fillText("INDIETRO", 4, GROUND_Y + PLAYER_H - 65);
+            if (nearEntrance) {
+                gc.setFill(Color.web("#534AB7", 0.85));
+                gc.fillRoundRect(12, GROUND_Y + PLAYER_H - 90, 100, 20, 4, 4);
+                gc.setFill(Color.web("#AFA9EC"));
+                gc.setFont(new Font("Monospaced", 11));
+                gc.fillText("[E] torna indietro", 16, GROUND_Y + PLAYER_H - 75);
+            }
+        } else {
+            gc.setFill(Color.web("#3a3a55"));
+            gc.setFont(new Font("Monospaced", 10));
+            gc.fillText("ENTRATA", 4, GROUND_Y + PLAYER_H - 65);
+        }
     }
 
     private void renderPlayer() {
@@ -260,27 +369,57 @@ public class ExplorationScene {
         Room room = gameManager.getCurrentRoom();
         Zone zone = gameManager.getCurrentZone();
 
-        gc.setFill(Color.web("#13131f", 0.85));
-        gc.fillRect(0, 0, W, 36);
+        gc.setFill(Color.web("#13131f", 0.90));
+        gc.fillRect(0, 0, W, 40);
 
         gc.setFont(new Font("Monospaced", 12));
         gc.setFill(Color.web("#AFA9EC"));
-        gc.fillText(player.getName(), 12, 22);
+        gc.fillText(player.getName(), 12, 24);
 
+        gc.setFill(Color.web("#2a2a40"));
+        gc.fillRoundRect(110, 14, 100, 12, 4, 4);
         gc.setFill(Color.web("#E24B4A"));
-        gc.fillRect(120, 12, 100, 8);
-        gc.setFill(Color.web("#7F77DD"));
         double hpRatio = (double) stats.getCurrentHp() / stats.getMaxHp();
-        gc.fillRect(120, 12, 100 * hpRatio, 8);
+        gc.fillRoundRect(110, 14, 100 * hpRatio, 12, 4, 4);
         gc.setFill(Color.web("#ccc"));
-        gc.fillText("HP " + stats.getCurrentHp() + "/" + stats.getMaxHp(), 228, 22);
+        gc.fillText("HP " + stats.getCurrentHp() + "/" + stats.getMaxHp(), 218, 24);
 
         gc.setFill(Color.web("#888780"));
-        gc.fillText("LV." + stats.getLevel(), 340, 22);
-        gc.fillText("XP " + stats.getCurrentXp() + "/" + stats.getXpToNextLevel(), 390, 22);
+        gc.fillText("LV." + stats.getLevel(), 330, 24);
+        gc.fillText("XP " + stats.getCurrentXp() + "/" + stats.getXpToNextLevel(), 375, 24);
 
         gc.setFill(Color.web("#555"));
-        gc.fillText(zone.getName() + " — " + room.getName(), W - 280, 22);
+        int currentRoom = gameManager.getCurrentZone().getCurrentRoomIndex() + 1;
+        int totalRooms = gameManager.getCurrentZone().getRooms().size();
+        gc.fillText(zone.getName() + " — stanza " + currentRoom + "/" + totalRooms
+                + ": " + room.getName(), W - 380, 24);
+
+        gc.setFill(Color.web("#13131f", 0.90));
+        gc.fillRect(0, H - 40, W, 40);
+
+        gc.setFill(Color.web("#13131f", 0.90));
+        gc.fillRect(0, H - 36, W, 36);
+        gc.setFill(Color.web("#555"));
+        gc.setFont(new Font("Monospaced", 11));
+        gc.fillText("← → muoviti", 12, H - 16);
+        gc.fillText("↑ salta", 130, H - 16);
+        gc.fillText("[E] interagisci", 210, H - 16);
+        gc.fillText("[R] riprova", 330, H - 16);
+        gc.fillText("[CMD+S] salva", 430, H - 16);
+        gc.setFill(Color.web("#534AB7"));
+        gc.fillText("inventario:", 560, H - 18);
+        List<Item> items = player.getInventory().getItems();
+        if (items.isEmpty()) {
+            gc.setFill(Color.web("#555"));
+            gc.fillText("vuoto", 650, H - 18);
+        } else {
+            gc.setFill(Color.web("#EF9F27"));
+            StringBuilder inv = new StringBuilder();
+            for (Item item : items) {
+                inv.append(item.getName()).append(" ");
+            }
+            gc.fillText(inv.toString().trim(), 650, H - 18);
+        }
     }
 
     private void renderOverlay(String title, String subtitle, String color) {

@@ -37,7 +37,7 @@ public class CombatManager {
                 checkBossEnrage();
             }
             case SPECIAL -> {
-                int damage = computeDamage(player.getStats().getAttack() * 2, action.getPower());
+                int damage = computeDamage((int)(player.getStats().getAttack() * 1.5), action.getPower());
                 enemy.takeDamage(damage);
                 checkBossEnrage();
             }
@@ -95,7 +95,7 @@ public class CombatManager {
 
     private int computeDamage(int baseAttack, int actionPower) {
         int raw = baseAttack + actionPower;
-        int variance = (int) (Math.random() * 5) - 2;
+        int variance = (int) (Math.random() * 3);
         return Math.max(1, raw + variance);
     }
 

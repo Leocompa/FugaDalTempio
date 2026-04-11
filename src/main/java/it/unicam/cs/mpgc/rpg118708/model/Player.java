@@ -11,7 +11,7 @@ public class Player {
 
     public Player(String name) {
         this.name = name;
-        this.stats = new Stats(30, 10, 3, 1);
+        this.stats = new Stats(40, 8, 4, 1);
         this.inventory = new Inventory();
         this.x = 0;
         this.y = 0;

@@ -46,6 +46,14 @@ public class Zone {
         return rooms.stream().allMatch(Room::isCleared);
     }
 
+    public boolean goBack() {
+        if (currentRoomIndex > 0) {
+            currentRoomIndex--;
+            return true;
+        }
+        return false;
+    }
+
     public String getId() { return id; }
     public String getName() { return name; }
     public List<Room> getRooms() { return rooms; }

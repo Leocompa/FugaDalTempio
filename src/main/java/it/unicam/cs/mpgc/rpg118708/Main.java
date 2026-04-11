@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg118708;
 
+import it.unicam.cs.mpgc.rpg118708.controller.GameController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -8,9 +9,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Fuga dal Tempio");
-        primaryStage.setWidth(800);
-        primaryStage.setHeight(600);
         primaryStage.setResizable(false);
+        GameController controller = new GameController(primaryStage);
+        controller.start();
         primaryStage.show();
     }
 

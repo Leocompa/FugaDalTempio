@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.view;
 
 import it.unicam.cs.mpgc.rpg118708.controller.CombatController;
+import it.unicam.cs.mpgc.rpg118708.engine.CombatResult;
 import it.unicam.cs.mpgc.rpg118708.model.CombatActionType;
 import it.unicam.cs.mpgc.rpg118708.model.Enemy;
 import it.unicam.cs.mpgc.rpg118708.model.Player;
@@ -33,6 +34,7 @@ public class CombatScene {
     private Button fleeButton;
     private Canvas playerCanvas;
     private Canvas enemyCanvas;
+    private VBox rootBox;
     private final CombatController controller;
 
     public CombatScene(CombatController controller) {
@@ -43,6 +45,7 @@ public class CombatScene {
     private void buildScene() {
         VBox root = new VBox(0);
         root.setStyle("-fx-background-color: #0d0d14;");
+        this.rootBox = root;
 
         HBox hudRow = buildHudRow();
         HBox battleArea = buildBattleArea();
@@ -152,22 +155,62 @@ public class CombatScene {
     }
 
     private void handleAction(CombatActionType type) {
+        if (!controller.getCombatManager().isPlayerTurn()) return;
         setButtonsDisabled(true);
-        String msg = controller.handlePlayerAction(type);
-        if (!msg.isEmpty()) logLabel.setText(msg);
+
+        Player player = controller.getCombatManager().getPlayer();
+        Enemy enemy = controller.getCombatManager().getEnemy();
+        int hpBefore = enemy.getStats().getCurrentHp();
+
+        controller.handlePlayerAction(type);
+        int damage = hpBefore - enemy.getStats().getCurrentHp();
+
+        if (damage > 0) {
+            logLabel.setText("Colpisci " + enemy.getName() + " per " + damage + " danni!");
+        }
+
         refresh();
 
-        if (controller.getCombatManager().getLastResult().name().startsWith("VICTORY")
-                || controller.getCombatManager().getLastResult().name().equals("DEFEAT")
-                || controller.getCombatManager().getLastResult().name().equals("FLED")) {
+        CombatResult result = controller.getCombatManager().getLastResult();
+
+        if (result == CombatResult.VICTORY || result == CombatResult.VICTORY_LEVELUP) {
+            Stats ps = player.getStats();
+            logLabel.setText(enemy.getName() + " sconfitto! +" + enemy.getXpReward() + " XP");
+            turnLabel.setText("vittoria!");
+            refresh();
+            showEndButtons(true);
             return;
         }
 
-        javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(
-                javafx.util.Duration.seconds(1));
+        if (result == CombatResult.FLED) {
+            logLabel.setText("Sei fuggito dal combattimento.");
+            showEndButtons(false);
+            return;
+        }
+
+        javafx.animation.PauseTransition pause =
+                new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.2));
         pause.setOnFinished(e -> {
-            String enemyMsg = controller.handleEnemyTurn();
-            if (!enemyMsg.isEmpty()) logLabel.setText(enemyMsg);
+            int playerHpBefore = player.getStats().getCurrentHp();
+            controller.handleEnemyTurn();
+            int enemyDamage = playerHpBefore - player.getStats().getCurrentHp();
+
+            CombatResult afterResult = controller.getCombatManager().getLastResult();
+
+            if (enemyDamage > 0) {
+                String actionLabel = enemy.getAvailableActions()
+                        .get((int)(Math.random() * enemy.getAvailableActions().size())).getLabel();
+                logLabel.setText(enemy.getName() + " usa " + actionLabel
+                        + " — subisci " + enemyDamage + " danni!");
+            }
+
+            if (afterResult == CombatResult.DEFEAT) {
+                turnLabel.setText("sconfitta");
+                refresh();
+                showEndButtons(false);
+                return;
+            }
+
             refresh();
             setButtonsDisabled(false);
         });
@@ -224,6 +267,133 @@ public class CombatScene {
         gc.setFill(Color.web("#EF9F27"));
         gc.fillPolygon(new double[]{60, 48, 72}, new double[]{0, 18, 18}, 3);
     }
+
+    private void showEndButtons(boolean victory) {
+        System.out.println("showEndButtons() chiamato, victory=" + victory);
+        attackButton.setDisable(true);
+        specialButton.setDisable(true);
+        healButton.setDisable(true);
+        fleeButton.setDisable(true);
+
+        if (victory) {
+            showVictoryScreen();
+        } else {
+            showDefeatScreen();
+        }
+    }
+
+    private void showVictoryScreen() {
+        Player player = controller.getCombatManager().getPlayer();
+        Enemy enemy = controller.getCombatManager().getEnemy();
+        Stats ps = player.getStats();
+        boolean leveledUp = controller.getCombatManager()
+                .getLastResult() == CombatResult.VICTORY_LEVELUP;
+
+        VBox overlay = new VBox(16);
+        overlay.setAlignment(Pos.CENTER);
+        overlay.setPadding(new Insets(40));
+        overlay.setStyle("-fx-background-color: #0d1f0d;");
+
+        Label title = new Label("Nemico sconfitto!");
+        title.setFont(new Font("Monospaced", 22));
+        title.setStyle("-fx-text-fill: #5DCAA5;");
+
+        Label xpLabel = new Label("+" + enemy.getXpReward() + " XP guadagnati");
+        xpLabel.setFont(new Font("Monospaced", 14));
+        xpLabel.setStyle("-fx-text-fill: #EF9F27;");
+
+        overlay.getChildren().addAll(title, xpLabel);
+
+        if (leveledUp) {
+            Label lvLabel = new Label("Livello aumentato!  LV. " + ps.getLevel());
+            lvLabel.setFont(new Font("Monospaced", 18));
+            lvLabel.setStyle("-fx-text-fill: #FAC775;");
+
+            Label statsLabel = new Label(
+                    "HP max:  " + ps.getMaxHp() + "\n" +
+                            "ATK:     " + ps.getAttack() + "\n" +
+                            "DEF:     " + ps.getDefense() + "\n" +
+                            "XP:      " + ps.getCurrentXp() + " / " + ps.getXpToNextLevel()
+            );
+            statsLabel.setFont(new Font("Monospaced", 14));
+            statsLabel.setStyle("-fx-text-fill: #ccc;");
+
+            overlay.getChildren().addAll(lvLabel, statsLabel);
+        } else {
+            Label xpProgress = new Label(
+                    "XP: " + ps.getCurrentXp() + " / " + ps.getXpToNextLevel());
+            xpProgress.setFont(new Font("Monospaced", 12));
+            xpProgress.setStyle("-fx-text-fill: #888;");
+            overlay.getChildren().add(xpProgress);
+        }
+
+        Button continueBtn = new Button("Continua  ▶");
+        continueBtn.setStyle("""
+            -fx-background-color: #1D9E75;
+            -fx-text-fill: #E1F5EE;
+            -fx-font-family: Monospaced;
+            -fx-font-size: 14px;
+            -fx-background-radius: 4;
+            -fx-padding: 10px 24px;
+            -fx-cursor: hand;
+            """);
+        continueBtn.setOnAction(e -> {
+            Runnable onV = controller.getOnVictory();
+            if (onV != null) onV.run();
+        });
+
+        overlay.getChildren().add(continueBtn);
+
+        rootBox.getChildren().clear();
+        rootBox.getChildren().add(overlay);
+    }
+
+    private void showDefeatScreen() {
+        System.out.println("showDefeatScreen() chiamato");
+        Player player = controller.getCombatManager().getPlayer();
+        Stats ps = player.getStats();
+
+        VBox overlay = new VBox(16);
+        overlay.setAlignment(Pos.CENTER);
+        overlay.setPadding(new Insets(40));
+        overlay.setStyle("-fx-background-color: #1f0d0d;");
+
+        Label title = new Label("Sei caduto...");
+        title.setFont(new Font("Monospaced", 22));
+        title.setStyle("-fx-text-fill: #E24B4A;");
+
+        Label msg = new Label("Il tempio ha inghiottito la tua anima.");
+        msg.setFont(new Font("Monospaced", 13));
+        msg.setStyle("-fx-text-fill: #888;");
+
+        Label statsLabel = new Label(
+                "Livello raggiunto:  " + ps.getLevel() + "\n" +
+                        "XP accumulati:      " + ps.getCurrentXp()
+        );
+        statsLabel.setFont(new Font("Monospaced", 13));
+        statsLabel.setStyle("-fx-text-fill: #ccc;");
+
+        Button retryBtn = new Button("Riprova  ▶");
+        retryBtn.setStyle("""
+            -fx-background-color: #A32D2D;
+            -fx-text-fill: #FCEBEB;
+            -fx-font-family: Monospaced;
+            -fx-font-size: 14px;
+            -fx-background-radius: 4;
+            -fx-padding: 10px 24px;
+            -fx-cursor: hand;
+            """);
+        retryBtn.setOnAction(e -> {
+            Runnable onD = controller.getOnDefeat();
+            if (onD != null) onD.run();
+        });
+
+        overlay.getChildren().addAll(title, msg, statsLabel, retryBtn);
+
+        rootBox.getChildren().clear();
+        rootBox.getChildren().add(overlay);
+    }
+
 
     public Scene getScene() { return scene; }
     public Label getLogLabel() { return logLabel; }

@@ -89,6 +89,9 @@ public class GameManager {
 
     public boolean isGameOver() { return state == GameState.GAME_OVER; }
     public boolean isVictory() { return state == GameState.VICTORY; }
+    public boolean goBackRoom() {
+        return getCurrentZone().goBack();
+    }
 
     public Player getPlayer() { return player; }
     public List<Zone> getZones() { return zones; }
