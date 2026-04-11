@@ -15,6 +15,7 @@ public class StartScene {
     private TextField nameField;
     private Button newGameButton;
     private Button loadGameButton;
+    private Button exitButton;
 
     public StartScene() {
         buildScene();
@@ -75,11 +76,26 @@ public class StartScene {
                 -fx-cursor: hand;
                 """);
 
+        exitButton = new Button("Esci");
+        exitButton.setPrefWidth(240);
+        exitButton.setStyle("""
+        -fx-background-color: #1e1e30;
+        -fx-text-fill: #555;
+        -fx-font-family: Monospaced;
+        -fx-font-size: 14px;
+        -fx-border-color: #2a2a40;
+        -fx-border-radius: 4;
+        -fx-background-radius: 4;
+        -fx-padding: 10px;
+        -fx-cursor: hand;
+        """);
+        exitButton.setOnAction(e -> javafx.application.Platform.exit());
+
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(60));
         root.setStyle("-fx-background-color: #0d0d14;");
-        root.getChildren().addAll(title, subtitle, nameLabel, nameField, newGameButton, loadGameButton);
+        root.getChildren().addAll(title, subtitle, nameLabel, nameField, newGameButton, loadGameButton, exitButton);
 
         scene = new Scene(root, 800, 600);
     }

@@ -19,13 +19,13 @@ import java.util.Set;
 
 public class ExplorationScene {
 
-    private static final int W = 800;
-    private static final int H = 600;
+    private final int W;
+    private final int H;
     private static final int TILE = 32;
     private static final int PLAYER_SPEED = 4;
     private static final int PLAYER_W = 24;
     private static final int PLAYER_H = 32;
-    private static final int GROUND_Y = H - 80;
+    private final int GROUND_Y;
     private static final int INTERACT_RANGE = 60;
 
     private final GameManager gameManager;
@@ -49,8 +49,16 @@ public class ExplorationScene {
     private Runnable onEnterCombat;
     private Runnable onZoneComplete;
     private Runnable onSave;
+    private Runnable onExit;
+
+    public void setOnExit(Runnable onExit) { this.onExit = onExit; }
 
     public ExplorationScene(GameManager gameManager) {
+        javafx.geometry.Rectangle2D screen =
+                javafx.stage.Screen.getPrimary().getVisualBounds();
+        this.W = (int) screen.getWidth();
+        this.H = (int) screen.getHeight();
+        this.GROUND_Y = this.H - 80;
         this.gameManager = gameManager;
         buildScene();
     }
@@ -69,6 +77,16 @@ public class ExplorationScene {
             if (e.getCode() == KeyCode.S && e.isMetaDown()) {
                 if (onSave != null) onSave.run();
             }
+            if (e.getCode() == KeyCode.ESCAPE) {
+                if (onExit != null) onExit.run();
+            }
+        });
+        scene.setOnKeyPressed(e -> {
+            keysPressed.add(e.getCode());
+            if (e.getCode() == KeyCode.S && e.isMetaDown()) {
+                if (onSave != null) onSave.run();
+            }
+
         });
 
         gameLoop = new AnimationTimer() {
@@ -225,6 +243,7 @@ public class ExplorationScene {
             gc.setFill(Color.web("#E1F5EE"));
             gc.setFont(new Font("Monospaced", 13));
             gc.fillText(saveMessage, W / 2.0 - 60, 73);
+
         }
         renderHUD();
 
@@ -435,6 +454,7 @@ public class ExplorationScene {
             }
             gc.fillText(inv.toString().trim(), 650, H - 18);
         }
+        gc.fillText("[ESC] menu", 560, H - 16);
     }
 
     private void renderOverlay(String title, String subtitle, String color) {

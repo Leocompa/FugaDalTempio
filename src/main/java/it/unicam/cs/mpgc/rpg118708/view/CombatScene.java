@@ -57,7 +57,9 @@ public class CombatScene {
         HBox actionArea = buildActionArea();
 
         root.getChildren().addAll(hudRow, battleArea, logArea, actionArea);
-        scene = new Scene(root, 800, 600);
+        javafx.geometry.Rectangle2D screen =
+                javafx.stage.Screen.getPrimary().getVisualBounds();
+        scene = new Scene(root, screen.getWidth(), screen.getHeight());
     }
 
     private HBox buildHudRow() {
@@ -347,7 +349,9 @@ public class CombatScene {
         overlay.getChildren().add(continueBtn);
 
         if (stage != null) {
-            stage.setScene(new Scene(overlay, 800, 600));
+            javafx.geometry.Rectangle2D screen =
+                    javafx.stage.Screen.getPrimary().getVisualBounds();
+            stage.setScene(new Scene(overlay, screen.getWidth(), screen.getHeight()));
         } else {
             rootBox.getChildren().clear();
             rootBox.getChildren().add(overlay);
@@ -396,7 +400,9 @@ public class CombatScene {
         overlay.getChildren().addAll(title, msg, statsLabel, retryBtn);
 
         if (stage != null) {
-            stage.setScene(new Scene(overlay, 800, 600));
+            javafx.geometry.Rectangle2D screen =
+                    javafx.stage.Screen.getPrimary().getVisualBounds();
+            stage.setScene(new Scene(overlay, screen.getWidth(), screen.getHeight()));
         } else {
             rootBox.getChildren().clear();
             rootBox.getChildren().add(overlay);

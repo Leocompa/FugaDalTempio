@@ -9,7 +9,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Fuga dal Tempio");
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
+        primaryStage.setMaximized(true);
         GameController controller = new GameController(primaryStage);
         controller.start();
         primaryStage.show();

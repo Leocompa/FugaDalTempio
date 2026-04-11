@@ -128,6 +128,10 @@ public class GameController {
             saver.save(gameManager);
             explorationScene.showSaveMessage();
         });
+        explorationScene.setOnExit(() -> {
+            explorationScene.stop();
+            start();
+        });
 
         stage.setScene(explorationScene.getScene());
         explorationScene.start();
@@ -174,7 +178,10 @@ public class GameController {
 
         overlay.getChildren().addAll(title, subtitle, statsLabel, menuBtn);
 
-        javafx.scene.Scene victoryScene = new javafx.scene.Scene(overlay, 800, 600);
+        javafx.geometry.Rectangle2D screen =
+                javafx.stage.Screen.getPrimary().getVisualBounds();
+        javafx.scene.Scene victoryScene = new javafx.scene.Scene(
+                overlay, screen.getWidth(), screen.getHeight());
         stage.setScene(victoryScene);
     }
 }
