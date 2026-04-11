@@ -77,11 +77,11 @@ public class ExplorationScene {
 
         scene.setOnKeyPressed(e -> {
             keysPressed.add(e.getCode());
-            if (e.getCode() == KeyCode.S && e.isMetaDown()) {
+            if (e.getCode() == KeyCode.S && (e.isMetaDown() || e.isControlDown())) {
                 if (onSave != null) onSave.run();
             }
             if (e.getCode() == KeyCode.ESCAPE) {
-                if (onExit != null) onExit.run();
+                showExitConfirm();
             }
         });
         scene.setOnKeyReleased(e -> keysPressed.remove(e.getCode()));
@@ -93,6 +93,34 @@ public class ExplorationScene {
                 render();
             }
         };
+
+
+    }
+
+    private void showExitConfirm() {
+        gameLoop.stop();
+
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Fuga dal Tempio");
+        alert.setHeaderText("Vuoi tornare al menu principale?");
+        alert.setContentText("I progressi non salvati andranno persi.");
+
+        javafx.scene.control.ButtonType btnSi =
+                new javafx.scene.control.ButtonType("Sì, esci");
+        javafx.scene.control.ButtonType btnNo =
+                new javafx.scene.control.ButtonType("No, continua",
+                        javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(btnSi, btnNo);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == btnSi) {
+                if (onExit != null) onExit.run();
+            } else {
+                gameLoop.start();
+            }
+        });
     }
 
     public void showSaveMessage() {
@@ -408,59 +436,132 @@ public class ExplorationScene {
         Stats stats = player.getStats();
         Room room = gameManager.getCurrentRoom();
         Zone zone = gameManager.getCurrentZone();
+        int currentRoom = zone.getCurrentRoomIndex() + 1;
+        int totalRooms = zone.getRooms().size();
 
-        gc.setFill(Color.web("#13131f", 0.90));
-        gc.fillRect(0, 0, W, 40);
+        // HUD superiore
+        gc.setFill(Color.web("#13131f", 0.92));
+        gc.fillRect(0, 0, W, 48);
+        gc.setStroke(Color.web("#2a2a40"));
+        gc.setLineWidth(0.5);
+        gc.strokeLine(0, 48, W, 48);
 
-        gc.setFont(new Font("Monospaced", 12));
+        // nome giocatore — sinistra
+        gc.setFont(new Font("Monospaced", 13));
         gc.setFill(Color.web("#AFA9EC"));
-        gc.fillText(player.getName(), 12, 24);
+        gc.fillText(player.getName(), 16, 18);
 
+        // barra HP
+        int barX = 16;
+        int barY = 24;
+        int barW = 140;
+        int barH = 9;
         gc.setFill(Color.web("#2a2a40"));
-        gc.fillRoundRect(110, 14, 100, 12, 4, 4);
-        gc.setFill(Color.web("#E24B4A"));
+        gc.fillRoundRect(barX, barY, barW, barH, 4, 4);
         double hpRatio = (double) stats.getCurrentHp() / stats.getMaxHp();
-        gc.fillRoundRect(110, 14, 100 * hpRatio, 12, 4, 4);
-        gc.setFill(Color.web("#ccc"));
-        gc.fillText("HP " + stats.getCurrentHp() + "/" + stats.getMaxHp(), 218, 24);
+        Color hpColor = hpRatio > 0.5 ? Color.web("#1D9E75")
+                : hpRatio > 0.25 ? Color.web("#EF9F27")
+                  : Color.web("#E24B4A");
+        gc.setFill(hpColor);
+        gc.fillRoundRect(barX, barY, barW * hpRatio, barH, 4, 4);
+        gc.setFont(new Font("Monospaced", 10));
+        gc.setFill(Color.web("#888"));
+        gc.fillText("HP " + stats.getCurrentHp() + "/" + stats.getMaxHp(), barX + barW + 6, barY + 8);
 
-        gc.setFill(Color.web("#888780"));
-        gc.fillText("LV." + stats.getLevel(), 330, 24);
-        gc.fillText("XP " + stats.getCurrentXp() + "/" + stats.getXpToNextLevel(), 375, 24);
+        // barra XP
+        int xpBarX = 16;
+        int xpBarY = 36;
+        int xpBarW = 140;
+        int xpBarH = 7;
+        gc.setFill(Color.web("#2a2a40"));
+        gc.fillRoundRect(xpBarX, xpBarY, xpBarW, xpBarH, 4, 4);
+        double xpRatio = (double) stats.getCurrentXp() / stats.getXpToNextLevel();
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillRoundRect(xpBarX, xpBarY, xpBarW * xpRatio, xpBarH, 4, 4);
+        gc.setFont(new Font("Monospaced", 10));
+        gc.setFill(Color.web("#888"));
+        gc.fillText("XP  LV." + stats.getLevel(), xpBarX + xpBarW + 6, xpBarY + 6);
 
-        gc.setFill(Color.web("#555"));
-        int currentRoom = gameManager.getCurrentZone().getCurrentRoomIndex() + 1;
-        int totalRooms = gameManager.getCurrentZone().getRooms().size();
-        gc.fillText(zone.getName() + " — stanza " + currentRoom + "/" + totalRooms
-                + ": " + room.getName(), W - 380, 24);
+        // titolo zona — centro
+        gc.setFont(new Font("Monospaced", 13));
+        gc.setFill(Color.web("#EF9F27"));
+        String zoneName = zone.getName();
+        double titleW = zoneName.length() * 8.5;
+        gc.fillText(zoneName, W / 2.0 - titleW / 2, 30);
 
-        gc.setFill(Color.web("#13131f", 0.90));
-        gc.fillRect(0, H - 40, W, 40);
-
-        gc.setFill(Color.web("#13131f", 0.90));
-        gc.fillRect(0, H - 36, W, 36);
-        gc.setFill(Color.web("#555"));
+        // stanza — destra
+        gc.setFont(new Font("Monospaced", 13));
+        gc.setFill(Color.web("#AFA9EC"));
+        gc.fillText("Stanza " + currentRoom + " / " + totalRooms, W - 220, 18);
         gc.setFont(new Font("Monospaced", 11));
-        gc.fillText("← → muoviti", 12, H - 16);
-        gc.fillText("↑ salta", 130, H - 16);
-        gc.fillText("[E] interagisci", 210, H - 16);
-        gc.fillText("[R] riprova", 330, H - 16);
-        gc.fillText("[CMD+S] salva", 430, H - 16);
-        gc.setFill(Color.web("#534AB7"));
-        gc.fillText("inventario:", 560, H - 18);
+        gc.setFill(Color.web("#666"));
+        gc.fillText(room.getName(), W - 220, 36);
+
+        // HUD inferiore
+        gc.setFill(Color.web("#13131f", 0.92));
+        gc.fillRect(0, H - 44, W, 44);
+        gc.setStroke(Color.web("#2a2a40"));
+        gc.setLineWidth(0.5);
+        gc.strokeLine(0, H - 44, W, H - 44);
+
+        int hudY = H - 18;
+        int spacing = W / 8;
+        gc.setFont(new Font("Monospaced", 12));
+
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillText("← →", 12, hudY);
+        gc.setFill(Color.web("#888"));
+        gc.fillText("muoviti", 50, hudY);
+
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillText("↑", spacing, hudY);
+        gc.setFill(Color.web("#888"));
+        gc.fillText("salta", spacing + 18, hudY);
+
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillText("[E]", spacing * 2, hudY);
+        gc.setFill(Color.web("#888"));
+        gc.fillText("interagisci", spacing * 2 + 34, hudY);
+
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillText("[R]", spacing * 3, hudY);
+        gc.setFill(Color.web("#888"));
+        gc.fillText("riprova", spacing * 3 + 34, hudY);
+
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillText("[CTRL+S]", spacing * 4, hudY);
+        gc.setFill(Color.web("#888"));
+        gc.fillText("salva", spacing * 4 + 78, hudY);
+
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillText("[ESC]", spacing * 5, hudY);
+        gc.setFill(Color.web("#888"));
+        gc.fillText("menu", spacing * 5 + 50, hudY);
+
+        gc.setFill(Color.web("#EF9F27"));
+        gc.fillText("pozioni:", spacing * 6, hudY);
+        long potions = player.getInventory().getItems().stream()
+                .filter(i -> i.getType() == it.unicam.cs.mpgc.rpg118708.model.ItemType.POTION)
+                .count();
+        gc.setFill(Color.web("#888"));
+        gc.fillText(String.valueOf(potions), spacing * 6 + 72, hudY);
+
+        gc.setFill(Color.web("#EF9F27"));
+        gc.fillText("oggetti:", spacing * 7, hudY);
         List<Item> items = player.getInventory().getItems();
+        gc.setFill(Color.web("#888"));
         if (items.isEmpty()) {
-            gc.setFill(Color.web("#555"));
-            gc.fillText("vuoto", 650, H - 18);
+            gc.fillText("vuoto", spacing * 7 + 68, hudY);
         } else {
-            gc.setFill(Color.web("#EF9F27"));
             StringBuilder inv = new StringBuilder();
             for (Item item : items) {
-                inv.append(item.getName()).append(" ");
+                if (item.getType() != it.unicam.cs.mpgc.rpg118708.model.ItemType.POTION) {
+                    inv.append(item.getName()).append(" ");
+                }
             }
-            gc.fillText(inv.toString().trim(), 650, H - 18);
+            gc.fillText(inv.toString().trim().isEmpty() ? "vuoto" : inv.toString().trim(),
+                    spacing * 7 + 68, hudY);
         }
-        gc.fillText("[ESC] menu", 560, H - 16);
     }
 
     private void renderOverlay(String title, String subtitle, String color) {

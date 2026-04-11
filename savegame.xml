@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <savegame>
-    <player attack="8" defense="4" hp="40" level="1" maxHp="40" name="Leo" xp="0" xpToNextLevel="20"/>
-    <progress roomIndex="0" zoneIndex="0"/>
+    <player attack="14" defense="7" hp="55" level="4" maxHp="55" name="prova" xp="30" xpToNextLevel="80"/>
+    <progress roomIndex="2" zoneIndex="0"/>
     <zones>
         <zone completed="false" id="zone1">
-            <room id="r1" puzzleSolved="false">
-                <item id="potion1"/>
-            </room>
+            <room id="r1" puzzleSolved="false"/>
             <room id="r2" puzzleSolved="false">
-                <enemy alive="true" hp="28" id="e_r2"/>
+                <enemy alive="false" hp="0" id="e_r2"/>
             </room>
             <room id="r3" puzzleSolved="false">
-                <enemy alive="true" hp="41" id="e_r3"/>
-                <item id="potion2"/>
+                <enemy alive="false" hp="0" id="e_r3"/>
             </room>
             <room id="r4" puzzleSolved="false">
                 <enemy alive="true" hp="60" id="e_r4"/>
@@ -23,5 +20,8 @@
             </room>
         </zone>
     </zones>
-    <inventory/>
+    <inventory>
+        <item id="potion1" name="Pozione" type="POTION" value="15"/>
+        <item id="potion2" name="Pozione" type="POTION" value="15"/>
+    </inventory>
 </savegame>
