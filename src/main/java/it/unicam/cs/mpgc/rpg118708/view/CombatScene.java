@@ -2,10 +2,7 @@ package it.unicam.cs.mpgc.rpg118708.view;
 
 import it.unicam.cs.mpgc.rpg118708.controller.CombatController;
 import it.unicam.cs.mpgc.rpg118708.engine.CombatResult;
-import it.unicam.cs.mpgc.rpg118708.model.CombatActionType;
-import it.unicam.cs.mpgc.rpg118708.model.Enemy;
-import it.unicam.cs.mpgc.rpg118708.model.Player;
-import it.unicam.cs.mpgc.rpg118708.model.Stats;
+import it.unicam.cs.mpgc.rpg118708.model.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,7 +11,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -29,10 +25,12 @@ public class CombatScene {
     private Label playerStatsLabel;
     private Label enemyStatsLabel;
     private Label turnLabel;
+    private Label inventoryLabel;
     private Button attackButton;
     private Button specialButton;
     private Button healButton;
     private Button fleeButton;
+    private Button equipButton;
     private Canvas playerCanvas;
     private Canvas enemyCanvas;
     private VBox rootBox;
@@ -53,10 +51,11 @@ public class CombatScene {
 
         HBox hudRow = buildHudRow();
         HBox battleArea = buildBattleArea();
+        HBox inventoryArea = buildInventoryArea();
         VBox logArea = buildLogArea();
         HBox actionArea = buildActionArea();
 
-        root.getChildren().addAll(hudRow, battleArea, logArea, actionArea);
+        root.getChildren().addAll(hudRow, battleArea, inventoryArea, logArea, actionArea);
         javafx.geometry.Rectangle2D screen =
                 javafx.stage.Screen.getPrimary().getVisualBounds();
         scene = new Scene(root, screen.getWidth(), screen.getHeight());
@@ -114,6 +113,31 @@ public class CombatScene {
         return battle;
     }
 
+    private HBox buildInventoryArea() {
+        Label invTitle = new Label("Inventario:");
+        invTitle.setFont(new Font("Monospaced", 12));
+        invTitle.setStyle("-fx-text-fill: #534AB7;");
+
+        inventoryLabel = new Label("vuoto");
+        inventoryLabel.setFont(new Font("Monospaced", 12));
+        inventoryLabel.setStyle("-fx-text-fill: #888;");
+
+        Label equippedTitle = new Label("Equipaggiato:");
+        equippedTitle.setFont(new Font("Monospaced", 12));
+        equippedTitle.setStyle("-fx-text-fill: #EF9F27; -fx-padding: 0 0 0 24;");
+
+        Label equippedLabel = new Label("nessuno");
+        equippedLabel.setFont(new Font("Monospaced", 12));
+        equippedLabel.setStyle("-fx-text-fill: #888;");
+        equippedLabel.setId("equipped-label");
+
+        HBox row = new HBox(12, invTitle, inventoryLabel, equippedTitle, equippedLabel);
+        row.setPadding(new Insets(8, 20, 8, 20));
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setStyle("-fx-background-color: #0a0a12; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0;");
+        return row;
+    }
+
     private VBox buildLogArea() {
         logLabel = new Label("Il nemico ti fissa. Cosa fai?");
         logLabel.setFont(new Font("Monospaced", 13));
@@ -132,13 +156,15 @@ public class CombatScene {
         specialButton = buildButton("Lama d'ombra", "#854F0B", "#EF9F27");
         healButton = buildButton("Usa pozione", "#0F6E56", "#5DCAA5");
         fleeButton = buildButton("Fuggi", "#993C1D", "#F0997B");
+        equipButton = buildButton("Equipaggia", "#1e1e30", "#AFA9EC");
 
         attackButton.setOnAction(e -> handleAction(CombatActionType.ATTACK));
         specialButton.setOnAction(e -> handleAction(CombatActionType.SPECIAL));
         healButton.setOnAction(e -> handleAction(CombatActionType.HEAL));
         fleeButton.setOnAction(e -> handleAction(CombatActionType.FLEE));
+        equipButton.setOnAction(e -> handleEquip());
 
-        HBox actions = new HBox(12, attackButton, specialButton, healButton, fleeButton);
+        HBox actions = new HBox(12, attackButton, specialButton, healButton, fleeButton, equipButton);
         actions.setAlignment(Pos.CENTER);
         actions.setPadding(new Insets(16));
         actions.setStyle("-fx-background-color: #0d0d14;");
@@ -172,17 +198,29 @@ public class CombatScene {
             }
             int usesLeft = controller.getCombatManager().getSpecialUsesLeft() - 1;
             int usesMax = controller.getCombatManager().getMaxSpecialUses();
-            logLabel.setText("Usi mosse speciale! (" + usesLeft + "/" + usesMax + " rimasti)");
+            logLabel.setText("Usi mossa speciale! (" + usesLeft + "/" + usesMax + " rimasti)");
         }
 
         Player player = controller.getCombatManager().getPlayer();
         Enemy enemy = controller.getCombatManager().getEnemy();
         int hpBefore = enemy.getStats().getCurrentHp();
+        int playerHpBefore = player.getStats().getCurrentHp();
 
         controller.handlePlayerAction(type);
-        int damage = hpBefore - enemy.getStats().getCurrentHp();
 
-        if (damage > 0) {
+        int damage = hpBefore - enemy.getStats().getCurrentHp();
+        int healed = player.getStats().getCurrentHp() - playerHpBefore;
+
+        if (type == CombatActionType.HEAL) {
+            if (healed > 0) {
+                logLabel.setText("Usi una pozione — recuperi " + healed + " HP! ("
+                        + player.getStats().getCurrentHp() + "/" + player.getStats().getMaxHp() + ")");
+            } else {
+                logLabel.setText("Nessuna pozione disponibile!");
+            }
+        } else if (type == CombatActionType.SPECIAL && damage > 0) {
+            logLabel.setText("Lama d'ombra colpisce " + enemy.getName() + " per " + damage + " danni!");
+        } else if (damage > 0) {
             logLabel.setText("Colpisci " + enemy.getName() + " per " + damage + " danni!");
         }
 
@@ -207,9 +245,9 @@ public class CombatScene {
         javafx.animation.PauseTransition pause =
                 new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.2));
         pause.setOnFinished(e -> {
-            int playerHpBefore = player.getStats().getCurrentHp();
+            int playerHpBeforeEnemy = player.getStats().getCurrentHp();
             controller.handleEnemyTurn();
-            int enemyDamage = playerHpBefore - player.getStats().getCurrentHp();
+            int enemyDamage = playerHpBeforeEnemy - player.getStats().getCurrentHp();
 
             CombatResult afterResult = controller.getCombatManager().getLastResult();
 
@@ -217,7 +255,8 @@ public class CombatScene {
                 String actionLabel = enemy.getAvailableActions()
                         .get((int)(Math.random() * enemy.getAvailableActions().size())).getLabel();
                 logLabel.setText(enemy.getName() + " usa " + actionLabel
-                        + " — subisci " + enemyDamage + " danni!");
+                        + " — subisci " + enemyDamage + " danni! (HP: "
+                        + player.getStats().getCurrentHp() + "/" + player.getStats().getMaxHp() + ")");
             }
 
             if (afterResult == CombatResult.DEFEAT) {
@@ -231,6 +270,28 @@ public class CombatScene {
             setButtonsDisabled(false);
         });
         pause.play();
+    }
+
+    private void handleEquip() {
+        Player player = controller.getCombatManager().getPlayer();
+        Item amulet = player.getInventory().getItems().stream()
+                .filter(i -> i.getType() == ItemType.AMULET)
+                .findFirst().orElse(null);
+
+        if (amulet == null) {
+            logLabel.setText("Nessun amuleto nell'inventario.");
+            return;
+        }
+
+        if (player.hasEquipped() && player.getEquippedItem().getId().equals(amulet.getId())) {
+            logLabel.setText("Hai già equipaggiato " + amulet.getName() + "!");
+            return;
+        }
+
+        controller.getCombatManager().equipItem(amulet);
+        logLabel.setText("Hai equipaggiato " + amulet.getName()
+                + " — DEF +4, HP max +10!");
+        refresh();
     }
 
     private void setButtonsDisabled(boolean disabled) {
@@ -258,8 +319,34 @@ public class CombatScene {
         int specialMax = controller.getCombatManager().getMaxSpecialUses();
         if (specialLeft <= 0) {
             specialButton.setDisable(true);
-            specialButton.setText("Lama d'ombra");
             specialButton.setStyle(String.format("""
+                    -fx-background-color: %s;
+                    -fx-text-fill: %s;
+                    -fx-font-family: Monospaced;
+                    -fx-font-size: 13px;
+                    -fx-background-radius: 4;
+                    -fx-padding: 10px;
+                    -fx-cursor: hand;
+                    """, "#2a2a40", "#555"));
+        } else {
+            specialButton.setDisable(false);
+            specialButton.setStyle(String.format("""
+                    -fx-background-color: %s;
+                    -fx-text-fill: %s;
+                    -fx-font-family: Monospaced;
+                    -fx-font-size: 13px;
+                    -fx-background-radius: 4;
+                    -fx-padding: 10px;
+                    -fx-cursor: hand;
+                    """, "#854F0B", "#EF9F27"));
+        }
+
+        long potions = player.getInventory().getItems().stream()
+                .filter(i -> i.getType() == ItemType.POTION)
+                .count();
+        if (potions <= 0) {
+            healButton.setDisable(true);
+            healButton.setStyle(String.format("""
             -fx-background-color: %s;
             -fx-text-fill: %s;
             -fx-font-family: Monospaced;
@@ -269,9 +356,9 @@ public class CombatScene {
             -fx-cursor: hand;
             """, "#2a2a40", "#555"));
         } else {
-            specialButton.setDisable(false);
-            specialButton.setText("Lama d'ombra");
-            specialButton.setStyle(String.format("""
+            healButton.setDisable(false);
+            healButton.setText("Usa pozione (" + potions + ")");
+            healButton.setStyle(String.format("""
             -fx-background-color: %s;
             -fx-text-fill: %s;
             -fx-font-family: Monospaced;
@@ -279,8 +366,23 @@ public class CombatScene {
             -fx-background-radius: 4;
             -fx-padding: 10px;
             -fx-cursor: hand;
-            """, "#854F0B", "#EF9F27"));
+            """, "#0F6E56", "#5DCAA5"));
         }
+
+        StringBuilder invText = new StringBuilder();
+        for (Item item : player.getInventory().getItems()) {
+            invText.append(item.getName()).append("  ");
+        }
+        inventoryLabel.setText(invText.toString().trim().isEmpty() ? "vuoto" : invText.toString().trim());
+
+        Label equippedLabel = (Label) scene.lookup("#equipped-label");
+        if (equippedLabel != null) {
+            equippedLabel.setText(player.hasEquipped()
+                    ? player.getEquippedItem().getName() : "nessuno");
+        }
+
+        equipButton.setDisable(player.getInventory().getItems().stream()
+                .noneMatch(i -> i.getType() == ItemType.AMULET));
     }
 
     private void drawPlayerSprite(GraphicsContext gc) {
@@ -317,6 +419,7 @@ public class CombatScene {
         specialButton.setDisable(true);
         healButton.setDisable(true);
         fleeButton.setDisable(true);
+        equipButton.setDisable(true);
 
         if (victory) {
             showVictoryScreen();
@@ -360,7 +463,6 @@ public class CombatScene {
             );
             statsLabel.setFont(new Font("Monospaced", 14));
             statsLabel.setStyle("-fx-text-fill: #ccc;");
-
             overlay.getChildren().addAll(lvLabel, statsLabel);
         } else {
             Label xpProgress = new Label(
@@ -372,19 +474,18 @@ public class CombatScene {
 
         Button continueBtn = new Button("Continua  ▶");
         continueBtn.setStyle("""
-            -fx-background-color: #1D9E75;
-            -fx-text-fill: #E1F5EE;
-            -fx-font-family: Monospaced;
-            -fx-font-size: 14px;
-            -fx-background-radius: 4;
-            -fx-padding: 10px 24px;
-            -fx-cursor: hand;
-            """);
+                -fx-background-color: #1D9E75;
+                -fx-text-fill: #E1F5EE;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 14px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px 24px;
+                -fx-cursor: hand;
+                """);
         continueBtn.setOnAction(e -> {
             Runnable onV = controller.getOnVictory();
             if (onV != null) onV.run();
         });
-
         overlay.getChildren().add(continueBtn);
 
         if (stage != null) {
@@ -423,14 +524,14 @@ public class CombatScene {
 
         Button retryBtn = new Button("Ricomincia dall'inizio");
         retryBtn.setStyle("""
-        -fx-background-color: #A32D2D;
-        -fx-text-fill: #FCEBEB;
-        -fx-font-family: Monospaced;
-        -fx-font-size: 14px;
-        -fx-background-radius: 4;
-        -fx-padding: 10px 24px;
-        -fx-cursor: hand;
-        """);
+                -fx-background-color: #A32D2D;
+                -fx-text-fill: #FCEBEB;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 14px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px 24px;
+                -fx-cursor: hand;
+                """);
         retryBtn.setOnAction(e -> {
             Runnable onD = controller.getOnDefeat();
             if (onD != null) onD.run();
@@ -438,14 +539,14 @@ public class CombatScene {
 
         Button loadBtn = new Button("Carica ultimo salvataggio");
         loadBtn.setStyle("""
-        -fx-background-color: #534AB7;
-        -fx-text-fill: #EEEDFE;
-        -fx-font-family: Monospaced;
-        -fx-font-size: 14px;
-        -fx-background-radius: 4;
-        -fx-padding: 10px 24px;
-        -fx-cursor: hand;
-        """);
+                -fx-background-color: #534AB7;
+                -fx-text-fill: #EEEDFE;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 14px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px 24px;
+                -fx-cursor: hand;
+                """);
         loadBtn.setOnAction(e -> {
             Runnable onL = controller.getOnLoad();
             if (onL != null) onL.run();
@@ -462,7 +563,6 @@ public class CombatScene {
             rootBox.getChildren().add(overlay);
         }
     }
-
 
     public Scene getScene() { return scene; }
     public Label getLogLabel() { return logLabel; }

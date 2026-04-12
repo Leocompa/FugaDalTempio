@@ -47,6 +47,18 @@ public class Stats {
         return leveled;
     }
 
+    public void applyAmuletBonus() {
+        this.defense += 4;
+        this.maxHp += 10;
+        this.currentHp = Math.min(currentHp + 10, maxHp);
+    }
+
+    public void removeAmuletBonus() {
+        this.defense = Math.max(0, this.defense - 4);
+        this.maxHp = Math.max(1, this.maxHp - 10);
+        this.currentHp = Math.min(currentHp, maxHp);
+    }
+
     private void levelUp() {
         level++;
         currentXp = currentXp - xpToNextLevel;

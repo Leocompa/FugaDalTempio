@@ -99,6 +99,19 @@ public class CombatManager {
         return CombatResult.ONGOING;
     }
 
+    public boolean equipItem(Item item) {
+        if (item.getType() == ItemType.AMULET) {
+            if (player.hasEquipped()) {
+                player.getStats().removeAmuletBonus();
+            }
+            player.equip(item);
+            player.getStats().applyAmuletBonus();
+            player.getInventory().removeItem(item);
+            return true;
+        }
+        return false;
+    }
+
     private int computeDamage(int baseAttack, int actionPower) {
         int raw = baseAttack + actionPower;
         int variance = (int) (Math.random() * 3);

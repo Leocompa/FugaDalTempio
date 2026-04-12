@@ -8,6 +8,7 @@ public class Player {
     private int x;
     private int y;
     private Direction direction;
+    private Item equippedItem;
 
     public Player(String name) {
         this.name = name;
@@ -39,6 +40,17 @@ public class Player {
         this.y = y;
     }
 
+    public boolean equip(Item item) {
+        if (item.getType() == ItemType.AMULET || item.getType() == ItemType.KEY) {
+            this.equippedItem = item;
+            return true;
+        }
+        return false;
+    }
+
+    public void unequip() { this.equippedItem = null; }
+    public Item getEquippedItem() { return equippedItem; }
+    public boolean hasEquipped() { return equippedItem != null; }
     public String getName() { return name; }
     public Stats getStats() { return stats; }
     public Inventory getInventory() { return inventory; }
