@@ -223,7 +223,16 @@ public class ExplorationScene {
             }
             for (NPC npc : room.getNpcs()) {
                 if (Math.abs(px - npcX) < INTERACT_RANGE) {
-                    showDialogue(npc.getName() + ": \"" + npc.getDialogue() + "\"");
+                    Item reward = npc.collectReward();
+                    if (reward != null) {
+                        boolean added = gameManager.getPlayer().getInventory().addItem(reward);
+                        if (added) {
+                            showDialogue(npc.getName() + ": \"" + npc.getDialogue() + "\"\n"
+                                    + "[Hai ricevuto: " + reward.getName() + "!]");
+                        }
+                    } else {
+                        showDialogue(npc.getName() + ": \"" + npc.getDialogue() + "\"");
+                    }
                 }
             }
             keysPressed.remove(KeyCode.E);

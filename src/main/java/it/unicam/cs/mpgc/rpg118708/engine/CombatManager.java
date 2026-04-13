@@ -16,6 +16,8 @@ public class CombatManager {
     private CombatResult lastResult;
     private int specialUsesLeft;
     private int maxSpecialUses;
+    private int temporaryAttackBonus = 0;
+    private boolean damageReductionActive = false;
 
     public CombatManager(Player player) {
         this.player = player;
@@ -112,8 +114,23 @@ public class CombatManager {
         return false;
     }
 
+    public String useItem(Item item) {
+        if (item.getType() == ItemType.SCROLL) {
+            temporaryAttackBonus = item.getValue();
+            player.getInventory().removeItem(item);
+            return "Pergamena usata — ATK +" + item.getValue() + " per questo turno!";
+        }
+        if (item.getType() == ItemType.TALISMAN) {
+            damageReductionActive = true;
+            player.getInventory().removeItem(item);
+            return "Talismano attivato — il prossimo attacco nemico sarà dimezzato!";
+        }
+        return "";
+    }
+
     private int computeDamage(int baseAttack, int actionPower) {
-        int raw = baseAttack + actionPower;
+        int raw = baseAttack + actionPower + temporaryAttackBonus;
+        temporaryAttackBonus = 0;
         int variance = (int) (Math.random() * 3);
         return Math.max(1, raw + variance);
     }
@@ -137,4 +154,6 @@ public class CombatManager {
     public CombatResult getLastResult() { return lastResult; }
     public int getSpecialUsesLeft() { return specialUsesLeft; }
     public int getMaxSpecialUses() { return maxSpecialUses; }
+    public int getTemporaryAttackBonus() { return temporaryAttackBonus; }
+    public boolean isDamageReductionActive() { return damageReductionActive; }
 }

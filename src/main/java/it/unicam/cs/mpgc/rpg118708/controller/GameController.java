@@ -7,6 +7,7 @@ import it.unicam.cs.mpgc.rpg118708.persistence.GameLoader;
 import it.unicam.cs.mpgc.rpg118708.persistence.GameSaver;
 import it.unicam.cs.mpgc.rpg118708.view.CombatScene;
 import it.unicam.cs.mpgc.rpg118708.view.ExplorationScene;
+import it.unicam.cs.mpgc.rpg118708.view.SaveSlotScene;
 import it.unicam.cs.mpgc.rpg118708.view.StartScene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -19,6 +20,7 @@ public class GameController {
     private GameManager gameManager;
     private final GameSaver saver;
     private final GameLoader loader;
+    private int currentSaveSlot = 1;
 
     private StartScene startScene;
     private ExplorationScene explorationScene;
@@ -41,7 +43,7 @@ public class GameController {
 
         startScene.getLoadGameButton().setOnAction(e -> {
             if (loader.saveExists()) {
-                loadGame();
+                showLoadSlotScreen(() -> stage.setScene(startScene.getScene()));
             } else {
                 startScene.getLoadGameButton().setText("Nessun salvataggio trovato");
             }
@@ -81,6 +83,7 @@ public class GameController {
 
             combatController.setOnVictory(() -> {
                 gameManager.endCombat();
+                gameManager.registerEnemyDefeated();
                 if (gameManager.getCurrentZone().getCurrentRoomIndex() == 4
                         && gameManager.getCurrentRoom().getEnemies().stream().noneMatch(e -> e.isAlive())) {
                     gameManager.setState(GameState.VICTORY);
@@ -108,7 +111,7 @@ public class GameController {
 
             combatController.setOnLoad(() -> {
                 if (loader.saveExists()) {
-                    loadGame();
+                    showLoadSlotScreen(() -> stage.setScene(combatScene.getScene()));
                 } else {
                     gameManager.respawn();
                     startExploration();
@@ -126,14 +129,11 @@ public class GameController {
         explorationScene.setOnZoneComplete(() -> {
             explorationScene.stop();
             gameManager.advanceZone();
-            saver.save(gameManager);
+            saver.save(gameManager, currentSaveSlot);
             startExploration();
         });
 
-        explorationScene.setOnSave(() -> {
-            saver.save(gameManager);
-            explorationScene.showSaveMessage();
-        });
+        explorationScene.setOnSave(() -> showSaveSlotScreen());
 
         explorationScene.setOnExit(() -> {
             explorationScene.stop();
@@ -173,14 +173,14 @@ public class GameController {
 
         javafx.scene.control.Button menuBtn = new javafx.scene.control.Button("Torna al menu  ▶");
         menuBtn.setStyle("""
-            -fx-background-color: #854F0B;
-            -fx-text-fill: #FAEEDA;
-            -fx-font-family: Monospaced;
-            -fx-font-size: 14px;
-            -fx-background-radius: 4;
-            -fx-padding: 12px 28px;
-            -fx-cursor: hand;
-            """);
+                -fx-background-color: #854F0B;
+                -fx-text-fill: #FAEEDA;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 14px;
+                -fx-background-radius: 4;
+                -fx-padding: 12px 28px;
+                -fx-cursor: hand;
+                """);
         menuBtn.setOnAction(e -> start());
 
         overlay.getChildren().addAll(title, subtitle, statsLabel, menuBtn);
@@ -192,22 +192,49 @@ public class GameController {
         stage.setScene(victoryScene);
     }
 
-    private void loadGame() {
-        String name = loader.loadPlayerName();
-        if (name.isEmpty()) name = "Ladro";
-        Player player = new Player(name);
-        List<Zone> zones = WorldBuilder.buildWorld();
-        int roomIndex = 0;
-        for (Zone zone : zones) {
-            for (Room room : zone.getRooms()) {
-                for (Enemy enemy : room.getEnemies()) {
-                    WorldBuilder.scaleEnemy(enemy, roomIndex);
-                }
-                roomIndex++;
+    private void showSaveSlotScreen() {
+        SaveSlotScene saveSlotScene = new SaveSlotScene(loader, true);
+        saveSlotScene.setOnSlotSelected(slot -> {
+            if (slot == -1) {
+                stage.setScene(explorationScene.getScene());
+                explorationScene.start();
+                return;
             }
-        }
-        gameManager = new GameManager(player, zones);
-        loader.load(gameManager);
-        startExploration();
+            currentSaveSlot = slot;
+            saver.save(gameManager, slot);
+            explorationScene.showSaveMessage();
+            stage.setScene(explorationScene.getScene());
+            explorationScene.start();
+        });
+        if (explorationScene != null) explorationScene.stop();
+        stage.setScene(saveSlotScene.getScene());
+    }
+
+    private void showLoadSlotScreen(Runnable onBack) {
+        SaveSlotScene loadSlotScene = new SaveSlotScene(loader, false);
+        loadSlotScene.setOnSlotSelected(slot -> {
+            if (slot == -1) {
+                if (onBack != null) onBack.run();
+                return;
+            }
+            currentSaveSlot = slot;
+            String name = loader.loadPlayerName(slot);
+            if (name.isEmpty()) name = "Ladro";
+            Player player = new Player(name);
+            List<Zone> zones = WorldBuilder.buildWorld();
+            int roomIndex = 0;
+            for (Zone zone : zones) {
+                for (Room room : zone.getRooms()) {
+                    for (Enemy enemy : room.getEnemies()) {
+                        WorldBuilder.scaleEnemy(enemy, roomIndex);
+                    }
+                    roomIndex++;
+                }
+            }
+            gameManager = new GameManager(player, zones);
+            loader.load(gameManager, slot);
+            startExploration();
+        });
+        stage.setScene(loadSlotScene.getScene());
     }
 }

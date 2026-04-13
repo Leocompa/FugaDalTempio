@@ -1,0 +1,133 @@
+package it.unicam.cs.mpgc.rpg118708.view;
+
+import it.unicam.cs.mpgc.rpg118708.persistence.GameLoader;
+import it.unicam.cs.mpgc.rpg118708.persistence.GameSaver;
+import it.unicam.cs.mpgc.rpg118708.persistence.SlotInfo;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+
+import java.util.function.Consumer;
+
+public class SaveSlotScene {
+
+    private Scene scene;
+    private final GameLoader loader;
+    private final boolean isSaveMode;
+    private Consumer<Integer> onSlotSelected;
+
+    public SaveSlotScene(GameLoader loader, boolean isSaveMode) {
+        this.loader = loader;
+        this.isSaveMode = isSaveMode;
+        buildScene();
+    }
+
+    private void buildScene() {
+        VBox root = new VBox(24);
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(60));
+        root.setStyle("-fx-background-color: #0d0d14;");
+
+        Label title = new Label(isSaveMode ? "Scegli uno slot di salvataggio" : "Scegli una partita da caricare");
+        title.setFont(new Font("Monospaced", 20));
+        title.setStyle("-fx-text-fill: #EF9F27;");
+
+        root.getChildren().add(title);
+
+        for (int slot = 1; slot <= GameSaver.getMaxSlots(); slot++) {
+            root.getChildren().add(buildSlotCard(slot));
+        }
+
+        Button backBtn = new Button("← Indietro");
+        backBtn.setStyle("""
+                -fx-background-color: #1e1e30;
+                -fx-text-fill: #555;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 13px;
+                -fx-border-color: #2a2a40;
+                -fx-border-radius: 4;
+                -fx-background-radius: 4;
+                -fx-padding: 8px 20px;
+                -fx-cursor: hand;
+                """);
+        backBtn.setOnAction(e -> { if (onSlotSelected != null) onSlotSelected.accept(-1); });
+
+        root.getChildren().add(backBtn);
+
+        javafx.geometry.Rectangle2D screen =
+                javafx.stage.Screen.getPrimary().getVisualBounds();
+        scene = new Scene(root, screen.getWidth(), screen.getHeight());
+    }
+
+    private HBox buildSlotCard(int slot) {
+        SlotInfo info = loader.getSlotInfo(slot);
+
+        VBox details = new VBox(6);
+        details.setAlignment(Pos.CENTER_LEFT);
+
+        Label slotLabel = new Label("Slot " + slot);
+        slotLabel.setFont(new Font("Monospaced", 14));
+        slotLabel.setStyle("-fx-text-fill: #AFA9EC;");
+
+        if (info != null) {
+            Label nameLabel = new Label(info.getPlayerName() + "  —  LV." + info.getLevel()
+                    + "  —  Stanza " + info.getRoomNumber());
+            nameLabel.setFont(new Font("Monospaced", 12));
+            nameLabel.setStyle("-fx-text-fill: #ccc;");
+
+            Label timeLabel = new Label(info.getTimestamp());
+            timeLabel.setFont(new Font("Monospaced", 11));
+            timeLabel.setStyle("-fx-text-fill: #555;");
+
+            details.getChildren().addAll(slotLabel, nameLabel, timeLabel);
+        } else {
+            Label emptyLabel = new Label("— vuoto —");
+            emptyLabel.setFont(new Font("Monospaced", 12));
+            emptyLabel.setStyle("-fx-text-fill: #3a3a55;");
+            details.getChildren().addAll(slotLabel, emptyLabel);
+        }
+
+        Button actionBtn = new Button(isSaveMode ? "Salva qui" : "Carica");
+        actionBtn.setPrefWidth(120);
+        boolean canLoad = !isSaveMode && info == null;
+        actionBtn.setDisable(canLoad);
+        actionBtn.setStyle(String.format("""
+                -fx-background-color: %s;
+                -fx-text-fill: %s;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 13px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px;
+                -fx-cursor: hand;
+                """,
+                canLoad ? "#2a2a40" : "#534AB7",
+                canLoad ? "#555" : "#EEEDFE"));
+
+        int finalSlot = slot;
+        actionBtn.setOnAction(e -> { if (onSlotSelected != null) onSlotSelected.accept(finalSlot); });
+
+        HBox card = new HBox(20, details, actionBtn);
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.setPadding(new Insets(16, 24, 16, 24));
+        card.setPrefWidth(600);
+        card.setStyle("""
+                -fx-background-color: #13131f;
+                -fx-border-color: #2a2a40;
+                -fx-border-width: 0.5;
+                -fx-border-radius: 8;
+                -fx-background-radius: 8;
+                """);
+        HBox.setHgrow(details, javafx.scene.layout.Priority.ALWAYS);
+        return card;
+    }
+
+    public Scene getScene() { return scene; }
+    public void setOnSlotSelected(Consumer<Integer> onSlotSelected) {
+        this.onSlotSelected = onSlotSelected;
+    }
+}

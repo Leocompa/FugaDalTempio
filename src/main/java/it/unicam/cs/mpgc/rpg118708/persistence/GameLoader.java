@@ -4,6 +4,7 @@ import it.unicam.cs.mpgc.rpg118708.engine.GameManager;
 import it.unicam.cs.mpgc.rpg118708.model.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -11,15 +12,60 @@ import java.io.File;
 
 public class GameLoader {
 
-    private static final String SAVE_PATH = "savegame.xml";
-
-    public boolean saveExists() {
-        return new File(SAVE_PATH).exists();
+    public boolean saveExists(int slot) {
+        return new File(GameSaver.getSavePath(slot)).exists();
     }
 
-    public void load(GameManager gameManager) {
+    public boolean saveExists() {
+        for (int i = 1; i <= GameSaver.getMaxSlots(); i++) {
+            if (saveExists(i)) return true;
+        }
+        return false;
+    }
+
+    public String loadPlayerName(int slot) {
         try {
-            File file = new File(SAVE_PATH);
+            File file = new File(GameSaver.getSavePath(slot));
+            if (!file.exists()) return "";
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(file);
+            doc.getDocumentElement().normalize();
+            Element playerEl = (Element) doc.getElementsByTagName("player").item(0);
+            return playerEl.getAttribute("name");
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public String loadPlayerName() { return loadPlayerName(1); }
+
+    public SlotInfo getSlotInfo(int slot) {
+        try {
+            File file = new File(GameSaver.getSavePath(slot));
+            if (!file.exists()) return null;
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(file);
+            doc.getDocumentElement().normalize();
+
+            String timestamp = doc.getDocumentElement().getAttribute("timestamp");
+            Element playerEl = (Element) doc.getElementsByTagName("player").item(0);
+            Element progressEl = (Element) doc.getElementsByTagName("progress").item(0);
+
+            String name = playerEl.getAttribute("name");
+            int level = Integer.parseInt(playerEl.getAttribute("level"));
+            int roomIndex = Integer.parseInt(progressEl.getAttribute("roomIndex")) + 1;
+
+            return new SlotInfo(slot, name, level, roomIndex, timestamp);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void load(GameManager gameManager, int slot) {
+        try {
+            File file = new File(GameSaver.getSavePath(slot));
             if (!file.exists()) return;
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -42,8 +88,11 @@ public class GameLoader {
             int roomIndex = Integer.parseInt(progressEl.getAttribute("roomIndex"));
             gameManager.setCurrentZoneIndex(zoneIndex);
             gameManager.getCurrentZone().setCurrentRoomIndex(roomIndex);
+            if (progressEl.hasAttribute("enemiesDefeated")) {
+                // setter da aggiungere a GameManager
+            }
 
-            org.w3c.dom.NodeList zoneNodes = doc.getElementsByTagName("zone");
+            NodeList zoneNodes = doc.getElementsByTagName("zone");
             for (int i = 0; i < zoneNodes.getLength(); i++) {
                 Element zoneEl = (Element) zoneNodes.item(i);
                 String zoneId = zoneEl.getAttribute("id");
@@ -54,7 +103,7 @@ public class GameLoader {
 
                 zone.setCompleted(Boolean.parseBoolean(zoneEl.getAttribute("completed")));
 
-                org.w3c.dom.NodeList roomNodes = zoneEl.getElementsByTagName("room");
+                NodeList roomNodes = zoneEl.getElementsByTagName("room");
                 for (int j = 0; j < roomNodes.getLength(); j++) {
                     Element roomEl = (Element) roomNodes.item(j);
                     String roomId = roomEl.getAttribute("id");
@@ -65,7 +114,7 @@ public class GameLoader {
 
                     room.setPuzzleSolved(Boolean.parseBoolean(roomEl.getAttribute("puzzleSolved")));
 
-                    org.w3c.dom.NodeList enemyNodes = roomEl.getElementsByTagName("enemy");
+                    NodeList enemyNodes = roomEl.getElementsByTagName("enemy");
                     for (int k = 0; k < enemyNodes.getLength(); k++) {
                         Element enemyEl = (Element) enemyNodes.item(k);
                         String enemyId = enemyEl.getAttribute("id");
@@ -78,7 +127,17 @@ public class GameLoader {
                                 });
                     }
 
-                    org.w3c.dom.NodeList itemNodes = roomEl.getElementsByTagName("item");
+                    NodeList npcNodes = roomEl.getElementsByTagName("npc");
+                    for (int k = 0; k < npcNodes.getLength(); k++) {
+                        Element npcEl = (Element) npcNodes.item(k);
+                        String npcId = npcEl.getAttribute("id");
+                        boolean rewardGiven = Boolean.parseBoolean(npcEl.getAttribute("rewardGiven"));
+                        room.getNpcs().stream()
+                                .filter(n -> n.getId().equals(npcId))
+                                .findFirst().ifPresent(n -> n.setRewardGiven(rewardGiven));
+                    }
+
+                    NodeList itemNodes = roomEl.getElementsByTagName("item");
                     room.getItems().clear();
                     for (int k = 0; k < itemNodes.getLength(); k++) {
                         Element itemEl = (Element) itemNodes.item(k);
@@ -94,7 +153,7 @@ public class GameLoader {
 
             Element inventoryEl = (Element) doc.getElementsByTagName("inventory").item(0);
             if (inventoryEl != null) {
-                org.w3c.dom.NodeList invItems = inventoryEl.getElementsByTagName("item");
+                NodeList invItems = inventoryEl.getElementsByTagName("item");
                 for (int i = 0; i < invItems.getLength(); i++) {
                     Element itemEl = (Element) invItems.item(i);
                     String name = itemEl.getAttribute("name");
@@ -111,18 +170,5 @@ public class GameLoader {
         }
     }
 
-    public String loadPlayerName() {
-        try {
-            File file = new File(SAVE_PATH);
-            if (!file.exists()) return "";
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
-            doc.getDocumentElement().normalize();
-            Element playerEl = (Element) doc.getElementsByTagName("player").item(0);
-            return playerEl.getAttribute("name");
-        } catch (Exception e) {
-            return "";
-        }
-    }
+    public void load(GameManager gameManager) { load(gameManager, 1); }
 }

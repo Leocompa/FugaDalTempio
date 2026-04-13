@@ -17,6 +17,7 @@ public class GameManager {
     private int currentZoneIndex;
     private GameState state;
     private final CombatManager combatManager;
+    private int totalEnemiesDefeated = 0;
 
     public GameManager(Player player, List<Zone> zones) {
         this.player = player;
@@ -35,8 +36,8 @@ public class GameManager {
     }
 
     public void enterCombat(Enemy enemy) {
-        int enemyCount = getCurrentRoom().getEnemies().size();
-        combatManager.startCombat(enemy, enemyCount);
+        int specialUses = Math.min(3, 1 + totalEnemiesDefeated / 2);
+        combatManager.startCombat(enemy, specialUses);
         state = GameState.COMBAT;
     }
 
@@ -101,4 +102,7 @@ public class GameManager {
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
     public CombatManager getCombatManager() { return combatManager; }
+    public void registerEnemyDefeated() { totalEnemiesDefeated++; }
+    public int getTotalEnemiesDefeated() { return totalEnemiesDefeated; }
+
 }

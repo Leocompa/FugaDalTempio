@@ -274,12 +274,24 @@ public class CombatScene {
 
     private void handleEquip() {
         Player player = controller.getCombatManager().getPlayer();
+
         Item amulet = player.getInventory().getItems().stream()
                 .filter(i -> i.getType() == ItemType.AMULET)
                 .findFirst().orElse(null);
 
-        if (amulet == null) {
-            logLabel.setText("Nessun amuleto nell'inventario.");
+        Item usable = player.getInventory().getItems().stream()
+                .filter(i -> i.getType() == ItemType.SCROLL || i.getType() == ItemType.TALISMAN)
+                .findFirst().orElse(null);
+
+        if (amulet == null && usable == null) {
+            logLabel.setText("Nessun oggetto utilizzabile nell'inventario.");
+            return;
+        }
+
+        if (usable != null) {
+            String msg = controller.getCombatManager().useItem(usable);
+            logLabel.setText(msg);
+            refresh();
             return;
         }
 
@@ -289,8 +301,7 @@ public class CombatScene {
         }
 
         controller.getCombatManager().equipItem(amulet);
-        logLabel.setText("Hai equipaggiato " + amulet.getName()
-                + " — DEF +4, HP max +10!");
+        logLabel.setText("Hai equipaggiato " + amulet.getName() + " — DEF +4, HP max +10!");
         refresh();
     }
 
@@ -316,29 +327,28 @@ public class CombatScene {
         turnLabel.setText(controller.getCombatManager().isPlayerTurn() ? "turno del ladro" : "turno del nemico");
 
         int specialLeft = controller.getCombatManager().getSpecialUsesLeft();
-        int specialMax = controller.getCombatManager().getMaxSpecialUses();
         if (specialLeft <= 0) {
             specialButton.setDisable(true);
             specialButton.setStyle(String.format("""
-                    -fx-background-color: %s;
-                    -fx-text-fill: %s;
-                    -fx-font-family: Monospaced;
-                    -fx-font-size: 13px;
-                    -fx-background-radius: 4;
-                    -fx-padding: 10px;
-                    -fx-cursor: hand;
-                    """, "#2a2a40", "#555"));
+                -fx-background-color: %s;
+                -fx-text-fill: %s;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 13px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px;
+                -fx-cursor: hand;
+                """, "#2a2a40", "#555"));
         } else {
             specialButton.setDisable(false);
             specialButton.setStyle(String.format("""
-                    -fx-background-color: %s;
-                    -fx-text-fill: %s;
-                    -fx-font-family: Monospaced;
-                    -fx-font-size: 13px;
-                    -fx-background-radius: 4;
-                    -fx-padding: 10px;
-                    -fx-cursor: hand;
-                    """, "#854F0B", "#EF9F27"));
+                -fx-background-color: %s;
+                -fx-text-fill: %s;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 13px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px;
+                -fx-cursor: hand;
+                """, "#854F0B", "#EF9F27"));
         }
 
         long potions = player.getInventory().getItems().stream()
@@ -346,27 +356,28 @@ public class CombatScene {
                 .count();
         if (potions <= 0) {
             healButton.setDisable(true);
+            healButton.setText("Usa pozione");
             healButton.setStyle(String.format("""
-            -fx-background-color: %s;
-            -fx-text-fill: %s;
-            -fx-font-family: Monospaced;
-            -fx-font-size: 13px;
-            -fx-background-radius: 4;
-            -fx-padding: 10px;
-            -fx-cursor: hand;
-            """, "#2a2a40", "#555"));
+                -fx-background-color: %s;
+                -fx-text-fill: %s;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 13px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px;
+                -fx-cursor: hand;
+                """, "#2a2a40", "#555"));
         } else {
             healButton.setDisable(false);
             healButton.setText("Usa pozione (" + potions + ")");
             healButton.setStyle(String.format("""
-            -fx-background-color: %s;
-            -fx-text-fill: %s;
-            -fx-font-family: Monospaced;
-            -fx-font-size: 13px;
-            -fx-background-radius: 4;
-            -fx-padding: 10px;
-            -fx-cursor: hand;
-            """, "#0F6E56", "#5DCAA5"));
+                -fx-background-color: %s;
+                -fx-text-fill: %s;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 13px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px;
+                -fx-cursor: hand;
+                """, "#0F6E56", "#5DCAA5"));
         }
 
         StringBuilder invText = new StringBuilder();
@@ -381,8 +392,21 @@ public class CombatScene {
                     ? player.getEquippedItem().getName() : "nessuno");
         }
 
-        equipButton.setDisable(player.getInventory().getItems().stream()
-                .noneMatch(i -> i.getType() == ItemType.AMULET));
+        boolean hasUsable = player.getInventory().getItems().stream()
+                .anyMatch(i -> i.getType() == ItemType.AMULET
+                        || i.getType() == ItemType.SCROLL
+                        || i.getType() == ItemType.TALISMAN);
+        equipButton.setDisable(!hasUsable);
+        equipButton.setStyle(String.format("""
+            -fx-background-color: %s;
+            -fx-text-fill: %s;
+            -fx-font-family: Monospaced;
+            -fx-font-size: 13px;
+            -fx-background-radius: 4;
+            -fx-padding: 10px;
+            -fx-cursor: hand;
+            """, hasUsable ? "#1e1e30" : "#2a2a40",
+                hasUsable ? "#AFA9EC" : "#555"));
     }
 
     private void drawPlayerSprite(GraphicsContext gc) {

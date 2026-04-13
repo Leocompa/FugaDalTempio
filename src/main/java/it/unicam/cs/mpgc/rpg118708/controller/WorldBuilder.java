@@ -41,7 +41,8 @@ public class WorldBuilder {
 
         if (roomNumber == 1) {
             room.addNpc(new NPC("npc1", "Ombra del Sacerdote",
-                    "Straniero... questo tempio custodisce segreti antichi. Procedi con cautela."));
+                    "Straniero... questo tempio custodisce segreti antichi. Prendi questa pozione, ne avrai bisogno.",
+                    new Item("potion_npc1", "Pozione del Sacerdote", ItemType.POTION, 20)));
             room.addItem(new Item("potion1", "Pozione", ItemType.POTION, 15));
         }
 
@@ -70,7 +71,8 @@ public class WorldBuilder {
         if (roomNumber == 4) {
             room.addTrap(new Trap("trap3", 10));
             room.addNpc(new NPC("npc2", "Ombra del Guerriero",
-                    "Il boss ti aspetta. Preparati."));
+                    "Il boss ti aspetta. Prendi questa Pergamena di Fuoco — aumenterà il tuo attacco per un turno.",
+                    new Item("scroll_npc2", "Pergamena di Fuoco", ItemType.SCROLL, 8)));
             room.addEnemy(scaleEnemy(new Enemy("e_" + id, "Capitano della Guardia",
                     new Stats(45, 11, 4, 3), 130,
                     List.of(
@@ -83,7 +85,8 @@ public class WorldBuilder {
         if (roomNumber == 5) {
             room.addItem(new Item("amulet1", "Amuleto del Tempio", ItemType.AMULET, 0));
             room.addNpc(new NPC("npc3", "Voce del Tempio",
-                    "Hai raggiunto il cuore del tempio... ma il Dio Serpente non ti lascerà passare."));
+                    "Hai raggiunto il cuore del tempio... il Dio Serpente non ti lascerà passare. Prendi questo Talismano.",
+                    new Item("talisman_npc3", "Talismano della Luna", ItemType.TALISMAN, 5)));
 
             Boss boss = new Boss(
                     "boss_finale", "Dio Serpente Apep", "Signore del Caos",

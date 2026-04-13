@@ -1,7 +1,12 @@
 package it.unicam.cs.mpgc.rpg118708.persistence;
 
 import it.unicam.cs.mpgc.rpg118708.engine.GameManager;
-import it.unicam.cs.mpgc.rpg118708.model.*;
+import it.unicam.cs.mpgc.rpg118708.model.Item;
+import it.unicam.cs.mpgc.rpg118708.model.Player;
+import it.unicam.cs.mpgc.rpg118708.model.Stats;
+import it.unicam.cs.mpgc.rpg118708.model.Zone;
+import it.unicam.cs.mpgc.rpg118708.model.Room;
+import it.unicam.cs.mpgc.rpg118708.model.Enemy;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -13,12 +18,23 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class GameSaver {
 
-    private static final String SAVE_PATH = "savegame.xml";
+    private static final String SAVE_DIR = "saves/";
+    private static final int MAX_SLOTS = 3;
 
-    public void save(GameManager gameManager) {
+    public GameSaver() {
+        new File(SAVE_DIR).mkdirs();
+    }
+
+    public static String getSavePath(int slot) {
+        return SAVE_DIR + "save_" + slot + ".xml";
+    }
+
+    public void save(GameManager gameManager, int slot) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -26,6 +42,10 @@ public class GameSaver {
 
             Element root = doc.createElement("savegame");
             doc.appendChild(root);
+
+            String timestamp = LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            root.setAttribute("timestamp", timestamp);
 
             Player player = gameManager.getPlayer();
             Stats stats = player.getStats();
@@ -45,6 +65,8 @@ public class GameSaver {
             progressEl.setAttribute("zoneIndex", String.valueOf(gameManager.getCurrentZoneIndex()));
             progressEl.setAttribute("roomIndex", String.valueOf(
                     gameManager.getCurrentZone().getCurrentRoomIndex()));
+            progressEl.setAttribute("enemiesDefeated",
+                    String.valueOf(gameManager.getTotalEnemiesDefeated()));
             root.appendChild(progressEl);
 
             Element zonesEl = doc.createElement("zones");
@@ -68,6 +90,12 @@ public class GameSaver {
                         itemEl.setAttribute("id", item.getId());
                         roomEl.appendChild(itemEl);
                     }
+                    for (var npc : room.getNpcs()) {
+                        Element npcEl = doc.createElement("npc");
+                        npcEl.setAttribute("id", npc.getId());
+                        npcEl.setAttribute("rewardGiven", String.valueOf(npc.isRewardGiven()));
+                        roomEl.appendChild(npcEl);
+                    }
                     zoneEl.appendChild(roomEl);
                 }
                 zonesEl.appendChild(zoneEl);
@@ -87,10 +115,17 @@ public class GameSaver {
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.transform(new DOMSource(doc), new StreamResult(new File(SAVE_PATH)));
+            transformer.transform(new DOMSource(doc),
+                    new StreamResult(new File(getSavePath(slot))));
 
         } catch (Exception e) {
             System.err.println("Errore durante il salvataggio: " + e.getMessage());
         }
     }
+
+    public void save(GameManager gameManager) {
+        save(gameManager, 1);
+    }
+
+    public static int getMaxSlots() { return MAX_SLOTS; }
 }
