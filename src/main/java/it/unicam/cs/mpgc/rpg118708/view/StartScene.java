@@ -9,6 +9,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
+/**
+ * Schermata iniziale del gioco.
+ *
+ * <p>Mostra il titolo, un campo per inserire il nome del personaggio e
+ * i pulsanti per avviare una nuova partita, caricare una partita salvata
+ * o uscire dall'applicazione. I listener sui pulsanti sono registrati
+ * esternamente dal {@link it.unicam.cs.mpgc.rpg118708.controller.GameController}.</p>
+ */
 public class StartScene {
 
     private Scene scene;
@@ -17,6 +25,7 @@ public class StartScene {
     private Button loadGameButton;
     private Button exitButton;
 
+    /** Costruisce e inizializza la scena del menu principale. */
     public StartScene() {
         buildScene();
     }
@@ -79,29 +88,34 @@ public class StartScene {
         exitButton = new Button("Esci");
         exitButton.setPrefWidth(240);
         exitButton.setStyle("""
-        -fx-background-color: #1e1e30;
-        -fx-text-fill: #555;
-        -fx-font-family: Monospaced;
-        -fx-font-size: 14px;
-        -fx-border-color: #2a2a40;
-        -fx-border-radius: 4;
-        -fx-background-radius: 4;
-        -fx-padding: 10px;
-        -fx-cursor: hand;
-        """);
+                -fx-background-color: #1e1e30;
+                -fx-text-fill: #555;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 14px;
+                -fx-border-color: #2a2a40;
+                -fx-border-radius: 4;
+                -fx-background-radius: 4;
+                -fx-padding: 10px;
+                -fx-cursor: hand;
+                """);
         exitButton.setOnAction(e -> javafx.application.Platform.exit());
 
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(60));
         root.setStyle("-fx-background-color: #0d0d14;");
-        root.getChildren().addAll(title, subtitle, nameLabel, nameField, newGameButton, loadGameButton, exitButton);
+        root.getChildren().addAll(title, subtitle, nameLabel, nameField,
+                newGameButton, loadGameButton, exitButton);
 
         scene = new Scene(root, 800, 600);
     }
 
+    /** @return la scena JavaFX pronta per essere impostata sullo stage */
     public Scene getScene() { return scene; }
+
+    /** @return il testo inserito dall'utente nel campo nome, ripulito da spazi */
     public String getPlayerName() { return nameField.getText().trim(); }
+
     public Button getNewGameButton() { return newGameButton; }
     public Button getLoadGameButton() { return loadGameButton; }
 }

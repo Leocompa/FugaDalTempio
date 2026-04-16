@@ -7,9 +7,21 @@ import it.unicam.cs.mpgc.rpg118708.model.Room;
 import it.unicam.cs.mpgc.rpg118708.model.Trap;
 import it.unicam.cs.mpgc.rpg118708.model.Zone;
 
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Gestisce lo stato globale della partita in corso.
+ *
+ * <p>È il punto centrale di coordinamento tra il modello di dati (giocatore,
+ * zone, stanze) e le operazioni di gioco: transizioni di stato, navigazione
+ * tra le stanze, raccolta oggetti e verifica trappole. Non contiene logica
+ * di rendering o di input — quelle responsabilità appartengono alle classi
+ * nel package {@code view}.</p>
+ *
+ * <p>Il contatore {@code totalEnemiesDefeated} viene usato da
+ * {@link CombatManager} per determinare il numero di usi speciali disponibili
+ * nel combattimento corrente, scalando la difficoltà con la progressione.</p>
+ */
 public class GameManager {
 
     private final Player player;
@@ -19,6 +31,12 @@ public class GameManager {
     private final CombatManager combatManager;
     private int totalEnemiesDefeated = 0;
 
+    /**
+     * Crea un nuovo gestore di partita.
+     *
+     * @param player il personaggio del giocatore
+     * @param zones  la lista ordinata delle zone che compongono il mondo
+     */
     public GameManager(Player player, List<Zone> zones) {
         this.player = player;
         this.zones = zones;
@@ -27,24 +45,38 @@ public class GameManager {
         this.combatManager = new CombatManager(player);
     }
 
+    /** @return la zona attualmente attiva */
     public Zone getCurrentZone() {
         return zones.get(currentZoneIndex);
     }
 
+    /** @return la stanza attualmente attiva nella zona corrente */
     public Room getCurrentRoom() {
         return getCurrentZone().getCurrentRoom();
     }
 
+    /**
+     * Avvia un combattimento contro il nemico specificato.
+     * Il numero di mosse speciali disponibili scala con i nemici già sconfitti.
+     *
+     * @param enemy il nemico da affrontare
+     */
     public void enterCombat(Enemy enemy) {
         int specialUses = Math.min(3, 1 + totalEnemiesDefeated / 2);
         combatManager.startCombat(enemy, specialUses);
         state = GameState.COMBAT;
     }
 
+    /** Termina il combattimento corrente e riporta lo stato a {@link GameState#EXPLORING}. */
     public void endCombat() {
         state = GameState.EXPLORING;
     }
 
+    /**
+     * Avanza alla stanza successiva nella zona corrente, se disponibile.
+     *
+     * @return {@code true} se l'avanzamento è avvenuto
+     */
     public boolean advanceRoom() {
         Zone zone = getCurrentZone();
         if (zone.isLastRoom()) return false;
@@ -52,6 +84,12 @@ public class GameManager {
         return true;
     }
 
+    /**
+     * Avanza alla zona successiva, se disponibile. Se non ci sono altre zone,
+     * imposta lo stato a {@link GameState#VICTORY}.
+     *
+     * @return {@code true} se si è passati a una nuova zona
+     */
     public boolean advanceZone() {
         if (currentZoneIndex < zones.size() - 1) {
             currentZoneIndex++;
@@ -63,6 +101,11 @@ public class GameManager {
         return false;
     }
 
+    /**
+     * Verifica tutte le trappole nella stanza corrente e applica i danni al giocatore.
+     * Se il giocatore muore a causa di una trappola, imposta lo stato a
+     * {@link GameState#GAME_OVER}.
+     */
     public void checkTraps() {
         Room room = getCurrentRoom();
         for (Trap trap : room.getTraps()) {
@@ -73,6 +116,12 @@ public class GameManager {
         }
     }
 
+    /**
+     * Tenta di raccogliere un oggetto dalla stanza corrente aggiungendolo all'inventario.
+     *
+     * @param item l'oggetto da raccogliere
+     * @return {@code true} se l'oggetto era nella stanza ed è stato aggiunto all'inventario
+     */
     public boolean collectItem(Item item) {
         Room room = getCurrentRoom();
         if (room.getItems().contains(item)) {
@@ -83,17 +132,33 @@ public class GameManager {
         return false;
     }
 
+    /**
+     * Riporta il giocatore alla prima stanza della zona corrente con HP pieni,
+     * senza perdere l'inventario.
+     */
     public void respawn() {
         getCurrentZone().setCurrentRoomIndex(0);
         player.getStats().setCurrentHp(player.getStats().getMaxHp());
         state = GameState.EXPLORING;
     }
 
+    /** @return {@code true} se lo stato corrente è {@link GameState#GAME_OVER} */
     public boolean isGameOver() { return state == GameState.GAME_OVER; }
+
+    /** @return {@code true} se lo stato corrente è {@link GameState#VICTORY} */
     public boolean isVictory() { return state == GameState.VICTORY; }
+
+    /**
+     * Torna alla stanza precedente nella zona corrente, se possibile.
+     *
+     * @return {@code true} se il ritorno è avvenuto
+     */
     public boolean goBackRoom() {
         return getCurrentZone().goBack();
     }
+
+    /** Incrementa di uno il contatore dei nemici sconfitti nella partita corrente. */
+    public void registerEnemyDefeated() { totalEnemiesDefeated++; }
 
     public Player getPlayer() { return player; }
     public List<Zone> getZones() { return zones; }
@@ -102,8 +167,6 @@ public class GameManager {
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
     public CombatManager getCombatManager() { return combatManager; }
-    public void registerEnemyDefeated() { totalEnemiesDefeated++; }
     public int getTotalEnemiesDefeated() { return totalEnemiesDefeated; }
     public void setTotalEnemiesDefeated(int value) { this.totalEnemiesDefeated = value; }
-
 }

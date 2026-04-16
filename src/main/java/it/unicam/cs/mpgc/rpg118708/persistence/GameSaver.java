@@ -21,6 +21,13 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Implementazione legacy del salvataggio su file XML.
+ *
+ * @deprecated Usare {@link XmlGamePersistence} che implementa {@link GamePersistence}.
+ *             Questa classe è mantenuta per compatibilità temporanea.
+ */
+@Deprecated
 public class GameSaver {
 
     private static final String SAVE_DIR = "saves/";

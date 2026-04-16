@@ -16,6 +16,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/**
+ * Scena del combattimento a turni.
+ *
+ * <p>Costruisce l'interfaccia grafica del combattimento (pulsanti azioni,
+ * barre HP, log testuale, inventario) e delega la logica di gioco al
+ * {@link it.unicam.cs.mpgc.rpg118708.controller.CombatController}.
+ * Gestisce anche le schermate di game-over e vittoria mostrate al termine
+ * dello scontro.</p>
+ */
 public class CombatScene {
 
     private Scene scene;

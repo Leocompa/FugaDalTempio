@@ -1,5 +1,12 @@
 package it.unicam.cs.mpgc.rpg118708.model;
 
+/**
+ * Rappresenta un personaggio non giocante (NPC) con cui il giocatore può interagire.
+ *
+ * <p>Un NPC ha un dialogo fisso e può offrire una ricompensa una sola volta.
+ * Una volta consegnata, la ricompensa non è più disponibile: {@link #collectReward()}
+ * restituisce {@code null} alle chiamate successive.</p>
+ */
 public class NPC {
 
     private final String id;
@@ -8,6 +15,14 @@ public class NPC {
     private final Item reward;
     private boolean rewardGiven;
 
+    /**
+     * Crea un NPC con dialogo e ricompensa.
+     *
+     * @param id       identificatore univoco
+     * @param name     nome visualizzato
+     * @param dialogue testo del dialogo mostrato al giocatore
+     * @param reward   oggetto offerto come ricompensa (può essere {@code null})
+     */
     public NPC(String id, String name, String dialogue, Item reward) {
         this.id = id;
         this.name = name;
@@ -16,10 +31,24 @@ public class NPC {
         this.rewardGiven = false;
     }
 
+    /**
+     * Crea un NPC senza ricompensa.
+     *
+     * @param id       identificatore univoco
+     * @param name     nome visualizzato
+     * @param dialogue testo del dialogo mostrato al giocatore
+     */
     public NPC(String id, String name, String dialogue) {
         this(id, name, dialogue, null);
     }
 
+    /**
+     * Consegna la ricompensa al giocatore, se ancora disponibile.
+     * Dopo la prima chiamata con esito positivo, la ricompensa è marcata
+     * come consegnata e non sarà più restituita.
+     *
+     * @return l'oggetto ricompensa, o {@code null} se assente o già consegnato
+     */
     public Item collectReward() {
         if (reward != null && !rewardGiven) {
             rewardGiven = true;
@@ -28,7 +57,9 @@ public class NPC {
         return null;
     }
 
+    /** @return {@code true} se la ricompensa esiste e non è ancora stata consegnata */
     public boolean hasReward() { return reward != null && !rewardGiven; }
+
     public String getId() { return id; }
     public String getName() { return name; }
     public String getDialogue() { return dialogue; }

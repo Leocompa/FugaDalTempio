@@ -17,6 +17,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Scena di esplorazione del tempio con visuale a piattaforme 2D.
+ *
+ * <p>Gestisce il game loop (tramite {@link AnimationTimer}), l'input da tastiera,
+ * il rendering su {@link javafx.scene.canvas.Canvas} e le interazioni con
+ * nemici, NPC, trappole e oggetti della stanza corrente. Notifica il
+ * {@link it.unicam.cs.mpgc.rpg118708.controller.GameController} degli eventi
+ * di gioco tramite callback ({@code onEnterCombat}, {@code onZoneComplete},
+ * {@code onSave}, {@code onExit}).</p>
+ */
 public class ExplorationScene {
 
     private final int W;

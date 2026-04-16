@@ -10,6 +10,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 
+/**
+ * Implementazione legacy del caricamento da file XML.
+ *
+ * @deprecated Usare {@link XmlGamePersistence} che implementa {@link GamePersistence}.
+ *             Questa classe è mantenuta per compatibilità temporanea.
+ */
+@Deprecated
 public class GameLoader {
 
     public boolean saveExists(int slot) {

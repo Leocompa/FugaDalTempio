@@ -3,6 +3,14 @@ package it.unicam.cs.mpgc.rpg118708.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Rappresenta una singola stanza all'interno di una zona del tempio.
+ *
+ * <p>Una stanza è un contenitore passivo di entità di gioco: nemici, trappole,
+ * oggetti raccoglibili e NPC. Non contiene logica di gioco — le interazioni
+ * con queste entità sono gestite da {@link it.unicam.cs.mpgc.rpg118708.engine.GameManager}
+ * e dalle scene di esplorazione.</p>
+ */
 public class Room {
 
     private final String id;
@@ -14,6 +22,12 @@ public class Room {
     private boolean puzzleSolved;
     private boolean locked;
 
+    /**
+     * Crea una stanza vuota.
+     *
+     * @param id   identificatore univoco
+     * @param name nome visualizzato
+     */
     public Room(String id, String name) {
         this.id = id;
         this.name = name;
@@ -25,15 +39,28 @@ public class Room {
         this.locked = false;
     }
 
+    /** Aggiunge un nemico alla stanza. */
     public void addEnemy(Enemy enemy) { enemies.add(enemy); }
+
+    /** Aggiunge una trappola alla stanza. */
     public void addTrap(Trap trap) { traps.add(trap); }
+
+    /** Aggiunge un oggetto raccoglibile alla stanza. */
     public void addItem(Item item) { items.add(item); }
+
+    /** Aggiunge un NPC alla stanza. */
     public void addNpc(NPC npc) { npcs.add(npc); }
 
+    /**
+     * Indica se la stanza è stata ripulita da tutti i nemici.
+     *
+     * @return {@code true} se nessun nemico è ancora vivo
+     */
     public boolean isCleared() {
         return enemies.stream().allMatch(e -> !e.isAlive());
     }
 
+    /** Rimuove un oggetto dalla stanza (es. dopo che il giocatore lo raccoglie). */
     public void removeItem(Item item) { items.remove(item); }
 
     public String getId() { return id; }
