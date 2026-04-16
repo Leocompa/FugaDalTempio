@@ -57,17 +57,10 @@ src/main/java/it/unicam/cs/mpgc/rpg118708/
 
 ## Uso di strumenti di AI
 
-Durante lo sviluppo del progetto è stato utilizzato **Claude (Anthropic)** come assistente tramite Claude Code CLI.
+Durante lo sviluppo è stato utilizzato **Claude (Anthropic)** tramite Claude Code CLI.
 
-Il primo contributo dell'AI è stato nella **scelta del tipo di gioco da sviluppare**: non essendo un appassionato di videogiochi, avevo poche idee di partenza. Claude mi ha aiutato a esplorare alcune possibilità e a individuare un'idea adatta alle mie competenze e ai requisiti del progetto, ovvero un RPG 2D a piattaforme con combattimento a turni.
+Non essendo un appassionato di videogiochi, ho usato l'AI come primo supporto per scegliere il tipo di gioco da sviluppare. Nelle fasi successive ha operato come assistente tecnico per la revisione del codice, l'applicazione dei principi SOLID e la documentazione.
 
-Nelle fasi successive l'AI è stata impiegata come strumento di supporto per:
-
-- **Progettazione architetturale**: discussione e verifica dell'applicazione dei principi SOLID, identificazione delle responsabilità delle classi, revisione del design a livello di package
-- **Revisione e ottimizzazione del codice**: identificazione di bug, rimozione di codice duplicato e morto, miglioramento dell'incapsulamento
-- **Refactoring**: estrazione di metodi privati, separazione delle responsabilità, parametrizzazione di logica hardcoded
-- **Supporto alla scrittura della documentazione**: struttura Javadoc delle classi
-
-L'AI non ha sostituito il mio lavoro: ogni scelta progettuale è stata discussa, compresa e validata personalmente prima di essere applicata. Il codice è stato scritto, modificato e adattato da me; Claude ha operato come revisore e assistente tecnico, non come autore.
+Le scelte progettuali e il codice principale sono opera mia. Claude ha avuto il ruolo di revisore, non di autore.
 
 Per una descrizione dettagliata vedere la **[Wiki del repository](../../wiki)**.
