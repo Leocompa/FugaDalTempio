@@ -72,7 +72,7 @@ public class CombatScene {
 
     private HBox buildHudRow() {
         turnLabel = new Label("turno del ladro");
-        turnLabel.setFont(new Font("Monospaced", 12));
+        turnLabel.setFont(new Font("Monospaced", 14));
         turnLabel.setStyle("-fx-text-fill: #AFA9EC;");
 
         HBox hud = new HBox(turnLabel);
@@ -89,19 +89,19 @@ public class CombatScene {
         drawEnemySprite(enemyCanvas.getGraphicsContext2D());
 
         playerHpLabel = new Label("HP: 30 / 30");
-        playerHpLabel.setFont(new Font("Monospaced", 12));
+        playerHpLabel.setFont(new Font("Monospaced", 14));
         playerHpLabel.setStyle("-fx-text-fill: #7F77DD;");
 
         playerStatsLabel = new Label("ATK: 10  DEF: 3  LV: 1");
-        playerStatsLabel.setFont(new Font("Monospaced", 11));
+        playerStatsLabel.setFont(new Font("Monospaced", 13));
         playerStatsLabel.setStyle("-fx-text-fill: #555;");
 
         enemyHpLabel = new Label("HP: ?? / ??");
-        enemyHpLabel.setFont(new Font("Monospaced", 12));
+        enemyHpLabel.setFont(new Font("Monospaced", 14));
         enemyHpLabel.setStyle("-fx-text-fill: #D85A30;");
 
         enemyStatsLabel = new Label("ATK: ?  DEF: ?");
-        enemyStatsLabel.setFont(new Font("Monospaced", 11));
+        enemyStatsLabel.setFont(new Font("Monospaced", 13));
         enemyStatsLabel.setStyle("-fx-text-fill: #555;");
 
         VBox playerBox = new VBox(8, playerCanvas, playerHpLabel, playerStatsLabel);
@@ -124,19 +124,19 @@ public class CombatScene {
 
     private HBox buildInventoryArea() {
         Label invTitle = new Label("Inventario:");
-        invTitle.setFont(new Font("Monospaced", 12));
+        invTitle.setFont(new Font("Monospaced", 14));
         invTitle.setStyle("-fx-text-fill: #534AB7;");
 
         inventoryLabel = new Label("vuoto");
-        inventoryLabel.setFont(new Font("Monospaced", 12));
+        inventoryLabel.setFont(new Font("Monospaced", 14));
         inventoryLabel.setStyle("-fx-text-fill: #888;");
 
         Label equippedTitle = new Label("Equipaggiato:");
-        equippedTitle.setFont(new Font("Monospaced", 12));
+        equippedTitle.setFont(new Font("Monospaced", 14));
         equippedTitle.setStyle("-fx-text-fill: #EF9F27; -fx-padding: 0 0 0 24;");
 
         Label equippedLabel = new Label("nessuno");
-        equippedLabel.setFont(new Font("Monospaced", 12));
+        equippedLabel.setFont(new Font("Monospaced", 14));
         equippedLabel.setStyle("-fx-text-fill: #888;");
         equippedLabel.setId("equipped-label");
 
@@ -149,7 +149,7 @@ public class CombatScene {
 
     private VBox buildLogArea() {
         logLabel = new Label("Il nemico ti fissa. Cosa fai?");
-        logLabel.setFont(new Font("Monospaced", 13));
+        logLabel.setFont(new Font("Monospaced", 15));
         logLabel.setStyle("-fx-text-fill: #ccc;");
         logLabel.setWrapText(true);
 
@@ -187,7 +187,7 @@ public class CombatScene {
                 -fx-background-color: %s;
                 -fx-text-fill: %s;
                 -fx-font-family: Monospaced;
-                -fx-font-size: 13px;
+                -fx-font-size: 15px;
                 -fx-background-radius: 4;
                 -fx-padding: 10px;
                 -fx-cursor: hand;
@@ -391,7 +391,7 @@ public class CombatScene {
                 -fx-background-color: %s;
                 -fx-text-fill: %s;
                 -fx-font-family: Monospaced;
-                -fx-font-size: 13px;
+                -fx-font-size: 15px;
                 -fx-background-radius: 4;
                 -fx-padding: 10px;
                 -fx-cursor: hand;
@@ -399,17 +399,29 @@ public class CombatScene {
     }
 
     private void drawPlayerSprite(GraphicsContext gc) {
-        gc.setFill(Color.web("#7F77DD"));
-        gc.fillRoundRect(40, 20, 40, 40, 8, 8);
-        gc.setFill(Color.web("#EEEDFE"));
-        gc.fillOval(52, 32, 8, 8);
+        // gambe
         gc.setFill(Color.web("#534AB7"));
-        gc.fillRoundRect(30, 60, 60, 50, 6, 6);
+        gc.fillRoundRect(38, 112, 18, 34, 4, 4);
+        gc.fillRoundRect(64, 112, 18, 34, 4, 4);
+        // braccia
+        gc.fillRoundRect(18, 72, 14, 28, 4, 4);
+        gc.fillRoundRect(88, 72, 14, 28, 4, 4);
+        // busto
+        gc.fillRoundRect(28, 62, 64, 52, 6, 6);
+        // testa
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillRoundRect(34, 18, 52, 46, 10, 10);
+        // occhio
+        gc.setFill(Color.web("#EEEDFE"));
+        gc.fillOval(64, 32, 10, 10);
+        // cintura
         gc.setFill(Color.web("#3C3489"));
-        gc.fillRoundRect(35, 110, 20, 36, 4, 4);
-        gc.fillRoundRect(65, 110, 20, 36, 4, 4);
+        gc.fillRoundRect(28, 106, 64, 10, 3, 3);
+        // arma (daga)
         gc.setFill(Color.web("#EF9F27"));
-        gc.fillRoundRect(84, 68, 30, 8, 4, 4);
+        gc.fillRoundRect(100, 70, 8, 36, 3, 3);
+        gc.setFill(Color.web("#FCDE5A"));
+        gc.fillRoundRect(98, 66, 12, 8, 2, 2);
     }
 
     private void drawEnemySprite(GraphicsContext gc) {

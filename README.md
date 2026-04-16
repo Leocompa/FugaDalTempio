@@ -52,7 +52,7 @@ src/main/java/it/unicam/cs/mpgc/rpg118708/
 ├── persistence/            # GamePersistence (interfaccia), XmlGamePersistence, SlotInfo
 └── view/
     ├── combat/             # CombatScene
-    ├── exploration/        # ExplorationScene
+    ├── exploration/        # ExplorationScene, ExplorationRenderer
     └── menu/               # StartScene, SaveSlotScene, VictoryScene
 ```
 

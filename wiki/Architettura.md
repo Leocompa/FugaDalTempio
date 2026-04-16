@@ -167,7 +167,10 @@ Il package `view` è suddiviso in tre sotto-package in base alla responsabilità
 #### `view.exploration`
 
 ##### `ExplorationScene`
-Scena di esplorazione con game loop (`AnimationTimer`). Gestisce input da tastiera, fisica del personaggio, rendering del mondo su `Canvas`, collisioni con trappole e nemici, interazioni con oggetti e NPC. Notifica il `GameController` tramite callback. Il rendering è suddiviso in metodi privati per responsabilità: `renderTraps()`, `renderItems()`, `renderNpcs()`, `renderEnemies()`, `renderDoors()`, `renderTopHud()`, `renderBottomHud()` e altri.
+Scena di esplorazione con game loop (`AnimationTimer`). Gestisce esclusivamente: input da tastiera, fisica del personaggio (gravità, salto, vincolo al suolo), collisioni con trappole e nemici, interazioni con oggetti e NPC. Notifica il `GameController` tramite callback (`onEnterCombat`, `onZoneComplete`, `onSave`, `onExit`). Tutto il rendering è delegato a `ExplorationRenderer`.
+
+##### `ExplorationRenderer`
+Responsabile di tutto il disegno su `Canvas` durante l'esplorazione. Riceve lo stato necessario a ogni frame tramite `render(frame, nearExit, nearEntrance, onGround, keysPressed)`. Include: griglia di sfondo, terreno, rendering della stanza (trappole, oggetti, NPC, nemici con barra HP, porte), sprite del giocatore con animazione di camminata (braccia e gambe oscillanti), posa di salto, idle bobbing e ombra a terra, overlay di game-over e dialogo, HUD superiore (HP, XP, livello, zona, stanza) e HUD inferiore contestuale (`[E]` e `[R]` solo quando rilevanti).
 
 #### `view.combat`
 
@@ -180,7 +183,7 @@ Scena del combattimento a turni. Costruisce l'interfaccia (pulsanti, barre HP, l
 Schermata iniziale con campo nome, pulsanti nuova partita, carica e esci.
 
 ##### `SaveSlotScene`
-Schermata di selezione slot riutilizzabile in modalità salvataggio e caricamento. Dipende dall'interfaccia `GamePersistence`.
+Schermata di selezione slot riutilizzabile in modalità salvataggio e caricamento. Dipende dall'interfaccia `GamePersistence`. In modalità salvataggio, se lo slot è già occupato mostra un dialogo di conferma prima di sovrascrivere i dati esistenti.
 
 ##### `VictoryScene`
 Schermata di vittoria finale. Riceve i dati del giocatore e una callback per tornare al menu. Non contiene logica di gioco.

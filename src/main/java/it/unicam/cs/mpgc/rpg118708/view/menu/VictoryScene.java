@@ -42,11 +42,11 @@ public class VictoryScene {
         root.setStyle("-fx-background-color: #0a1a0a;");
 
         Label title = new Label("Hai completato il tempio!");
-        title.setFont(new Font("Monospaced", 26));
+        title.setFont(new Font("Monospaced", 30));
         title.setStyle("-fx-text-fill: #EF9F27;");
 
         Label subtitle = new Label("Il ladro " + player.getName() + " è fuggito con il tesoro.");
-        subtitle.setFont(new Font("Monospaced", 14));
+        subtitle.setFont(new Font("Monospaced", 16));
         subtitle.setStyle("-fx-text-fill: #888;");
 
         Label statsLabel = new Label(
@@ -55,7 +55,7 @@ public class VictoryScene {
                 "ATK:             " + stats.getAttack() + "\n" +
                 "DEF:             " + stats.getDefense()
         );
-        statsLabel.setFont(new Font("Monospaced", 14));
+        statsLabel.setFont(new Font("Monospaced", 16));
         statsLabel.setStyle("-fx-text-fill: #ccc;");
 
         Button menuBtn = new Button("Torna al menu  ▶");
@@ -63,9 +63,9 @@ public class VictoryScene {
                 -fx-background-color: #854F0B;
                 -fx-text-fill: #FAEEDA;
                 -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
+                -fx-font-size: 16px;
                 -fx-background-radius: 4;
-                -fx-padding: 12px 28px;
+                -fx-padding: 14px 32px;
                 -fx-cursor: hand;
                 """);
         menuBtn.setOnAction(e -> { if (onMenu != null) onMenu.run(); });

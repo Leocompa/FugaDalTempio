@@ -48,7 +48,7 @@ public class SaveSlotScene {
         root.setStyle("-fx-background-color: #0d0d14;");
 
         Label title = new Label(isSaveMode ? "Scegli uno slot di salvataggio" : "Scegli una partita da caricare");
-        title.setFont(new Font("Monospaced", 20));
+        title.setFont(new Font("Monospaced", 24));
         title.setStyle("-fx-text-fill: #EF9F27;");
 
         root.getChildren().add(title);
@@ -78,6 +78,15 @@ public class SaveSlotScene {
         scene = new Scene(root, screen.getWidth(), screen.getHeight());
     }
 
+    /**
+     * Costruisce la card grafica per un singolo slot.
+     *
+     * <p>In modalità salvataggio, se lo slot è già occupato mostra un dialogo di
+     * conferma prima di invocare il callback, per prevenire sovrascritture accidentali.</p>
+     *
+     * @param slot numero dello slot (1-based)
+     * @return la riga HBox pronta da aggiungere alla scena
+     */
     private HBox buildSlotCard(int slot) {
         SlotInfo info = persistence.getSlotInfo(slot);
 
@@ -85,45 +94,68 @@ public class SaveSlotScene {
         details.setAlignment(Pos.CENTER_LEFT);
 
         Label slotLabel = new Label("Slot " + slot);
-        slotLabel.setFont(new Font("Monospaced", 14));
+        slotLabel.setFont(new Font("Monospaced", 16));
         slotLabel.setStyle("-fx-text-fill: #AFA9EC;");
 
         if (info != null) {
             Label nameLabel = new Label(info.getPlayerName() + "  —  LV." + info.getLevel()
                     + "  —  Stanza " + info.getRoomNumber());
-            nameLabel.setFont(new Font("Monospaced", 12));
+            nameLabel.setFont(new Font("Monospaced", 14));
             nameLabel.setStyle("-fx-text-fill: #ccc;");
 
             Label timeLabel = new Label(info.getTimestamp());
-            timeLabel.setFont(new Font("Monospaced", 11));
+            timeLabel.setFont(new Font("Monospaced", 13));
             timeLabel.setStyle("-fx-text-fill: #555;");
 
             details.getChildren().addAll(slotLabel, nameLabel, timeLabel);
         } else {
             Label emptyLabel = new Label("— vuoto —");
-            emptyLabel.setFont(new Font("Monospaced", 12));
+            emptyLabel.setFont(new Font("Monospaced", 14));
             emptyLabel.setStyle("-fx-text-fill: #3a3a55;");
             details.getChildren().addAll(slotLabel, emptyLabel);
         }
 
         Button actionBtn = new Button(isSaveMode ? "Salva qui" : "Carica");
-        actionBtn.setPrefWidth(120);
+        actionBtn.setPrefWidth(140);
         boolean disabled = !isSaveMode && info == null;
         actionBtn.setDisable(disabled);
         actionBtn.setStyle(String.format("""
                 -fx-background-color: %s;
                 -fx-text-fill: %s;
                 -fx-font-family: Monospaced;
-                -fx-font-size: 13px;
+                -fx-font-size: 15px;
                 -fx-background-radius: 4;
-                -fx-padding: 10px;
+                -fx-padding: 12px;
                 -fx-cursor: hand;
                 """,
                 disabled ? "#2a2a40" : "#534AB7",
                 disabled ? "#555" : "#EEEDFE"));
 
         int finalSlot = slot;
-        actionBtn.setOnAction(e -> { if (onSlotSelected != null) onSlotSelected.accept(finalSlot); });
+        actionBtn.setOnAction(e -> {
+            if (onSlotSelected == null) return;
+            if (isSaveMode && info != null) {
+                javafx.scene.control.Alert confirm = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                confirm.setTitle("Sovrascrivere salvataggio?");
+                confirm.setHeaderText("Lo slot " + finalSlot + " contiene già una partita.");
+                confirm.setContentText("Sovrascrivere " + info.getPlayerName()
+                        + " (LV." + info.getLevel() + ") salvata il " + info.getTimestamp() + "?");
+
+                javafx.scene.control.ButtonType btnSi =
+                        new javafx.scene.control.ButtonType("Sì, sovrascrivi");
+                javafx.scene.control.ButtonType btnNo =
+                        new javafx.scene.control.ButtonType("Annulla",
+                                javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
+                confirm.getButtonTypes().setAll(btnSi, btnNo);
+
+                confirm.showAndWait().ifPresent(response -> {
+                    if (response == btnSi) onSlotSelected.accept(finalSlot);
+                });
+            } else {
+                onSlotSelected.accept(finalSlot);
+            }
+        });
 
         HBox card = new HBox(20, details, actionBtn);
         card.setAlignment(Pos.CENTER_LEFT);

@@ -32,15 +32,15 @@ public class StartScene {
 
     private void buildScene() {
         Label title = new Label("Fuga dal Tempio");
-        title.setFont(new Font("Monospaced", 32));
+        title.setFont(new Font("Monospaced", 38));
         title.setStyle("-fx-text-fill: #EF9F27;");
 
         Label subtitle = new Label("Un ladro. Un tempio. Nessuna via d'uscita.");
-        subtitle.setFont(new Font("Monospaced", 14));
+        subtitle.setFont(new Font("Monospaced", 16));
         subtitle.setStyle("-fx-text-fill: #888780;");
 
         Label nameLabel = new Label("Inserisci il nome del tuo ladro:");
-        nameLabel.setFont(new Font("Monospaced", 13));
+        nameLabel.setFont(new Font("Monospaced", 15));
         nameLabel.setStyle("-fx-text-fill: #ccc;");
 
         nameField = new TextField();
@@ -54,48 +54,48 @@ public class StartScene {
                 -fx-border-radius: 4;
                 -fx-background-radius: 4;
                 -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
-                -fx-padding: 8px;
+                -fx-font-size: 16px;
+                -fx-padding: 10px;
                 """);
 
         newGameButton = new Button("Nuova partita");
-        newGameButton.setPrefWidth(240);
+        newGameButton.setPrefWidth(280);
         newGameButton.setStyle("""
                 -fx-background-color: #534AB7;
                 -fx-text-fill: #EEEDFE;
                 -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
+                -fx-font-size: 16px;
                 -fx-border-radius: 4;
                 -fx-background-radius: 4;
-                -fx-padding: 10px;
+                -fx-padding: 12px;
                 -fx-cursor: hand;
                 """);
 
         loadGameButton = new Button("Carica partita");
-        loadGameButton.setPrefWidth(240);
+        loadGameButton.setPrefWidth(280);
         loadGameButton.setStyle("""
                 -fx-background-color: #1e1e30;
                 -fx-text-fill: #AFA9EC;
                 -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
+                -fx-font-size: 16px;
                 -fx-border-color: #534AB7;
                 -fx-border-radius: 4;
                 -fx-background-radius: 4;
-                -fx-padding: 10px;
+                -fx-padding: 12px;
                 -fx-cursor: hand;
                 """);
 
         exitButton = new Button("Esci");
-        exitButton.setPrefWidth(240);
+        exitButton.setPrefWidth(280);
         exitButton.setStyle("""
                 -fx-background-color: #1e1e30;
-                -fx-text-fill: #555;
+                -fx-text-fill: #E24B4A;
                 -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
-                -fx-border-color: #2a2a40;
+                -fx-font-size: 16px;
+                -fx-border-color: #5a2222;
                 -fx-border-radius: 4;
                 -fx-background-radius: 4;
-                -fx-padding: 10px;
+                -fx-padding: 12px;
                 -fx-cursor: hand;
                 """);
         exitButton.setOnAction(e -> javafx.application.Platform.exit());

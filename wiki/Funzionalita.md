@@ -11,6 +11,7 @@
 
 - Movimento orizzontale del personaggio (frecce o WASD)
 - Fisica di gioco: gravità, salto, vincolo al suolo
+- Animazione del personaggio: camminata con oscillazione di braccia e gambe, posa di salto, idle con leggero bobbing, ombra a terra dinamica
 - Avanzamento alla stanza successiva (tasto E vicino all'uscita, solo se la stanza è stata ripulita)
 - Ritorno alla stanza precedente (tasto E vicino all'ingresso)
 - Raccolta degli oggetti presenti nella stanza (tasto E)
@@ -18,7 +19,10 @@
 - Collisione con le trappole: danno al giocatore con cooldown per evitare danni ripetuti
 - Collisione con i nemici: avvio del combattimento dopo un breve ritardo di preavviso
 - HUD superiore: nome giocatore, barra HP colorata (verde/arancione/rosso), barra XP, livello, zona e stanza corrente
-- HUD inferiore: guida tasti, contatore pozioni, oggetti nell'inventario
+- HUD inferiore: guida tasti contestuale (i tasti appaiono solo quando rilevanti), contatore pozioni, oggetti nell'inventario
+- Indicatore HP sopra il nemico visibile durante l'esplorazione
+- Hint `[E]` visibile solo quando il giocatore è vicino a qualcosa di interagibile
+- Hint `[R] riprova` visibile solo in stato di game over
 - Salvataggio rapido con CTRL+S
 - Conferma uscita al menu con ESC
 
@@ -57,6 +61,7 @@ Il combattimento si alterna tra il turno del giocatore e quello del nemico.
 
 - 3 slot di salvataggio indipendenti
 - Ogni slot mostra: nome personaggio, livello, numero stanza, data e ora del salvataggio
+- Se si salva su uno slot già occupato, viene mostrata una schermata di conferma con i dettagli del salvataggio esistente per prevenire sovrascritture accidentali
 - Vengono salvati: statistiche del giocatore, inventario, stato di ogni nemico (vivo/morto, HP), stato degli NPC (ricompensa già data), item ancora presenti nelle stanze, indice zona e stanza corrente
 
 ## Schermate speciali
