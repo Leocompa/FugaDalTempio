@@ -78,13 +78,13 @@ public class Player {
     }
 
     /**
-     * Equipaggia un oggetto se il tipo lo consente (AMULET o KEY).
+     * Equipaggia un amuleto, sostituendo l'eventuale oggetto già equipaggiato.
      *
      * @param item l'oggetto da equipaggiare
      * @return {@code true} se l'oggetto è stato equipaggiato con successo
      */
     public boolean equip(Item item) {
-        if (item.getType() == ItemType.AMULET || item.getType() == ItemType.KEY) {
+        if (item.getType() == ItemType.AMULET) {
             this.equippedItem = item;
             return true;
         }

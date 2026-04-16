@@ -10,7 +10,7 @@ import java.util.List;
  * <p>Una stanza è un contenitore passivo di entità di gioco: nemici, trappole,
  * oggetti raccoglibili e NPC. Non contiene logica di gioco — le interazioni
  * con queste entità sono gestite da {@link it.unicam.cs.mpgc.rpg118708.engine.GameManager}
- * e dalle scene di esplorazione.</p>
+ * e da {@link it.unicam.cs.mpgc.rpg118708.view.ExplorationScene}.</p>
  */
 public class Room {
 
@@ -20,8 +20,6 @@ public class Room {
     private final List<Trap> traps;
     private final List<Item> items;
     private final List<NPC> npcs;
-    private boolean puzzleSolved;
-    private boolean locked;
 
     /**
      * Crea una stanza vuota.
@@ -36,8 +34,6 @@ public class Room {
         this.traps = new ArrayList<>();
         this.items = new ArrayList<>();
         this.npcs = new ArrayList<>();
-        this.puzzleSolved = false;
-        this.locked = false;
     }
 
     /** Aggiunge un nemico alla stanza. */
@@ -73,8 +69,4 @@ public class Room {
     public List<Trap> getTraps() { return Collections.unmodifiableList(traps); }
     public List<Item> getItems() { return Collections.unmodifiableList(items); }
     public List<NPC> getNpcs() { return Collections.unmodifiableList(npcs); }
-    public boolean isPuzzleSolved() { return puzzleSolved; }
-    public void setPuzzleSolved(boolean puzzleSolved) { this.puzzleSolved = puzzleSolved; }
-    public boolean isLocked() { return locked; }
-    public void setLocked(boolean locked) { this.locked = locked; }
 }

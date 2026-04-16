@@ -88,7 +88,6 @@ public class XmlGamePersistence implements GamePersistence {
                 for (Room room : zone.getRooms()) {
                     Element roomEl = doc.createElement("room");
                     roomEl.setAttribute("id", room.getId());
-                    roomEl.setAttribute("puzzleSolved", String.valueOf(room.isPuzzleSolved()));
                     for (Enemy enemy : room.getEnemies()) {
                         Element enemyEl = doc.createElement("enemy");
                         enemyEl.setAttribute("id", enemy.getId());
@@ -225,9 +224,6 @@ public class XmlGamePersistence implements GamePersistence {
         zone.getRooms().stream()
                 .filter(r -> r.getId().equals(roomId))
                 .findFirst().ifPresent(room -> {
-                    room.setPuzzleSolved(Boolean.parseBoolean(
-                            roomEl.getAttribute("puzzleSolved")));
-
                     NodeList enemyNodes = roomEl.getElementsByTagName("enemy");
                     for (int k = 0; k < enemyNodes.getLength(); k++) {
                         Element enemyEl = (Element) enemyNodes.item(k);

@@ -5,7 +5,6 @@ package it.unicam.cs.mpgc.rpg118708.model;
  *
  * <ul>
  *   <li>{@link #POTION}   — ripristina HP durante o fuori dal combattimento</li>
- *   <li>{@link #KEY}      — apre porte o passaggi bloccati</li>
  *   <li>{@link #AMULET}   — equipaggiabile: aumenta difesa e HP massimi</li>
  *   <li>{@link #SCROLL}   — consumabile: aumenta l'attacco per un turno</li>
  *   <li>{@link #TALISMAN} — consumabile: dimezza il prossimo danno ricevuto</li>
@@ -13,7 +12,6 @@ package it.unicam.cs.mpgc.rpg118708.model;
  */
 public enum ItemType {
     POTION,
-    KEY,
     AMULET,
     SCROLL,
     TALISMAN

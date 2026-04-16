@@ -1,74 +1,71 @@
+# Fuga dal Tempio
 
-# 📌 FugaDalTempio
-Breve descrizione del progetto (2-3 righe):  
-Spiega cosa fa il programma e a cosa serve.
+Gioco di ruolo 2D a piattaforme sviluppato in Java con JavaFX.  
+Il giocatore veste i panni di un ladro intrappolato nel Tempio di Persepoli e deve combattere nemici, raccogliere oggetti e fuggire attraverso cinque stanze, affrontando il boss finale.
 
 ---
 
-## 🚀 Come eseguire il progetto
+## Funzionalità principali
 
-### Prerequisiti
-- Java 25 (LTS)
-- Gradle
+- Esplorazione a piattaforme con fisica (gravità, salto, movimento)
+- Combattimento a turni con nemici e boss (attacco, mossa speciale, pozione, fuga)
+- Inventario con oggetti: pozioni, amuleto, pergamena di fuoco, talismano
+- Sistema di progressione: XP, livelli, scaling dei nemici
+- NPC con dialogo e ricompensa
+- Trappole attive nelle stanze
+- Salvataggio e caricamento su 3 slot (persistenza XML)
+- Schermata di game over, vittoria e menu principale
 
-### Istruzioni
+---
+
+## Prerequisiti
+
+- Java 25
+- Gradle (incluso il wrapper `gradlew`)
+
+---
+
+## Come eseguire
 
 ```bash
-git clone <url-del-repository>
-cd <nome-cartella>
-```
-
-### Build del progetto
-```bash
-./gradlew build
-```
-
-### Esecuzione
-```bash
+git clone https://github.com/Leocompa/FugaDalTempio.git
+cd FugaDalTempio
 ./gradlew run
 ```
 
----
+Su Windows:
 
-## 🤖 Uso di strumenti di AI
-
-Indicare **se e come** sono stati utilizzati strumenti di AI (es. ChatGPT, Copilot, ecc.).
-Descrivere in modo chiaro **per quali attività** e **con quale livello di intervento personale**.
-
-È importante dimostrare che:
-* il codice è stato **compreso**
-* l’AI è stata usata come **supporto**, non come sostituto
----
-
-📌 Per una descrizione più dettagliata dell’uso dell’AI, utilizzare la **Wiki del repository**.
-
-
-### Esempi :
-
-* Utilizzato ChatGPT per:
-
-    * comprendere concetti teorici (es. differenza tra classi e oggetti)
-    * chiarire errori di compilazione
-    * suggerimenti su struttura del codice
-
-* Utilizzato Copilot per:
-
-    * autocompletamento di metodi semplici
-    * generazione di codice ripetitivo (es. getter/setter)
-
-* Utilizzato ChatGPT per generare una prima versione di una funzione, poi:
-
-    * modificata e adattata manualmente
-    * testata e corretta personalmente
+```bat
+gradlew.bat run
+```
 
 ---
 
-Oppure:
-- Non sono stati utilizzati strumenti di AI
+## Struttura del progetto
+
+```
+src/main/java/it/unicam/cs/mpgc/rpg118708/
+├── Main.java               # Punto di ingresso e composition root
+├── controller/             # GameController, CombatController, WorldBuilder, WorldFactory
+├── engine/                 # GameManager, CombatManager, GameState, CombatResult
+├── model/                  # Player, Enemy, Boss, Stats, Inventory, Item, Room, Zone, NPC, Trap
+├── persistence/            # GamePersistence (interfaccia), XmlGamePersistence, SlotInfo
+└── view/                   # ExplorationScene, CombatScene, StartScene, SaveSlotScene, VictoryScene
+```
 
 ---
 
+## Uso di strumenti di AI
 
-## ⚠️ Nota
+Durante lo sviluppo del progetto è stato utilizzato **Claude (Anthropic)** come assistente tramite Claude Code CLI.
 
-Questo è un template: **modificare e adattare tutte le parti necessarie** in base al proprio progetto
+L'AI è stata impiegata come strumento di supporto per:
+
+- **Progettazione architetturale**: discussione e verifica dell'applicazione dei principi SOLID, identificazione di responsabilità delle classi e revisione del design a livello di package
+- **Revisione e ottimizzazione del codice**: identificazione di bug, rimozione di codice duplicato e morto, miglioramento dell'incapsulamento
+- **Refactoring**: estrazione di metodi privati, separazione delle responsabilità, parametrizzazione di logica hardcoded
+- **Supporto alla scrittura della documentazione**: struttura Javadoc delle classi
+
+Tutto il codice prodotto è stato compreso, discusso e validato personalmente. Le scelte di design (struttura dei package, interfacce, flusso di gioco) sono state prese dallo studente; l'AI ha operato come revisore e assistente tecnico.
+
+Per una descrizione dettagliata vedere la **[Wiki del repository](../../wiki)**.
