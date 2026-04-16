@@ -196,3 +196,29 @@ Schermata di selezione slot riutilizzabile in modalità salvataggio e caricament
 
 ##### `VictoryScene`
 Schermata di vittoria finale. Riceve i dati del giocatore e una callback per tornare al menu. Non contiene logica di gioco.
+
+---
+
+## Test
+
+Il progetto include una suite di test JUnit 5 in `src/test`, organizzata in due package che rispecchiano la struttura del codice sorgente.
+
+### Cosa viene testato
+
+I test coprono esclusivamente il layer `model` e `engine`, che contengono tutta la logica verificabile senza dipendenze da JavaFX.
+
+| Classe di test | Cosa verifica |
+|---|---|
+| `StatsTest` | Danno con difesa, cura, level-up, XP, bonus equipaggiamento |
+| `InventoryTest` | Aggiunta/rimozione oggetti, capienza massima, vista immutabile |
+| `PlayerTest` | Delega a Stats, equip/unequip, movimento |
+| `BossTest` | Meccanismo di enrage (soglia, bonus attacco, attivazione unica) |
+| `NPCTest` | Ricompensa consegnata una sola volta, NPC senza premio |
+| `TrapTest` | Collisione hitbox, cooldown, disattivazione permanente |
+| `RoomTest` | isCleared, gestione oggetti, viste immutabili |
+| `ZoneTest` | Navigazione stanze, allRoomsCleared, completamento |
+| `CombatManagerTest` | Attacco, fuga, vittoria, sconfitta, mosse speciali, oggetti, limite cure nemico |
+
+### Perché il layer view non è testato
+
+Le classi del package `view` dipendono da JavaFX e richiedono un toolkit grafico inizializzato (runtime JavaFX). Testarle richiederebbe `TestFX` o simili framework di test UI, che esulano dagli obiettivi del corso. La correttezza della view è verificata manualmente durante l'esecuzione del gioco.

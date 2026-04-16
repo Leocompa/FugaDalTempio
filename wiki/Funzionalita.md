@@ -39,6 +39,7 @@ Il combattimento si alterna tra il turno del giocatore e quello del nemico.
 
 **Azioni del nemico:**
 - Sceglie casualmente tra attacco, mossa speciale o cura
+- La cura è disponibile al massimo **2 volte per combattimento**; una volta esaurita, il nemico ricade sull'attacco base
 - I nemici boss hanno il meccanismo di **enrage**: quando gli HP scendono sotto il 50%, l'attacco aumenta
 
 **Oggetti consumabili in combattimento:**

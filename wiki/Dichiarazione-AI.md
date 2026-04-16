@@ -2,7 +2,7 @@
 
 ## Strumento utilizzato
 
-**Claude (Anthropic)** — assistente AI sviluppato da Anthropic, utilizzato tramite l'interfaccia di chat.
+**Claude Code (Anthropic)** — assistente AI sviluppato da Anthropic, utilizzato tramite la CLI ufficiale **Claude Code** integrata nel terminale di sviluppo.
 
 ---
 
@@ -24,6 +24,10 @@ Durante lo sviluppo ho usato Claude come strumento di revisione:
 - **Rimozione di codice inutilizzato**: Claude ha segnalato metodi e variabili non più usati dopo refactoring successivi
 - **Ottimizzazione**: suggerimenti su come semplificare logica ridondante o migliorare la leggibilità
 - **Refactoring**: estrazione di metodi privati da metodi troppo lunghi, separazione di responsabilità, suddivisione del package `view` in sotto-package (`combat`, `exploration`, `menu`)
+
+### Fase di testing
+
+Ho usato Claude per definire i casi di test significativi da coprire e per scrivere le classi JUnit 5 corrispondenti (package `src/test`). I test coprono le classi del layer `model` e `engine`, che contengono tutta la logica di gioco verificabile senza dipendenze da JavaFX. I casi da testare (es. limite cure nemico, enrage del boss, capienza inventario) li ho individuati io; Claude ha tradotto i requisiti in codice di test.
 
 ### Fase di documentazione
 
