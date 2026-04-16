@@ -1,7 +1,6 @@
 package it.unicam.cs.mpgc.rpg118708.view;
 
-import it.unicam.cs.mpgc.rpg118708.persistence.GameLoader;
-import it.unicam.cs.mpgc.rpg118708.persistence.GameSaver;
+import it.unicam.cs.mpgc.rpg118708.persistence.GamePersistence;
 import it.unicam.cs.mpgc.rpg118708.persistence.SlotInfo;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,15 +13,30 @@ import javafx.scene.text.Font;
 
 import java.util.function.Consumer;
 
+/**
+ * Scena di selezione degli slot di salvataggio/caricamento.
+ *
+ * <p>Funziona in due modalità controllate dal flag {@code isSaveMode}:
+ * in modalità salvataggio mostra tutti gli slot, in modalità caricamento
+ * disabilita gli slot vuoti. Dipende dall'interfaccia {@link GamePersistence}
+ * per leggere le informazioni degli slot senza essere accoppiata a una
+ * specifica implementazione di persistenza.</p>
+ */
 public class SaveSlotScene {
 
     private Scene scene;
-    private final GameLoader loader;
+    private final GamePersistence persistence;
     private final boolean isSaveMode;
     private Consumer<Integer> onSlotSelected;
 
-    public SaveSlotScene(GameLoader loader, boolean isSaveMode) {
-        this.loader = loader;
+    /**
+     * Crea la scena di selezione slot.
+     *
+     * @param persistence la strategia di persistenza da cui leggere le informazioni degli slot
+     * @param isSaveMode  {@code true} per modalità salvataggio, {@code false} per caricamento
+     */
+    public SaveSlotScene(GamePersistence persistence, boolean isSaveMode) {
+        this.persistence = persistence;
         this.isSaveMode = isSaveMode;
         buildScene();
     }
@@ -39,7 +53,7 @@ public class SaveSlotScene {
 
         root.getChildren().add(title);
 
-        for (int slot = 1; slot <= GameSaver.getMaxSlots(); slot++) {
+        for (int slot = 1; slot <= persistence.getMaxSlots(); slot++) {
             root.getChildren().add(buildSlotCard(slot));
         }
 
@@ -65,7 +79,7 @@ public class SaveSlotScene {
     }
 
     private HBox buildSlotCard(int slot) {
-        SlotInfo info = loader.getSlotInfo(slot);
+        SlotInfo info = persistence.getSlotInfo(slot);
 
         VBox details = new VBox(6);
         details.setAlignment(Pos.CENTER_LEFT);

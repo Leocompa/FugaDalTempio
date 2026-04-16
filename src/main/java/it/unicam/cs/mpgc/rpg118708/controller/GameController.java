@@ -3,35 +3,63 @@ package it.unicam.cs.mpgc.rpg118708.controller;
 import it.unicam.cs.mpgc.rpg118708.engine.GameManager;
 import it.unicam.cs.mpgc.rpg118708.engine.GameState;
 import it.unicam.cs.mpgc.rpg118708.model.*;
-import it.unicam.cs.mpgc.rpg118708.persistence.GameLoader;
-import it.unicam.cs.mpgc.rpg118708.persistence.GameSaver;
+import it.unicam.cs.mpgc.rpg118708.persistence.GamePersistence;
 import it.unicam.cs.mpgc.rpg118708.view.CombatScene;
 import it.unicam.cs.mpgc.rpg118708.view.ExplorationScene;
 import it.unicam.cs.mpgc.rpg118708.view.SaveSlotScene;
 import it.unicam.cs.mpgc.rpg118708.view.StartScene;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.util.List;
-
+/**
+ * Controller principale dell'applicazione.
+ *
+ * <p>Coordina il flusso di gioco: gestisce le transizioni tra le scene
+ * (menu, esplorazione, combattimento, salvataggio) e delega le operazioni
+ * specifiche a collaboratori iniettati tramite costruttore.</p>
+ *
+ * <p>Dipende dalle interfacce {@link GamePersistence} e {@link WorldFactory}
+ * anziché da implementazioni concrete, garantendo che la logica di controllo
+ * non sia accoppiata alla tecnologia di persistenza o alla strategia di
+ * costruzione del mondo (DIP).</p>
+ */
 public class GameController {
 
     private final Stage stage;
+    private final GamePersistence persistence;
+    private final WorldFactory worldFactory;
+
     private GameManager gameManager;
-    private final GameSaver saver;
-    private final GameLoader loader;
     private int currentSaveSlot = 1;
 
     private StartScene startScene;
     private ExplorationScene explorationScene;
     private CombatScene combatScene;
 
-    public GameController(Stage stage) {
+    /**
+     * Crea il controller iniettando le dipendenze necessarie.
+     *
+     * @param stage        la finestra JavaFX principale
+     * @param persistence  la strategia di persistenza (salvataggio/caricamento)
+     * @param worldFactory la factory che costruisce il mondo di gioco
+     */
+    public GameController(Stage stage, GamePersistence persistence, WorldFactory worldFactory) {
         this.stage = stage;
-        this.saver = new GameSaver();
-        this.loader = new GameLoader();
+        this.persistence = persistence;
+        this.worldFactory = worldFactory;
     }
 
+    /**
+     * Mostra la schermata iniziale e registra i listener sui pulsanti.
+     */
     public void start() {
         startScene = new StartScene();
 
@@ -42,7 +70,7 @@ public class GameController {
         });
 
         startScene.getLoadGameButton().setOnAction(e -> {
-            if (loader.saveExists()) {
+            if (persistence.saveExists()) {
                 showLoadSlotScreen(() -> stage.setScene(startScene.getScene()));
             } else {
                 startScene.getLoadGameButton().setText("Nessun salvataggio trovato");
@@ -52,24 +80,16 @@ public class GameController {
         stage.setScene(startScene.getScene());
     }
 
+    // -------------------------------------------------------------------------
+    // Flusso di gioco
+    // -------------------------------------------------------------------------
+
     private void startNewGame(String playerName) {
-        Player player = new Player(playerName);
-        List<Zone> zones = WorldBuilder.buildWorld();
-        int roomIndex = 0;
-        for (Zone zone : zones) {
-            for (Room room : zone.getRooms()) {
-                for (Enemy enemy : room.getEnemies()) {
-                    WorldBuilder.scaleEnemy(enemy, roomIndex);
-                }
-                roomIndex++;
-            }
-        }
-        gameManager = new GameManager(player, zones);
+        gameManager = new GameManager(new Player(playerName), worldFactory.buildWorld());
         startExploration();
     }
 
     private void startExploration() {
-
         if (explorationScene != null) explorationScene.stop();
 
         explorationScene = new ExplorationScene(gameManager);
@@ -84,8 +104,10 @@ public class GameController {
             combatController.setOnVictory(() -> {
                 gameManager.endCombat();
                 gameManager.registerEnemyDefeated();
-                if (gameManager.getCurrentZone().getCurrentRoomIndex() == 4
-                        && gameManager.getCurrentRoom().getEnemies().stream().noneMatch(e -> e.isAlive())) {
+                boolean lastRoom = gameManager.getCurrentZone().getCurrentRoomIndex() == 4;
+                boolean allEnemiesDead = gameManager.getCurrentRoom().getEnemies()
+                        .stream().noneMatch(Enemy::isAlive);
+                if (lastRoom && allEnemiesDead) {
                     gameManager.setState(GameState.VICTORY);
                     showVictoryScreen();
                 } else {
@@ -94,23 +116,14 @@ public class GameController {
             });
 
             combatController.setOnDefeat(() -> {
-                Player player = new Player(gameManager.getPlayer().getName());
-                List<Zone> zones = WorldBuilder.buildWorld();
-                int roomIndex = 0;
-                for (Zone zone : zones) {
-                    for (Room room : zone.getRooms()) {
-                        for (Enemy enemy : room.getEnemies()) {
-                            WorldBuilder.scaleEnemy(enemy, roomIndex);
-                        }
-                        roomIndex++;
-                    }
-                }
-                gameManager = new GameManager(player, zones);
+                gameManager = new GameManager(
+                        new Player(gameManager.getPlayer().getName()),
+                        worldFactory.buildWorld());
                 startExploration();
             });
 
             combatController.setOnLoad(() -> {
-                if (loader.saveExists()) {
+                if (persistence.saveExists()) {
                     showLoadSlotScreen(() -> stage.setScene(combatScene.getScene()));
                 } else {
                     gameManager.respawn();
@@ -129,11 +142,11 @@ public class GameController {
         explorationScene.setOnZoneComplete(() -> {
             explorationScene.stop();
             gameManager.advanceZone();
-            saver.save(gameManager, currentSaveSlot);
+            persistence.save(gameManager, currentSaveSlot);
             startExploration();
         });
 
-        explorationScene.setOnSave(() -> showSaveSlotScreen());
+        explorationScene.setOnSave(this::showSaveSlotScreen);
 
         explorationScene.setOnExit(() -> {
             explorationScene.stop();
@@ -144,34 +157,37 @@ public class GameController {
         explorationScene.start();
     }
 
+    // -------------------------------------------------------------------------
+    // Schermate secondarie
+    // -------------------------------------------------------------------------
+
     private void showVictoryScreen() {
         Player player = gameManager.getPlayer();
         Stats stats = player.getStats();
 
         VBox overlay = new VBox(20);
-        overlay.setAlignment(javafx.geometry.Pos.CENTER);
-        overlay.setPadding(new javafx.geometry.Insets(60));
+        overlay.setAlignment(Pos.CENTER);
+        overlay.setPadding(new Insets(60));
         overlay.setStyle("-fx-background-color: #0a1a0a;");
 
-        javafx.scene.control.Label title = new javafx.scene.control.Label("Hai completato il tempio!");
-        title.setFont(new javafx.scene.text.Font("Monospaced", 26));
+        Label title = new Label("Hai completato il tempio!");
+        title.setFont(new Font("Monospaced", 26));
         title.setStyle("-fx-text-fill: #EF9F27;");
 
-        javafx.scene.control.Label subtitle = new javafx.scene.control.Label(
-                "Il ladro " + player.getName() + " è fuggito con il tesoro.");
-        subtitle.setFont(new javafx.scene.text.Font("Monospaced", 14));
+        Label subtitle = new Label("Il ladro " + player.getName() + " è fuggito con il tesoro.");
+        subtitle.setFont(new Font("Monospaced", 14));
         subtitle.setStyle("-fx-text-fill: #888;");
 
-        javafx.scene.control.Label statsLabel = new javafx.scene.control.Label(
+        Label statsLabel = new Label(
                 "Livello finale:  " + stats.getLevel() + "\n" +
-                        "HP:              " + stats.getCurrentHp() + " / " + stats.getMaxHp() + "\n" +
-                        "ATK:             " + stats.getAttack() + "\n" +
-                        "DEF:             " + stats.getDefense()
+                "HP:              " + stats.getCurrentHp() + " / " + stats.getMaxHp() + "\n" +
+                "ATK:             " + stats.getAttack() + "\n" +
+                "DEF:             " + stats.getDefense()
         );
-        statsLabel.setFont(new javafx.scene.text.Font("Monospaced", 14));
+        statsLabel.setFont(new Font("Monospaced", 14));
         statsLabel.setStyle("-fx-text-fill: #ccc;");
 
-        javafx.scene.control.Button menuBtn = new javafx.scene.control.Button("Torna al menu  ▶");
+        Button menuBtn = new Button("Torna al menu  ▶");
         menuBtn.setStyle("""
                 -fx-background-color: #854F0B;
                 -fx-text-fill: #FAEEDA;
@@ -185,15 +201,12 @@ public class GameController {
 
         overlay.getChildren().addAll(title, subtitle, statsLabel, menuBtn);
 
-        javafx.geometry.Rectangle2D screen =
-                javafx.stage.Screen.getPrimary().getVisualBounds();
-        javafx.scene.Scene victoryScene = new javafx.scene.Scene(
-                overlay, screen.getWidth(), screen.getHeight());
-        stage.setScene(victoryScene);
+        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+        stage.setScene(new Scene(overlay, screen.getWidth(), screen.getHeight()));
     }
 
     private void showSaveSlotScreen() {
-        SaveSlotScene saveSlotScene = new SaveSlotScene(loader, true);
+        SaveSlotScene saveSlotScene = new SaveSlotScene(persistence, true);
         saveSlotScene.setOnSlotSelected(slot -> {
             if (slot == -1) {
                 stage.setScene(explorationScene.getScene());
@@ -201,7 +214,7 @@ public class GameController {
                 return;
             }
             currentSaveSlot = slot;
-            saver.save(gameManager, slot);
+            persistence.save(gameManager, slot);
             explorationScene.showSaveMessage();
             stage.setScene(explorationScene.getScene());
             explorationScene.start();
@@ -211,28 +224,17 @@ public class GameController {
     }
 
     private void showLoadSlotScreen(Runnable onBack) {
-        SaveSlotScene loadSlotScene = new SaveSlotScene(loader, false);
+        SaveSlotScene loadSlotScene = new SaveSlotScene(persistence, false);
         loadSlotScene.setOnSlotSelected(slot -> {
             if (slot == -1) {
                 if (onBack != null) onBack.run();
                 return;
             }
             currentSaveSlot = slot;
-            String name = loader.loadPlayerName(slot);
+            String name = persistence.loadPlayerName(slot);
             if (name.isEmpty()) name = "Ladro";
-            Player player = new Player(name);
-            List<Zone> zones = WorldBuilder.buildWorld();
-            int roomIndex = 0;
-            for (Zone zone : zones) {
-                for (Room room : zone.getRooms()) {
-                    for (Enemy enemy : room.getEnemies()) {
-                        WorldBuilder.scaleEnemy(enemy, roomIndex);
-                    }
-                    roomIndex++;
-                }
-            }
-            gameManager = new GameManager(player, zones);
-            loader.load(gameManager, slot);
+            gameManager = new GameManager(new Player(name), worldFactory.buildWorld());
+            persistence.load(gameManager, slot);
             startExploration();
         });
         stage.setScene(loadSlotScene.getScene());

@@ -104,5 +104,6 @@ public class GameManager {
     public CombatManager getCombatManager() { return combatManager; }
     public void registerEnemyDefeated() { totalEnemiesDefeated++; }
     public int getTotalEnemiesDefeated() { return totalEnemiesDefeated; }
+    public void setTotalEnemiesDefeated(int value) { this.totalEnemiesDefeated = value; }
 
 }
