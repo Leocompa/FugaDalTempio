@@ -60,13 +60,13 @@ public class SaveSlotScene {
         Button backBtn = new Button("← Indietro");
         backBtn.setStyle("""
                 -fx-background-color: #1e1e30;
-                -fx-text-fill: #555;
+                -fx-text-fill: #AFA9EC;
                 -fx-font-family: Monospaced;
-                -fx-font-size: 13px;
-                -fx-border-color: #2a2a40;
+                -fx-font-size: 14px;
+                -fx-border-color: #534AB7;
                 -fx-border-radius: 4;
                 -fx-background-radius: 4;
-                -fx-padding: 8px 20px;
+                -fx-padding: 10px 24px;
                 -fx-cursor: hand;
                 """);
         backBtn.setOnAction(e -> { if (onSlotSelected != null) onSlotSelected.accept(-1); });

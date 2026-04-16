@@ -51,7 +51,7 @@ src/main/java/it/unicam/cs/mpgc/rpg118708/
 ├── model/                  # Player, Enemy, Boss, Stats, Inventory, Item, Room, Zone, NPC, Trap
 ├── persistence/            # GamePersistence (interfaccia), XmlGamePersistence, SlotInfo
 └── view/
-    ├── combat/             # CombatScene
+    ├── combat/             # CombatScene, CombatSpriteRenderer, CombatVictoryScreen, CombatDefeatScreen
     ├── exploration/        # ExplorationScene, ExplorationRenderer
     └── menu/               # StartScene, SaveSlotScene, VictoryScene
 ```

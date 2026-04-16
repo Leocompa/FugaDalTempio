@@ -175,7 +175,16 @@ Responsabile di tutto il disegno su `Canvas` durante l'esplorazione. Riceve lo s
 #### `view.combat`
 
 ##### `CombatScene`
-Scena del combattimento a turni. Costruisce l'interfaccia (pulsanti, barre HP, log). Delega tutta la logica a `CombatController`. Il metodo `refresh()` aggiorna le singole sezioni tramite metodi privati dedicati: `refreshLabels()`, `refreshSpecialButton()`, `refreshHealButton()`, `refreshEquipButton()`, `refreshInventoryLabel()`.
+Scena del combattimento a turni. Costruisce l'interfaccia (pulsanti, barre HP, log) e gestisce le interazioni utente. Delega la logica di gioco a `CombatController`, il disegno degli sprite a `CombatSpriteRenderer` e le schermate di fine combattimento a `CombatVictoryScreen` / `CombatDefeatScreen`. Il metodo `refresh()` aggiorna le singole sezioni tramite metodi privati dedicati.
+
+##### `CombatSpriteRenderer`
+Renderer degli sprite del combattimento su canvas JavaFX. Contiene esclusivamente la logica di disegno del giocatore e del nemico (metodi statici). Distingue automaticamente tra guardia normale e boss applicando schemi visivi diversi.
+
+##### `CombatVictoryScreen`
+Schermata mostrata al termine di un combattimento vinto. Riceve giocatore, nemico e una callback per continuare. Non contiene logica di gioco.
+
+##### `CombatDefeatScreen`
+Schermata mostrata al termine di un combattimento perso. Offre due opzioni (ricominciare o caricare) tramite callback. Non contiene logica di gioco.
 
 #### `view.menu`
 
