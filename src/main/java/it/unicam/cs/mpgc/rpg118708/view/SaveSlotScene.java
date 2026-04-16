@@ -108,8 +108,8 @@ public class SaveSlotScene {
 
         Button actionBtn = new Button(isSaveMode ? "Salva qui" : "Carica");
         actionBtn.setPrefWidth(120);
-        boolean canLoad = !isSaveMode && info == null;
-        actionBtn.setDisable(canLoad);
+        boolean disabled = !isSaveMode && info == null;
+        actionBtn.setDisable(disabled);
         actionBtn.setStyle(String.format("""
                 -fx-background-color: %s;
                 -fx-text-fill: %s;
@@ -119,8 +119,8 @@ public class SaveSlotScene {
                 -fx-padding: 10px;
                 -fx-cursor: hand;
                 """,
-                canLoad ? "#2a2a40" : "#534AB7",
-                canLoad ? "#555" : "#EEEDFE"));
+                disabled ? "#2a2a40" : "#534AB7",
+                disabled ? "#555" : "#EEEDFE"));
 
         int finalSlot = slot;
         actionBtn.setOnAction(e -> { if (onSlotSelected != null) onSlotSelected.accept(finalSlot); });

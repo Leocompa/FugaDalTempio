@@ -4,7 +4,6 @@ import it.unicam.cs.mpgc.rpg118708.model.Enemy;
 import it.unicam.cs.mpgc.rpg118708.model.Item;
 import it.unicam.cs.mpgc.rpg118708.model.Player;
 import it.unicam.cs.mpgc.rpg118708.model.Room;
-import it.unicam.cs.mpgc.rpg118708.model.Trap;
 import it.unicam.cs.mpgc.rpg118708.model.Zone;
 
 import java.util.List;
@@ -99,21 +98,6 @@ public class GameManager {
         }
         state = GameState.VICTORY;
         return false;
-    }
-
-    /**
-     * Verifica tutte le trappole nella stanza corrente e applica i danni al giocatore.
-     * Se il giocatore muore a causa di una trappola, imposta lo stato a
-     * {@link GameState#GAME_OVER}.
-     */
-    public void checkTraps() {
-        Room room = getCurrentRoom();
-        for (Trap trap : room.getTraps()) {
-            trap.trigger(player);
-        }
-        if (!player.isAlive()) {
-            state = GameState.GAME_OVER;
-        }
     }
 
     /**

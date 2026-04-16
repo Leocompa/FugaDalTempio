@@ -8,15 +8,7 @@ import it.unicam.cs.mpgc.rpg118708.view.CombatScene;
 import it.unicam.cs.mpgc.rpg118708.view.ExplorationScene;
 import it.unicam.cs.mpgc.rpg118708.view.SaveSlotScene;
 import it.unicam.cs.mpgc.rpg118708.view.StartScene;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.stage.Screen;
+import it.unicam.cs.mpgc.rpg118708.view.VictoryScene;
 import javafx.stage.Stage;
 
 /**
@@ -162,47 +154,7 @@ public class GameController {
     // -------------------------------------------------------------------------
 
     private void showVictoryScreen() {
-        Player player = gameManager.getPlayer();
-        Stats stats = player.getStats();
-
-        VBox overlay = new VBox(20);
-        overlay.setAlignment(Pos.CENTER);
-        overlay.setPadding(new Insets(60));
-        overlay.setStyle("-fx-background-color: #0a1a0a;");
-
-        Label title = new Label("Hai completato il tempio!");
-        title.setFont(new Font("Monospaced", 26));
-        title.setStyle("-fx-text-fill: #EF9F27;");
-
-        Label subtitle = new Label("Il ladro " + player.getName() + " è fuggito con il tesoro.");
-        subtitle.setFont(new Font("Monospaced", 14));
-        subtitle.setStyle("-fx-text-fill: #888;");
-
-        Label statsLabel = new Label(
-                "Livello finale:  " + stats.getLevel() + "\n" +
-                "HP:              " + stats.getCurrentHp() + " / " + stats.getMaxHp() + "\n" +
-                "ATK:             " + stats.getAttack() + "\n" +
-                "DEF:             " + stats.getDefense()
-        );
-        statsLabel.setFont(new Font("Monospaced", 14));
-        statsLabel.setStyle("-fx-text-fill: #ccc;");
-
-        Button menuBtn = new Button("Torna al menu  ▶");
-        menuBtn.setStyle("""
-                -fx-background-color: #854F0B;
-                -fx-text-fill: #FAEEDA;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
-                -fx-background-radius: 4;
-                -fx-padding: 12px 28px;
-                -fx-cursor: hand;
-                """);
-        menuBtn.setOnAction(e -> start());
-
-        overlay.getChildren().addAll(title, subtitle, statsLabel, menuBtn);
-
-        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
-        stage.setScene(new Scene(overlay, screen.getWidth(), screen.getHeight()));
+        stage.setScene(new VictoryScene(gameManager.getPlayer(), this::start).getScene());
     }
 
     private void showSaveSlotScreen() {

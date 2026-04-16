@@ -12,6 +12,8 @@ import java.util.List;
  */
 public class Boss extends Enemy {
 
+    private static final int ENRAGE_ATTACK_BONUS = 5;
+
     private final String title;
     private boolean enraged;
 
@@ -42,7 +44,7 @@ public class Boss extends Enemy {
     public boolean checkEnrage() {
         if (!enraged && getStats().getCurrentHp() <= getStats().getMaxHp() / 2) {
             enraged = true;
-            getStats().setAttack(getStats().getAttack() + 5);
+            getStats().setAttack(getStats().getAttack() + ENRAGE_ATTACK_BONUS);
             return true;
         }
         return false;

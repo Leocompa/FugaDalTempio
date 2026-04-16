@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.model;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Rappresenta un nemico che il giocatore può incontrare in combattimento.
@@ -11,6 +12,8 @@ import java.util.List;
  * comportamento speciale (enrage).</p>
  */
 public class Enemy {
+
+    private static final Random RANDOM = new Random();
 
     private final String id;
     private final String name;
@@ -64,8 +67,7 @@ public class Enemy {
      * @return l'azione selezionata
      */
     public CombatAction chooseAction() {
-        int index = (int) (Math.random() * availableActions.size());
-        return availableActions.get(index);
+        return availableActions.get(RANDOM.nextInt(availableActions.size()));
     }
 
     public String getId() { return id; }

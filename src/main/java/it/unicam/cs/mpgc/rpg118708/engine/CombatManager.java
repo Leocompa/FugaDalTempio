@@ -22,6 +22,9 @@ import it.unicam.cs.mpgc.rpg118708.model.Player;
  */
 public class CombatManager {
 
+    private static final int AMULET_DEF_BONUS = 4;
+    private static final int AMULET_HP_BONUS  = 10;
+
     private final Player player;
     private Enemy enemy;
     private boolean playerTurn;
@@ -115,11 +118,11 @@ public class CombatManager {
         switch (action.getType()) {
             case ATTACK -> {
                 int damage = computeDamage(enemy.getStats().getAttack(), action.getPower());
-                player.takeDamage(damage);
+                applyDamageToPlayer(damage);
             }
             case SPECIAL -> {
                 int damage = computeDamage(enemy.getStats().getAttack() * 2, action.getPower());
-                player.takeDamage(damage);
+                applyDamageToPlayer(damage);
             }
             case HEAL -> enemy.heal(action.getPower());
             default -> {}
@@ -144,10 +147,10 @@ public class CombatManager {
     public boolean equipItem(Item item) {
         if (item.getType() == ItemType.AMULET) {
             if (player.hasEquipped()) {
-                player.getStats().removeAmuletBonus();
+                player.getStats().removeEquipBonus(AMULET_DEF_BONUS, AMULET_HP_BONUS);
             }
             player.equip(item);
-            player.getStats().applyAmuletBonus();
+            player.getStats().applyEquipBonus(AMULET_DEF_BONUS, AMULET_HP_BONUS);
             player.getInventory().removeItem(item);
             return true;
         }
@@ -183,6 +186,18 @@ public class CombatManager {
         temporaryAttackBonus = 0;
         int variance = (int) (Math.random() * 3);
         return Math.max(1, raw + variance);
+    }
+
+    /**
+     * Applica il danno al giocatore, dimezzandolo se il talismano è attivo.
+     * Azzera il flag di riduzione danno dopo l'uso.
+     */
+    private void applyDamageToPlayer(int damage) {
+        if (damageReductionActive) {
+            damage = Math.max(1, damage / 2);
+            damageReductionActive = false;
+        }
+        player.takeDamage(damage);
     }
 
     /** Verifica e attiva l'enrage del boss se le condizioni sono soddisfatte. */

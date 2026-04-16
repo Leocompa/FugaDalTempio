@@ -16,6 +16,8 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Implementazione della persistenza di gioco tramite file XML.
@@ -134,16 +136,27 @@ public class XmlGamePersistence implements GamePersistence {
         }
     }
 
+    /**
+     * Apre e parsa il file XML dello slot indicato.
+     *
+     * @param slot il numero dello slot
+     * @return il documento XML, o {@code null} se il file non esiste
+     * @throws Exception in caso di errore di parsing
+     */
+    private Document parseDocument(int slot) throws Exception {
+        File file = new File(getSavePath(slot));
+        if (!file.exists()) return null;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document doc = factory.newDocumentBuilder().parse(file);
+        doc.getDocumentElement().normalize();
+        return doc;
+    }
+
     @Override
     public void load(GameManager gameManager, int slot) {
         try {
-            File file = new File(getSavePath(slot));
-            if (!file.exists()) return;
-
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
-            doc.getDocumentElement().normalize();
+            Document doc = parseDocument(slot);
+            if (doc == null) return;
 
             Element playerEl = (Element) doc.getElementsByTagName("player").item(0);
             Stats stats = gameManager.getPlayer().getStats();
@@ -165,6 +178,13 @@ public class XmlGamePersistence implements GamePersistence {
                         Integer.parseInt(progressEl.getAttribute("enemiesDefeated")));
             }
 
+            // Costruisce la mappa degli item per id PRIMA di svuotare le stanze,
+            // così il ripristino per id funziona anche dopo il clear.
+            Map<String, Item> itemById = gameManager.getZones().stream()
+                    .flatMap(z -> z.getRooms().stream())
+                    .flatMap(r -> r.getItems().stream())
+                    .collect(Collectors.toMap(Item::getId, i -> i));
+
             NodeList zoneNodes = doc.getElementsByTagName("zone");
             for (int i = 0; i < zoneNodes.getLength(); i++) {
                 Element zoneEl = (Element) zoneNodes.item(i);
@@ -176,7 +196,7 @@ public class XmlGamePersistence implements GamePersistence {
                                     zoneEl.getAttribute("completed")));
                             NodeList roomNodes = zoneEl.getElementsByTagName("room");
                             for (int j = 0; j < roomNodes.getLength(); j++) {
-                                loadRoom((Element) roomNodes.item(j), zone, gameManager);
+                                loadRoom((Element) roomNodes.item(j), zone, itemById);
                             }
                         });
             }
@@ -200,7 +220,7 @@ public class XmlGamePersistence implements GamePersistence {
         }
     }
 
-    private void loadRoom(Element roomEl, Zone zone, GameManager gameManager) {
+    private void loadRoom(Element roomEl, Zone zone, Map<String, Item> itemById) {
         String roomId = roomEl.getAttribute("id");
         zone.getRooms().stream()
                 .filter(r -> r.getId().equals(roomId))
@@ -231,16 +251,15 @@ public class XmlGamePersistence implements GamePersistence {
                                 .findFirst().ifPresent(n -> n.setRewardGiven(rewardGiven));
                     }
 
+                    // Ripristina gli item rimasti nella stanza al momento del salvataggio.
+                    // La mappa è costruita prima di svuotare qualsiasi stanza, così la
+                    // ricerca per id funziona correttamente.
                     NodeList itemNodes = roomEl.getElementsByTagName("item");
-                    room.getItems().clear();
+                    room.clearItems();
                     for (int k = 0; k < itemNodes.getLength(); k++) {
                         Element itemEl = (Element) itemNodes.item(k);
-                        String itemId = itemEl.getAttribute("id");
-                        gameManager.getZones().stream()
-                                .flatMap(z -> z.getRooms().stream())
-                                .flatMap(r -> r.getItems().stream())
-                                .filter(it -> it.getId().equals(itemId))
-                                .findFirst().ifPresent(room.getItems()::add);
+                        Item item = itemById.get(itemEl.getAttribute("id"));
+                        if (item != null) room.addItem(item);
                     }
                 });
     }
@@ -261,12 +280,8 @@ public class XmlGamePersistence implements GamePersistence {
     @Override
     public String loadPlayerName(int slot) {
         try {
-            File file = new File(getSavePath(slot));
-            if (!file.exists()) return "";
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
-            doc.getDocumentElement().normalize();
+            Document doc = parseDocument(slot);
+            if (doc == null) return "";
             Element playerEl = (Element) doc.getElementsByTagName("player").item(0);
             return playerEl.getAttribute("name");
         } catch (Exception e) {
@@ -277,12 +292,8 @@ public class XmlGamePersistence implements GamePersistence {
     @Override
     public SlotInfo getSlotInfo(int slot) {
         try {
-            File file = new File(getSavePath(slot));
-            if (!file.exists()) return null;
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
-            doc.getDocumentElement().normalize();
+            Document doc = parseDocument(slot);
+            if (doc == null) return null;
             String timestamp = doc.getDocumentElement().getAttribute("timestamp");
             Element playerEl = (Element) doc.getElementsByTagName("player").item(0);
             Element progressEl = (Element) doc.getElementsByTagName("progress").item(0);

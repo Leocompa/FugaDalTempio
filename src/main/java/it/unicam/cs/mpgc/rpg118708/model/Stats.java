@@ -81,20 +81,26 @@ public class Stats {
     }
 
     /**
-     * Applica il bonus passivo dell'Amuleto del Tempio: +4 difesa e +10 HP massimi.
+     * Applica un bonus da oggetto equipaggiato: aumenta la difesa e gli HP massimi.
+     *
+     * @param defBonus  punti difesa aggiuntivi
+     * @param hpBonus   punti HP massimi aggiuntivi (curano anche gli HP correnti)
      */
-    public void applyAmuletBonus() {
-        this.defense += 4;
-        this.maxHp += 10;
-        this.currentHp = Math.min(currentHp + 10, maxHp);
+    public void applyEquipBonus(int defBonus, int hpBonus) {
+        this.defense += defBonus;
+        this.maxHp += hpBonus;
+        this.currentHp = Math.min(currentHp + hpBonus, maxHp);
     }
 
     /**
-     * Rimuove il bonus dell'Amuleto del Tempio, ripristinando i valori precedenti.
+     * Rimuove un bonus da oggetto equipaggiato, ripristinando i valori precedenti.
+     *
+     * @param defBonus  punti difesa da rimuovere
+     * @param hpBonus   punti HP massimi da rimuovere
      */
-    public void removeAmuletBonus() {
-        this.defense = Math.max(0, this.defense - 4);
-        this.maxHp = Math.max(1, this.maxHp - 10);
+    public void removeEquipBonus(int defBonus, int hpBonus) {
+        this.defense = Math.max(0, this.defense - defBonus);
+        this.maxHp = Math.max(1, this.maxHp - hpBonus);
         this.currentHp = Math.min(currentHp, maxHp);
     }
 

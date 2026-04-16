@@ -14,7 +14,6 @@ import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -141,20 +140,33 @@ public class ExplorationScene {
     public void setOnSave(Runnable onSave) { this.onSave = onSave; }
 
     private void update() {
+        if (handleGameOverInput()) return;
+        if (gameManager.getState() != GameState.EXPLORING) return;
+
+        Player player = gameManager.getPlayer();
+        handleMovement(player);
+        applyPhysics(player);
+        if (checkTrapCollision(player)) return;
+        if (checkEnemyCollision(player)) return;
+        updateNavigationHints(player);
+        handleInteractions(player);
+    }
+
+    /** Gestisce il respawn quando il giocatore è in GAME_OVER e preme R. */
+    private boolean handleGameOverInput() {
         if (gameManager.getState() == GameState.GAME_OVER) {
             if (keysPressed.contains(KeyCode.R)) {
                 gameManager.respawn();
                 keysPressed.clear();
             }
-            return;
+            return true;
         }
+        return false;
+    }
 
-        if (gameManager.getState() != GameState.EXPLORING) return;
-
-        Player player = gameManager.getPlayer();
+    /** Aggiorna posizione orizzontale e direzione in base ai tasti premuti. */
+    private void handleMovement(Player player) {
         int px = player.getX();
-        int py = player.getY();
-
         if (keysPressed.contains(KeyCode.LEFT) || keysPressed.contains(KeyCode.A)) {
             px -= PLAYER_SPEED;
             player.setDirection(Direction.LEFT);
@@ -163,41 +175,57 @@ public class ExplorationScene {
             px += PLAYER_SPEED;
             player.setDirection(Direction.RIGHT);
         }
+        player.setX(Math.max(0, Math.min(W - PLAYER_W, px)));
+    }
 
+    /** Applica gravità, salto e vincolo al suolo. */
+    private void applyPhysics(Player player) {
         if ((keysPressed.contains(KeyCode.UP) || keysPressed.contains(KeyCode.W)
                 || keysPressed.contains(KeyCode.SPACE)) && onGround) {
             playerVY = JUMP_FORCE;
             onGround = false;
         }
-
         playerVY += GRAVITY;
-        py = player.getY() + playerVY;
-
+        int py = player.getY() + playerVY;
         if (py >= GROUND_Y) {
             py = GROUND_Y;
             playerVY = 0;
             onGround = true;
         }
+        player.moveTo(player.getX(), py);
+    }
 
-        px = Math.max(0, Math.min(W - PLAYER_W, px));
-        player.moveTo(px, py);
-
-        Room room = gameManager.getCurrentRoom();
-
+    /**
+     * Verifica la collisione con le trappole della stanza.
+     *
+     * @return {@code true} se il giocatore è morto per una trappola
+     */
+    private boolean checkTrapCollision(Player player) {
         int trapX = W / 4;
-        for (Trap trap : room.getTraps()) {
+        for (Trap trap : gameManager.getCurrentRoom().getTraps()) {
             trap.setTrapX(trapX);
             trap.setTrapY(GROUND_Y + PLAYER_H - 14);
             trap.trigger(player);
         }
         if (!player.isAlive()) {
             gameManager.setState(GameState.GAME_OVER);
-            return;
+            return true;
         }
+        return false;
+    }
 
+    /**
+     * Verifica la collisione con i nemici vivi della stanza.
+     * Se trovata, avvia il combattimento dopo un breve ritardo.
+     *
+     * @return {@code true} se è scattato un combattimento
+     */
+    private boolean checkEnemyCollision(Player player) {
         int enemyX = (int)(W * 0.55);
-        for (Enemy enemy : room.getEnemies()) {
-            if (enemy.isAlive() && collides(px, py, PLAYER_W, PLAYER_H, enemyX, GROUND_Y, 32, 40)) {
+        for (Enemy enemy : gameManager.getCurrentRoom().getEnemies()) {
+            if (enemy.isAlive() && collides(
+                    player.getX(), player.getY(), PLAYER_W, PLAYER_H,
+                    enemyX, GROUND_Y, 32, 40)) {
                 enemyWarningTimer = 60;
                 javafx.animation.PauseTransition pause =
                         new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1));
@@ -207,59 +235,73 @@ public class ExplorationScene {
                 });
                 pause.play();
                 gameManager.setState(GameState.COMBAT);
-                return;
+                return true;
             }
         }
+        return false;
+    }
 
+    /** Aggiorna i flag di prossimità a uscita e ingresso. */
+    private void updateNavigationHints(Player player) {
+        nearExit = player.getX() >= W - PLAYER_W - 80
+                && gameManager.getCurrentRoom().isCleared();
+        nearEntrance = player.getX() <= 50
+                && gameManager.getCurrentZone().getCurrentRoomIndex() > 0;
+    }
+
+    /** Gestisce la pressione di E per interagire con uscita, ingresso, oggetti e NPC. */
+    private void handleInteractions(Player player) {
         if (nearExit && keysPressed.contains(KeyCode.E)) {
             keysPressed.clear();
             nearExit = false;
             if (!gameManager.advanceRoom()) {
                 if (onZoneComplete != null) onZoneComplete.run();
             } else {
-                gameManager.getPlayer().moveTo(40, GROUND_Y);
+                player.moveTo(40, GROUND_Y);
                 dialogueText = "";
             }
             return;
         }
 
-        if (keysPressed.contains(KeyCode.E)) {
-            int itemX = W / 2;
-            int npcX = (int)(W * 0.65);
-            for (Item item : new ArrayList<>(room.getItems())) {
-                if (Math.abs(px - itemX) < INTERACT_RANGE) {
-                    gameManager.collectItem(item);
-                }
-            }
-            for (NPC npc : room.getNpcs()) {
-                if (Math.abs(px - npcX) < INTERACT_RANGE) {
-                    Item reward = npc.collectReward();
-                    if (reward != null) {
-                        boolean added = gameManager.getPlayer().getInventory().addItem(reward);
-                        if (added) {
-                            showDialogue(npc.getName() + ": \"" + npc.getDialogue() + "\"\n"
-                                    + "[Hai ricevuto: " + reward.getName() + "!]");
-                        }
-                    } else {
-                        showDialogue(npc.getName() + ": \"" + npc.getDialogue() + "\"");
-                    }
-                }
-            }
-            keysPressed.remove(KeyCode.E);
-        }
-
-        nearExit = px >= W - PLAYER_W - 80 && room.isCleared();
-
-        nearEntrance = px <= 50 && gameManager.getCurrentZone().getCurrentRoomIndex() > 0;
-
         if (nearEntrance && keysPressed.contains(KeyCode.E)) {
             keysPressed.clear();
             nearEntrance = false;
             gameManager.goBackRoom();
-            gameManager.getPlayer().moveTo(W - 80, GROUND_Y);
+            player.moveTo(W - 80, GROUND_Y);
             return;
         }
 
+        if (keysPressed.contains(KeyCode.E)) {
+            collectNearbyItems(player);
+            interactWithNearbyNPCs(player);
+            keysPressed.remove(KeyCode.E);
+        }
+    }
+
+    /** Raccoglie gli oggetti nella stanza se il giocatore è abbastanza vicino. */
+    private void collectNearbyItems(Player player) {
+        int itemX = W / 2;
+        for (Item item : new ArrayList<>(gameManager.getCurrentRoom().getItems())) {
+            if (Math.abs(player.getX() - itemX) < INTERACT_RANGE) {
+                gameManager.collectItem(item);
+            }
+        }
+    }
+
+    /** Avvia il dialogo con gli NPC vicini e consegna la ricompensa se disponibile. */
+    private void interactWithNearbyNPCs(Player player) {
+        int npcX = (int)(W * 0.65);
+        for (NPC npc : gameManager.getCurrentRoom().getNpcs()) {
+            if (Math.abs(player.getX() - npcX) < INTERACT_RANGE) {
+                Item reward = npc.collectReward();
+                if (reward != null && player.getInventory().addItem(reward)) {
+                    showDialogue(npc.getName() + ": \"" + npc.getDialogue() + "\"\n"
+                            + "[Hai ricevuto: " + reward.getName() + "!]");
+                } else {
+                    showDialogue(npc.getName() + ": \"" + npc.getDialogue() + "\"");
+                }
+            }
+        }
     }
 
     private boolean collides(int ax, int ay, int aw, int ah,
@@ -561,27 +603,20 @@ public class ExplorationScene {
         gc.setFill(Color.web("#EF9F27"));
         gc.fillText("pozioni:", spacing * 6, hudY);
         long potions = player.getInventory().getItems().stream()
-                .filter(i -> i.getType() == it.unicam.cs.mpgc.rpg118708.model.ItemType.POTION)
+                .filter(i -> i.getType() == ItemType.POTION)
                 .count();
         gc.setFill(Color.web("#888"));
         gc.fillText(String.valueOf(potions), spacing * 6 + 72, hudY);
 
         gc.setFill(Color.web("#EF9F27"));
         gc.fillText("oggetti:", spacing * 7, hudY);
-        List<Item> items = player.getInventory().getItems();
+        String nonPotions = player.getInventory().getItems().stream()
+                .filter(i -> i.getType() != ItemType.POTION)
+                .map(Item::getName)
+                .reduce((a, b) -> a + " " + b)
+                .orElse("vuoto");
         gc.setFill(Color.web("#888"));
-        if (items.isEmpty()) {
-            gc.fillText("vuoto", spacing * 7 + 68, hudY);
-        } else {
-            StringBuilder inv = new StringBuilder();
-            for (Item item : items) {
-                if (item.getType() != it.unicam.cs.mpgc.rpg118708.model.ItemType.POTION) {
-                    inv.append(item.getName()).append(" ");
-                }
-            }
-            gc.fillText(inv.toString().trim().isEmpty() ? "vuoto" : inv.toString().trim(),
-                    spacing * 7 + 68, hudY);
-        }
+        gc.fillText(nonPotions, spacing * 7 + 68, hudY);
     }
 
     private void renderOverlay(String title, String subtitle, String color) {

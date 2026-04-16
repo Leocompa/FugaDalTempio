@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -63,12 +64,15 @@ public class Room {
     /** Rimuove un oggetto dalla stanza (es. dopo che il giocatore lo raccoglie). */
     public void removeItem(Item item) { items.remove(item); }
 
+    /** Rimuove tutti gli oggetti dalla stanza (usato dalla persistenza al caricamento). */
+    public void clearItems() { items.clear(); }
+
     public String getId() { return id; }
     public String getName() { return name; }
-    public List<Enemy> getEnemies() { return enemies; }
-    public List<Trap> getTraps() { return traps; }
-    public List<Item> getItems() { return items; }
-    public List<NPC> getNpcs() { return npcs; }
+    public List<Enemy> getEnemies() { return Collections.unmodifiableList(enemies); }
+    public List<Trap> getTraps() { return Collections.unmodifiableList(traps); }
+    public List<Item> getItems() { return Collections.unmodifiableList(items); }
+    public List<NPC> getNpcs() { return Collections.unmodifiableList(npcs); }
     public boolean isPuzzleSolved() { return puzzleSolved; }
     public void setPuzzleSolved(boolean puzzleSolved) { this.puzzleSolved = puzzleSolved; }
     public boolean isLocked() { return locked; }

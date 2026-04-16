@@ -326,96 +326,76 @@ public class CombatScene {
         Enemy enemy = controller.getCombatManager().getEnemy();
         if (player == null || enemy == null) return;
 
+        refreshLabels(player, enemy);
+        refreshSpecialButton();
+        refreshHealButton(player);
+        refreshEquipButton(player);
+        refreshInventoryLabel(player);
+    }
+
+    private void refreshLabels(Player player, Enemy enemy) {
         Stats ps = player.getStats();
         Stats es = enemy.getStats();
-
         playerHpLabel.setText("HP: " + ps.getCurrentHp() + " / " + ps.getMaxHp());
         playerStatsLabel.setText("ATK: " + ps.getAttack() + "  DEF: " + ps.getDefense() + "  LV: " + ps.getLevel());
         enemyHpLabel.setText("HP: " + es.getCurrentHp() + " / " + es.getMaxHp());
         enemyStatsLabel.setText("ATK: " + es.getAttack() + "  DEF: " + es.getDefense());
         turnLabel.setText(controller.getCombatManager().isPlayerTurn() ? "turno del ladro" : "turno del nemico");
+    }
 
-        int specialLeft = controller.getCombatManager().getSpecialUsesLeft();
-        if (specialLeft <= 0) {
-            specialButton.setDisable(true);
-            specialButton.setStyle(String.format("""
-                -fx-background-color: %s;
-                -fx-text-fill: %s;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 13px;
-                -fx-background-radius: 4;
-                -fx-padding: 10px;
-                -fx-cursor: hand;
-                """, "#2a2a40", "#555"));
-        } else {
-            specialButton.setDisable(false);
-            specialButton.setStyle(String.format("""
-                -fx-background-color: %s;
-                -fx-text-fill: %s;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 13px;
-                -fx-background-radius: 4;
-                -fx-padding: 10px;
-                -fx-cursor: hand;
-                """, "#854F0B", "#EF9F27"));
-        }
+    private void refreshSpecialButton() {
+        boolean available = controller.getCombatManager().getSpecialUsesLeft() > 0;
+        applyButtonStyle(specialButton, available, "#854F0B", "#EF9F27");
+    }
 
+    private void refreshHealButton(Player player) {
         long potions = player.getInventory().getItems().stream()
-                .filter(i -> i.getType() == ItemType.POTION)
-                .count();
-        if (potions <= 0) {
-            healButton.setDisable(true);
-            healButton.setText("Usa pozione");
-            healButton.setStyle(String.format("""
-                -fx-background-color: %s;
-                -fx-text-fill: %s;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 13px;
-                -fx-background-radius: 4;
-                -fx-padding: 10px;
-                -fx-cursor: hand;
-                """, "#2a2a40", "#555"));
-        } else {
-            healButton.setDisable(false);
-            healButton.setText("Usa pozione (" + potions + ")");
-            healButton.setStyle(String.format("""
-                -fx-background-color: %s;
-                -fx-text-fill: %s;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 13px;
-                -fx-background-radius: 4;
-                -fx-padding: 10px;
-                -fx-cursor: hand;
-                """, "#0F6E56", "#5DCAA5"));
-        }
+                .filter(i -> i.getType() == ItemType.POTION).count();
+        healButton.setText(potions > 0 ? "Usa pozione (" + potions + ")" : "Usa pozione");
+        applyButtonStyle(healButton, potions > 0, "#0F6E56", "#5DCAA5");
+    }
 
-        StringBuilder invText = new StringBuilder();
-        for (Item item : player.getInventory().getItems()) {
-            invText.append(item.getName()).append("  ");
-        }
-        inventoryLabel.setText(invText.toString().trim().isEmpty() ? "vuoto" : invText.toString().trim());
+    private void refreshEquipButton(Player player) {
+        boolean hasUsable = player.getInventory().getItems().stream()
+                .anyMatch(i -> i.getType() == ItemType.AMULET
+                        || i.getType() == ItemType.SCROLL
+                        || i.getType() == ItemType.TALISMAN);
+        applyButtonStyle(equipButton, hasUsable, "#1e1e30", "#AFA9EC");
+    }
+
+    private void refreshInventoryLabel(Player player) {
+        String text = player.getInventory().getItems().stream()
+                .map(Item::getName)
+                .reduce((a, b) -> a + "  " + b)
+                .orElse("vuoto");
+        inventoryLabel.setText(text);
 
         Label equippedLabel = (Label) scene.lookup("#equipped-label");
         if (equippedLabel != null) {
             equippedLabel.setText(player.hasEquipped()
                     ? player.getEquippedItem().getName() : "nessuno");
         }
+    }
 
-        boolean hasUsable = player.getInventory().getItems().stream()
-                .anyMatch(i -> i.getType() == ItemType.AMULET
-                        || i.getType() == ItemType.SCROLL
-                        || i.getType() == ItemType.TALISMAN);
-        equipButton.setDisable(!hasUsable);
-        equipButton.setStyle(String.format("""
-            -fx-background-color: %s;
-            -fx-text-fill: %s;
-            -fx-font-family: Monospaced;
-            -fx-font-size: 13px;
-            -fx-background-radius: 4;
-            -fx-padding: 10px;
-            -fx-cursor: hand;
-            """, hasUsable ? "#1e1e30" : "#2a2a40",
-                hasUsable ? "#AFA9EC" : "#555"));
+    /**
+     * Applica lo stile a un pulsante di azione in base allo stato abilitato/disabilitato.
+     *
+     * @param btn       il pulsante da aggiornare
+     * @param enabled   {@code true} per abilitare il pulsante con i colori attivi
+     * @param activeBg  colore di sfondo quando abilitato
+     * @param activeFg  colore del testo quando abilitato
+     */
+    private void applyButtonStyle(Button btn, boolean enabled, String activeBg, String activeFg) {
+        btn.setDisable(!enabled);
+        btn.setStyle(String.format("""
+                -fx-background-color: %s;
+                -fx-text-fill: %s;
+                -fx-font-family: Monospaced;
+                -fx-font-size: 13px;
+                -fx-background-radius: 4;
+                -fx-padding: 10px;
+                -fx-cursor: hand;
+                """, enabled ? activeBg : "#2a2a40", enabled ? activeFg : "#555"));
     }
 
     private void drawPlayerSprite(GraphicsContext gc) {
