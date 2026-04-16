@@ -1,4 +1,4 @@
-package it.unicam.cs.mpgc.rpg118708.view;
+package it.unicam.cs.mpgc.rpg118708.view.menu;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

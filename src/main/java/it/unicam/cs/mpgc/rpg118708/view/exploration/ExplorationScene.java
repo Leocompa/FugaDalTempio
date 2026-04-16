@@ -1,4 +1,4 @@
-package it.unicam.cs.mpgc.rpg118708.view;
+package it.unicam.cs.mpgc.rpg118708.view.exploration;
 
 import it.unicam.cs.mpgc.rpg118708.engine.GameManager;
 import it.unicam.cs.mpgc.rpg118708.engine.GameState;
@@ -317,37 +317,10 @@ public class ExplorationScene {
         renderGround();
         renderRoom();
         renderPlayer();
-        if (enemyWarningTimer > 0) {
-            enemyWarningTimer--;
-            gc.setFill(Color.web("#D85A30", 0.85));
-            gc.fillRect(0, 0, W, H);
-            gc.setFill(Color.WHITE);
-            gc.setFont(new Font("Monospaced", 28));
-            gc.fillText("! NEMICO !", W / 2.0 - 80, H / 2.0);
-            gc.setFont(new Font("Monospaced", 14));
-            gc.fillText("preparati al combattimento...", W / 2.0 - 120, H / 2.0 + 36);
-        }
-        if (saveMessageTimer > 0) {
-            saveMessageTimer--;
-            gc.setFill(Color.web("#1D9E75", 0.90));
-            gc.fillRoundRect(W / 2.0 - 100, 50, 200, 36, 8, 8);
-            gc.setFill(Color.web("#E1F5EE"));
-            gc.setFont(new Font("Monospaced", 13));
-            gc.fillText(saveMessage, W / 2.0 - 60, 73);
-
-        }
+        renderEnemyWarning();
+        renderSaveMessage();
         renderHUD();
-
-        if (gameManager.getState() == GameState.DIALOGUE && !dialogueText.isEmpty()) {
-            gc.setFill(Color.web("#13131f", 0.92));
-            gc.fillRoundRect(60, H - 160, W - 120, 100, 8, 8);
-            gc.setStroke(Color.web("#534AB7"));
-            gc.setLineWidth(1);
-            gc.strokeRoundRect(60, H - 160, W - 120, 100, 8, 8);
-            gc.setFill(Color.web("#AFA9EC"));
-            gc.setFont(new Font("Monospaced", 12));
-            gc.fillText(dialogueText, 80, H - 120, W - 160);
-        }
+        renderDialogue();
 
         if (gameManager.getState() == GameState.GAME_OVER) {
             renderOverlay("GAME OVER", "premi R per riprovare", "#A32D2D");
@@ -355,7 +328,40 @@ public class ExplorationScene {
         if (gameManager.getState() == GameState.VICTORY) {
             renderOverlay("VITTORIA!", "hai completato il tempio!", "#1D9E75");
         }
+    }
 
+    private void renderEnemyWarning() {
+        if (enemyWarningTimer <= 0) return;
+        enemyWarningTimer--;
+        gc.setFill(Color.web("#D85A30", 0.85));
+        gc.fillRect(0, 0, W, H);
+        gc.setFill(Color.WHITE);
+        gc.setFont(new Font("Monospaced", 28));
+        gc.fillText("! NEMICO !", W / 2.0 - 80, H / 2.0);
+        gc.setFont(new Font("Monospaced", 14));
+        gc.fillText("preparati al combattimento...", W / 2.0 - 120, H / 2.0 + 36);
+    }
+
+    private void renderSaveMessage() {
+        if (saveMessageTimer <= 0) return;
+        saveMessageTimer--;
+        gc.setFill(Color.web("#1D9E75", 0.90));
+        gc.fillRoundRect(W / 2.0 - 100, 50, 200, 36, 8, 8);
+        gc.setFill(Color.web("#E1F5EE"));
+        gc.setFont(new Font("Monospaced", 13));
+        gc.fillText(saveMessage, W / 2.0 - 60, 73);
+    }
+
+    private void renderDialogue() {
+        if (gameManager.getState() != GameState.DIALOGUE || dialogueText.isEmpty()) return;
+        gc.setFill(Color.web("#13131f", 0.92));
+        gc.fillRoundRect(60, H - 160, W - 120, 100, 8, 8);
+        gc.setStroke(Color.web("#534AB7"));
+        gc.setLineWidth(1);
+        gc.strokeRoundRect(60, H - 160, W - 120, 100, 8, 8);
+        gc.setFill(Color.web("#AFA9EC"));
+        gc.setFont(new Font("Monospaced", 12));
+        gc.fillText(dialogueText, 80, H - 120, W - 160);
     }
 
     private void renderGrid() {
@@ -377,16 +383,16 @@ public class ExplorationScene {
     }
 
     private void renderRoom() {
-        Player player = gameManager.getPlayer();
-        int px = player.getX();
-        Room room = gameManager.getCurrentRoom();
+        renderTraps();
+        renderItems();
+        renderNpcs();
+        renderEnemies();
+        renderDoors();
+    }
 
+    private void renderTraps() {
         int trapX = W / 4;
-        int itemX = W / 2;
-        int npcX = (int)(W * 0.65);
-        int enemyX = (int)(W * 0.55);
-
-        for (Trap trap : room.getTraps()) {
+        for (Trap trap : gameManager.getCurrentRoom().getTraps()) {
             gc.setFill(trap.isActive() ? Color.web("#EF9F27") : Color.web("#BA7517"));
             gc.fillRect(trapX, GROUND_Y + PLAYER_H - 14, 32, 14);
             gc.setFill(Color.web("#fff"));
@@ -399,8 +405,12 @@ public class ExplorationScene {
                             GROUND_Y + PLAYER_H - 14},
                     5);
         }
+    }
 
-        for (Item item : room.getItems()) {
+    private void renderItems() {
+        int itemX = W / 2;
+        int px = gameManager.getPlayer().getX();
+        for (Item item : gameManager.getCurrentRoom().getItems()) {
             double bob = Math.sin(frame * 0.05) * 3;
             gc.setFill(Color.web("#EF9F27"));
             gc.fillOval(itemX, GROUND_Y + PLAYER_H - 40 + bob, 16, 16);
@@ -412,8 +422,12 @@ public class ExplorationScene {
                 gc.fillText("[E] raccogli", itemX - 10, GROUND_Y + PLAYER_H - 50 + bob);
             }
         }
+    }
 
-        for (NPC npc : room.getNpcs()) {
+    private void renderNpcs() {
+        int npcX = (int)(W * 0.65);
+        int px = gameManager.getPlayer().getX();
+        for (NPC npc : gameManager.getCurrentRoom().getNpcs()) {
             gc.setFill(Color.web("#1D9E75"));
             gc.fillRoundRect(npcX, GROUND_Y + PLAYER_H - 40, 20, 32, 4, 4);
             gc.setFill(Color.web("#E1F5EE"));
@@ -424,8 +438,11 @@ public class ExplorationScene {
                 gc.fillText("[E] parla", npcX - 4, GROUND_Y + PLAYER_H - 56);
             }
         }
+    }
 
-        for (Enemy enemy : room.getEnemies()) {
+    private void renderEnemies() {
+        int enemyX = (int)(W * 0.55);
+        for (Enemy enemy : gameManager.getCurrentRoom().getEnemies()) {
             if (!enemy.isAlive()) continue;
             gc.setFill(Color.web("#D85A30"));
             gc.fillRoundRect(enemyX, GROUND_Y + PLAYER_H - 40, 28, 40, 4, 4);
@@ -433,7 +450,9 @@ public class ExplorationScene {
             gc.fillOval(enemyX+4, GROUND_Y + PLAYER_H - 36, 8, 8);
             gc.fillOval(enemyX+16, GROUND_Y + PLAYER_H - 36, 8, 8);
         }
+    }
 
+    private void renderDoors() {
         gc.setFill(Color.web("#534AB7"));
         gc.fillRoundRect(W - 60, GROUND_Y + PLAYER_H - 60, 28, 60, 4, 4);
         gc.setFill(Color.web("#AFA9EC"));
@@ -494,47 +513,48 @@ public class ExplorationScene {
     }
 
     private void renderHUD() {
+        renderTopHud();
+        renderBottomHud();
+    }
+
+    private void renderTopHud() {
         Player player = gameManager.getPlayer();
         Stats stats = player.getStats();
-        Room room = gameManager.getCurrentRoom();
         Zone zone = gameManager.getCurrentZone();
-        int currentRoom = zone.getCurrentRoomIndex() + 1;
-        int totalRooms = zone.getRooms().size();
 
-        // HUD superiore
         gc.setFill(Color.web("#13131f", 0.92));
         gc.fillRect(0, 0, W, 48);
         gc.setStroke(Color.web("#2a2a40"));
         gc.setLineWidth(0.5);
         gc.strokeLine(0, 48, W, 48);
 
-        // nome giocatore — sinistra
         gc.setFont(new Font("Monospaced", 13));
         gc.setFill(Color.web("#AFA9EC"));
         gc.fillText(player.getName(), 16, 18);
 
-        // barra HP
-        int barX = 16;
-        int barY = 24;
-        int barW = 140;
-        int barH = 9;
+        renderHpBar(stats);
+        renderXpBar(stats);
+        renderZoneTitle(zone);
+        renderRoomInfo(zone);
+    }
+
+    private void renderHpBar(Stats stats) {
+        int barX = 16, barY = 24, barW = 140, barH = 9;
         gc.setFill(Color.web("#2a2a40"));
         gc.fillRoundRect(barX, barY, barW, barH, 4, 4);
         double hpRatio = (double) stats.getCurrentHp() / stats.getMaxHp();
         Color hpColor = hpRatio > 0.5 ? Color.web("#1D9E75")
                 : hpRatio > 0.25 ? Color.web("#EF9F27")
-                  : Color.web("#E24B4A");
+                : Color.web("#E24B4A");
         gc.setFill(hpColor);
         gc.fillRoundRect(barX, barY, barW * hpRatio, barH, 4, 4);
         gc.setFont(new Font("Monospaced", 10));
         gc.setFill(Color.web("#888"));
         gc.fillText("HP " + stats.getCurrentHp() + "/" + stats.getMaxHp(), barX + barW + 6, barY + 8);
+    }
 
-        // barra XP
-        int xpBarX = 16;
-        int xpBarY = 36;
-        int xpBarW = 140;
-        int xpBarH = 7;
+    private void renderXpBar(Stats stats) {
+        int xpBarX = 16, xpBarY = 36, xpBarW = 140, xpBarH = 7;
         gc.setFill(Color.web("#2a2a40"));
         gc.fillRoundRect(xpBarX, xpBarY, xpBarW, xpBarH, 4, 4);
         double xpRatio = (double) stats.getCurrentXp() / stats.getXpToNextLevel();
@@ -543,23 +563,29 @@ public class ExplorationScene {
         gc.setFont(new Font("Monospaced", 10));
         gc.setFill(Color.web("#888"));
         gc.fillText("XP  LV." + stats.getLevel(), xpBarX + xpBarW + 6, xpBarY + 6);
+    }
 
-        // titolo zona — centro
-        gc.setFont(new Font("Monospaced", 13));
-        gc.setFill(Color.web("#EF9F27"));
+    private void renderZoneTitle(Zone zone) {
         String zoneName = zone.getName();
         double titleW = zoneName.length() * 8.5;
+        gc.setFont(new Font("Monospaced", 13));
+        gc.setFill(Color.web("#EF9F27"));
         gc.fillText(zoneName, W / 2.0 - titleW / 2, 30);
+    }
 
-        // stanza — destra
+    private void renderRoomInfo(Zone zone) {
+        Room room = gameManager.getCurrentRoom();
+        int currentRoom = zone.getCurrentRoomIndex() + 1;
+        int totalRooms = zone.getRooms().size();
         gc.setFont(new Font("Monospaced", 13));
         gc.setFill(Color.web("#AFA9EC"));
         gc.fillText("Stanza " + currentRoom + " / " + totalRooms, W - 220, 18);
         gc.setFont(new Font("Monospaced", 11));
         gc.setFill(Color.web("#666"));
         gc.fillText(room.getName(), W - 220, 36);
+    }
 
-        // HUD inferiore
+    private void renderBottomHud() {
         gc.setFill(Color.web("#13131f", 0.92));
         gc.fillRect(0, H - 44, W, 44);
         gc.setStroke(Color.web("#2a2a40"));
@@ -570,51 +596,40 @@ public class ExplorationScene {
         int spacing = W / 8;
         gc.setFont(new Font("Monospaced", 12));
 
-        gc.setFill(Color.web("#7F77DD"));
-        gc.fillText("← →", 12, hudY);
-        gc.setFill(Color.web("#888"));
-        gc.fillText("muoviti", 50, hudY);
+        renderHudKey("← →", "muoviti",    12,           hudY, 38);
+        renderHudKey("↑",   "salta",      spacing,      hudY, 18);
+        renderHudKey("[E]", "interagisci", spacing * 2, hudY, 34);
+        renderHudKey("[R]", "riprova",    spacing * 3,  hudY, 34);
+        renderHudKey("[CTRL+S]", "salva", spacing * 4,  hudY, 78);
+        renderHudKey("[ESC]", "menu",     spacing * 5,  hudY, 50);
 
-        gc.setFill(Color.web("#7F77DD"));
-        gc.fillText("↑", spacing, hudY);
-        gc.setFill(Color.web("#888"));
-        gc.fillText("salta", spacing + 18, hudY);
+        renderInventorySummary(hudY, spacing);
+    }
 
+    private void renderHudKey(String key, String label, int x, int y, int labelOffset) {
         gc.setFill(Color.web("#7F77DD"));
-        gc.fillText("[E]", spacing * 2, hudY);
+        gc.fillText(key, x, y);
         gc.setFill(Color.web("#888"));
-        gc.fillText("interagisci", spacing * 2 + 34, hudY);
+        gc.fillText(label, x + labelOffset, y);
+    }
 
-        gc.setFill(Color.web("#7F77DD"));
-        gc.fillText("[R]", spacing * 3, hudY);
-        gc.setFill(Color.web("#888"));
-        gc.fillText("riprova", spacing * 3 + 34, hudY);
-
-        gc.setFill(Color.web("#7F77DD"));
-        gc.fillText("[CTRL+S]", spacing * 4, hudY);
-        gc.setFill(Color.web("#888"));
-        gc.fillText("salva", spacing * 4 + 78, hudY);
-
-        gc.setFill(Color.web("#7F77DD"));
-        gc.fillText("[ESC]", spacing * 5, hudY);
-        gc.setFill(Color.web("#888"));
-        gc.fillText("menu", spacing * 5 + 50, hudY);
-
-        gc.setFill(Color.web("#EF9F27"));
-        gc.fillText("pozioni:", spacing * 6, hudY);
+    private void renderInventorySummary(int hudY, int spacing) {
+        Player player = gameManager.getPlayer();
         long potions = player.getInventory().getItems().stream()
                 .filter(i -> i.getType() == ItemType.POTION)
                 .count();
+        gc.setFill(Color.web("#EF9F27"));
+        gc.fillText("pozioni:", spacing * 6, hudY);
         gc.setFill(Color.web("#888"));
         gc.fillText(String.valueOf(potions), spacing * 6 + 72, hudY);
 
-        gc.setFill(Color.web("#EF9F27"));
-        gc.fillText("oggetti:", spacing * 7, hudY);
         String nonPotions = player.getInventory().getItems().stream()
                 .filter(i -> i.getType() != ItemType.POTION)
                 .map(Item::getName)
                 .reduce((a, b) -> a + " " + b)
                 .orElse("vuoto");
+        gc.setFill(Color.web("#EF9F27"));
+        gc.fillText("oggetti:", spacing * 7, hudY);
         gc.setFill(Color.web("#888"));
         gc.fillText(nonPotions, spacing * 7 + 68, hudY);
     }

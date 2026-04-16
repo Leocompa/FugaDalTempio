@@ -57,67 +57,82 @@ public class WorldBuilder implements WorldFactory {
     }
 
     private Room buildRoom(String id, String name, int roomNumber) {
+        return switch (roomNumber) {
+            case 1 -> buildTutorialRoom(id, name);
+            case 2 -> buildSoldierRoom(id, name);
+            case 3 -> buildArcherRoom(id, name);
+            case 4 -> buildCaptainRoom(id, name);
+            case 5 -> buildBossRoom(id, name);
+            default -> new Room(id, name);
+        };
+    }
+
+    private Room buildTutorialRoom(String id, String name) {
         Room room = new Room(id, name);
+        room.addNpc(new NPC("npc1", "Ombra del Sacerdote",
+                "Straniero... questo tempio custodisce segreti antichi. Prendi questa pozione, ne avrai bisogno.",
+                new Item("potion_npc1", "Pozione del Sacerdote", ItemType.POTION, 20)));
+        room.addItem(new Item("potion1", "Pozione", ItemType.POTION, 15));
+        return room;
+    }
 
-        if (roomNumber == 1) {
-            room.addNpc(new NPC("npc1", "Ombra del Sacerdote",
-                    "Straniero... questo tempio custodisce segreti antichi. Prendi questa pozione, ne avrai bisogno.",
-                    new Item("potion_npc1", "Pozione del Sacerdote", ItemType.POTION, 20)));
-            room.addItem(new Item("potion1", "Pozione", ItemType.POTION, 15));
-        }
+    private Room buildSoldierRoom(String id, String name) {
+        Room room = new Room(id, name);
+        room.addTrap(new Trap("trap1", 6));
+        room.addEnemy(new Enemy("e_" + id, "Soldato Persiano",
+                new Stats(25, 7, 2, 1), 60,
+                List.of(
+                        new CombatAction("attack",  "Attacca",  CombatActionType.ATTACK,  0),
+                        new CombatAction("special", "Fendente", CombatActionType.SPECIAL, 3)
+                )));
+        return room;
+    }
 
-        if (roomNumber == 2) {
-            room.addTrap(new Trap("trap1", 6));
-            room.addEnemy(new Enemy("e_" + id, "Soldato Persiano",
-                    new Stats(25, 7, 2, 1), 60,
-                    List.of(
-                            new CombatAction("attack",  "Attacca",  CombatActionType.ATTACK,  0),
-                            new CombatAction("special", "Fendente", CombatActionType.SPECIAL, 3)
-                    )));
-        }
+    private Room buildArcherRoom(String id, String name) {
+        Room room = new Room(id, name);
+        room.addTrap(new Trap("trap2", 8));
+        room.addItem(new Item("potion2", "Pozione", ItemType.POTION, 15));
+        room.addEnemy(new Enemy("e_" + id, "Arciere Persiano",
+                new Stats(32, 9, 3, 2), 90,
+                List.of(
+                        new CombatAction("attack",  "Freccia",       CombatActionType.ATTACK,  0),
+                        new CombatAction("special", "Salva Freccia", CombatActionType.SPECIAL, 4),
+                        new CombatAction("heal",    "Benda",         CombatActionType.HEAL,    8)
+                )));
+        return room;
+    }
 
-        if (roomNumber == 3) {
-            room.addTrap(new Trap("trap2", 8));
-            room.addItem(new Item("potion2", "Pozione", ItemType.POTION, 15));
-            room.addEnemy(new Enemy("e_" + id, "Arciere Persiano",
-                    new Stats(32, 9, 3, 2), 90,
-                    List.of(
-                            new CombatAction("attack",  "Freccia",       CombatActionType.ATTACK,  0),
-                            new CombatAction("special", "Salva Freccia", CombatActionType.SPECIAL, 4),
-                            new CombatAction("heal",    "Benda",         CombatActionType.HEAL,    8)
-                    )));
-        }
+    private Room buildCaptainRoom(String id, String name) {
+        Room room = new Room(id, name);
+        room.addTrap(new Trap("trap3", 10));
+        room.addNpc(new NPC("npc2", "Ombra del Guerriero",
+                "Il boss ti aspetta. Prendi questa Pergamena di Fuoco — aumenterà il tuo attacco per un turno.",
+                new Item("scroll_npc2", "Pergamena di Fuoco", ItemType.SCROLL, 8)));
+        room.addEnemy(new Enemy("e_" + id, "Capitano della Guardia",
+                new Stats(45, 11, 4, 3), 130,
+                List.of(
+                        new CombatAction("attack",  "Colpo Pesante", CombatActionType.ATTACK,  0),
+                        new CombatAction("special", "Tempesta",      CombatActionType.SPECIAL, 6),
+                        new CombatAction("heal",    "Recupera",      CombatActionType.HEAL,    12)
+                )));
+        return room;
+    }
 
-        if (roomNumber == 4) {
-            room.addTrap(new Trap("trap3", 10));
-            room.addNpc(new NPC("npc2", "Ombra del Guerriero",
-                    "Il boss ti aspetta. Prendi questa Pergamena di Fuoco — aumenterà il tuo attacco per un turno.",
-                    new Item("scroll_npc2", "Pergamena di Fuoco", ItemType.SCROLL, 8)));
-            room.addEnemy(new Enemy("e_" + id, "Capitano della Guardia",
-                    new Stats(45, 11, 4, 3), 130,
-                    List.of(
-                            new CombatAction("attack",  "Colpo Pesante", CombatActionType.ATTACK,  0),
-                            new CombatAction("special", "Tempesta",      CombatActionType.SPECIAL, 6),
-                            new CombatAction("heal",    "Recupera",      CombatActionType.HEAL,    12)
-                    )));
-        }
-
-        if (roomNumber == 5) {
-            room.addItem(new Item("amulet1", "Amuleto del Tempio", ItemType.AMULET, 0));
-            room.addNpc(new NPC("npc3", "Voce del Tempio",
-                    "Hai raggiunto il cuore del tempio... il Dio Serpente non ti lascerà passare. Prendi questo Talismano.",
-                    new Item("talisman_npc3", "Talismano della Luna", ItemType.TALISMAN, 5)));
-            room.addEnemy(new Boss(
-                    "boss_finale", "Dio Serpente Apep", "Signore del Caos",
-                    new Stats(80, 14, 6, 6), 300,
-                    List.of(
-                            new CombatAction("attack",  "Morso del Caos",  CombatActionType.ATTACK,  0),
-                            new CombatAction("special", "Maledizione",     CombatActionType.SPECIAL, 6),
-                            new CombatAction("heal",    "Rigenerazione",   CombatActionType.HEAL,    15)
-                    )
-            ));
-        }
-
+    private Room buildBossRoom(String id, String name) {
+        Room room = new Room(id, name);
+        room.addItem(new Item("amulet1", "Amuleto del Tempio", ItemType.AMULET, 0));
+        room.addNpc(new NPC("npc3", "Voce del Tempio",
+                "Hai raggiunto il cuore del tempio... il Dio Serpente non ti lascerà passare. Prendi questo Talismano.",
+                new Item("talisman_npc3", "Talismano della Luna", ItemType.TALISMAN, 5)));
+        room.addEnemy(new Boss(
+                "boss_finale", "Dio Serpente Apep", "Signore del Caos",
+                new Stats(80, 14, 6, 6), 300,
+                List.of(
+                        new CombatAction("attack",  "Morso del Caos",  CombatActionType.ATTACK,  0),
+                        new CombatAction("special", "Maledizione",     CombatActionType.SPECIAL, 6),
+                        new CombatAction("heal",    "Rigenerazione",   CombatActionType.HEAL,    15)
+                )
+        ));
         return room;
     }
 

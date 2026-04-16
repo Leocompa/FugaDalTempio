@@ -1,4 +1,4 @@
-package it.unicam.cs.mpgc.rpg118708.view;
+package it.unicam.cs.mpgc.rpg118708.view.combat;
 
 import it.unicam.cs.mpgc.rpg118708.controller.CombatController;
 import it.unicam.cs.mpgc.rpg118708.engine.CombatResult;

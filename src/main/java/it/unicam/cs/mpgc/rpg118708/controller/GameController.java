@@ -4,11 +4,11 @@ import it.unicam.cs.mpgc.rpg118708.engine.GameManager;
 import it.unicam.cs.mpgc.rpg118708.engine.GameState;
 import it.unicam.cs.mpgc.rpg118708.model.*;
 import it.unicam.cs.mpgc.rpg118708.persistence.GamePersistence;
-import it.unicam.cs.mpgc.rpg118708.view.CombatScene;
-import it.unicam.cs.mpgc.rpg118708.view.ExplorationScene;
-import it.unicam.cs.mpgc.rpg118708.view.SaveSlotScene;
-import it.unicam.cs.mpgc.rpg118708.view.StartScene;
-import it.unicam.cs.mpgc.rpg118708.view.VictoryScene;
+import it.unicam.cs.mpgc.rpg118708.view.combat.CombatScene;
+import it.unicam.cs.mpgc.rpg118708.view.exploration.ExplorationScene;
+import it.unicam.cs.mpgc.rpg118708.view.menu.SaveSlotScene;
+import it.unicam.cs.mpgc.rpg118708.view.menu.StartScene;
+import it.unicam.cs.mpgc.rpg118708.view.menu.VictoryScene;
 import javafx.stage.Stage;
 
 /**
@@ -35,6 +35,7 @@ public class GameController {
     private StartScene startScene;
     private ExplorationScene explorationScene;
     private CombatScene combatScene;
+    private CombatController combatController;
 
     /**
      * Crea il controller iniettando le dipendenze necessarie.
@@ -83,70 +84,71 @@ public class GameController {
 
     private void startExploration() {
         if (explorationScene != null) explorationScene.stop();
-
         explorationScene = new ExplorationScene(gameManager);
-
-        explorationScene.setOnEnterCombat(() -> {
-            explorationScene.stop();
-            CombatController combatController = new CombatController(gameManager.getCombatManager());
-            combatScene = new CombatScene(combatController);
-            combatScene.setStage(stage);
-            combatScene.refresh();
-
-            combatController.setOnVictory(() -> {
-                gameManager.endCombat();
-                gameManager.registerEnemyDefeated();
-                boolean lastRoom = gameManager.getCurrentZone().getCurrentRoomIndex() == 4;
-                boolean allEnemiesDead = gameManager.getCurrentRoom().getEnemies()
-                        .stream().noneMatch(Enemy::isAlive);
-                if (lastRoom && allEnemiesDead) {
-                    gameManager.setState(GameState.VICTORY);
-                    showVictoryScreen();
-                } else {
-                    startExploration();
-                }
-            });
-
-            combatController.setOnDefeat(() -> {
-                gameManager = new GameManager(
-                        new Player(gameManager.getPlayer().getName()),
-                        worldFactory.buildWorld());
-                startExploration();
-            });
-
-            combatController.setOnLoad(() -> {
-                if (persistence.saveExists()) {
-                    showLoadSlotScreen(() -> stage.setScene(combatScene.getScene()));
-                } else {
-                    gameManager.respawn();
-                    startExploration();
-                }
-            });
-
-            combatController.setOnFlee(() -> {
-                gameManager.endCombat();
-                startExploration();
-            });
-
-            stage.setScene(combatScene.getScene());
-        });
-
-        explorationScene.setOnZoneComplete(() -> {
-            explorationScene.stop();
-            gameManager.advanceZone();
-            persistence.save(gameManager, currentSaveSlot);
-            startExploration();
-        });
-
-        explorationScene.setOnSave(this::showSaveSlotScreen);
-
-        explorationScene.setOnExit(() -> {
-            explorationScene.stop();
-            start();
-        });
-
+        setupExplorationCallbacks();
         stage.setScene(explorationScene.getScene());
         explorationScene.start();
+    }
+
+    private void setupExplorationCallbacks() {
+        explorationScene.setOnEnterCombat(this::enterCombat);
+        explorationScene.setOnZoneComplete(this::handleZoneComplete);
+        explorationScene.setOnSave(this::showSaveSlotScreen);
+        explorationScene.setOnExit(() -> { explorationScene.stop(); start(); });
+    }
+
+    private void enterCombat() {
+        explorationScene.stop();
+        combatController = new CombatController(gameManager.getCombatManager());
+        combatScene = new CombatScene(combatController);
+        combatScene.setStage(stage);
+        combatScene.refresh();
+        setupCombatCallbacks();
+        stage.setScene(combatScene.getScene());
+    }
+
+    private void setupCombatCallbacks() {
+        combatController.setOnVictory(this::handleVictory);
+        combatController.setOnDefeat(this::handleDefeat);
+        combatController.setOnLoad(this::handleCombatLoad);
+        combatController.setOnFlee(() -> { gameManager.endCombat(); startExploration(); });
+    }
+
+    private void handleVictory() {
+        gameManager.endCombat();
+        gameManager.registerEnemyDefeated();
+        boolean lastRoom = gameManager.getCurrentZone().getCurrentRoomIndex() == 4;
+        boolean allEnemiesDead = gameManager.getCurrentRoom().getEnemies()
+                .stream().noneMatch(Enemy::isAlive);
+        if (lastRoom && allEnemiesDead) {
+            gameManager.setState(GameState.VICTORY);
+            showVictoryScreen();
+        } else {
+            startExploration();
+        }
+    }
+
+    private void handleDefeat() {
+        gameManager = new GameManager(
+                new Player(gameManager.getPlayer().getName()),
+                worldFactory.buildWorld());
+        startExploration();
+    }
+
+    private void handleCombatLoad() {
+        if (persistence.saveExists()) {
+            showLoadSlotScreen(() -> stage.setScene(combatScene.getScene()));
+        } else {
+            gameManager.respawn();
+            startExploration();
+        }
+    }
+
+    private void handleZoneComplete() {
+        explorationScene.stop();
+        gameManager.advanceZone();
+        persistence.save(gameManager, currentSaveSlot);
+        startExploration();
     }
 
     // -------------------------------------------------------------------------

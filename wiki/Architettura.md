@@ -10,6 +10,9 @@ it.unicam.cs.mpgc.rpg118708
 ├── model/
 ├── persistence/
 └── view/
+    ├── combat/
+    ├── exploration/
+    └── menu/
 ```
 
 La separazione in package rispecchia la separazione delle responsabilità:
@@ -20,7 +23,9 @@ La separazione in package rispecchia la separazione delle responsabilità:
 | `engine` | Logica di gioco (combattimento, stato partita) senza dipendenze dalla UI |
 | `controller` | Coordinamento tra engine e view; costruzione del mondo |
 | `persistence` | Salvataggio e caricamento dello stato di gioco |
-| `view` | Rendering e gestione dell'input (JavaFX) |
+| `view/combat` | Scena del combattimento a turni |
+| `view/exploration` | Scena di esplorazione con game loop |
+| `view/menu` | Schermate di menu, salvataggio e vittoria |
 
 ---
 
@@ -157,17 +162,25 @@ Oggetto immutabile con le informazioni sintetiche di uno slot (nome, livello, st
 
 ### Package `view`
 
-#### `ExplorationScene`
-Scena di esplorazione con game loop (`AnimationTimer`). Gestisce input da tastiera, fisica del personaggio, rendering del mondo su `Canvas`, collisioni con trappole e nemici, interazioni con oggetti e NPC. Notifica il `GameController` tramite callback.
+Il package `view` è suddiviso in tre sotto-package in base alla responsabilità della scena.
 
-#### `CombatScene`
-Scena del combattimento a turni. Costruisce l'interfaccia (pulsanti, barre HP, log). Delega tutta la logica a `CombatController`.
+#### `view.exploration`
 
-#### `StartScene`
+##### `ExplorationScene`
+Scena di esplorazione con game loop (`AnimationTimer`). Gestisce input da tastiera, fisica del personaggio, rendering del mondo su `Canvas`, collisioni con trappole e nemici, interazioni con oggetti e NPC. Notifica il `GameController` tramite callback. Il rendering è suddiviso in metodi privati per responsabilità: `renderTraps()`, `renderItems()`, `renderNpcs()`, `renderEnemies()`, `renderDoors()`, `renderTopHud()`, `renderBottomHud()` e altri.
+
+#### `view.combat`
+
+##### `CombatScene`
+Scena del combattimento a turni. Costruisce l'interfaccia (pulsanti, barre HP, log). Delega tutta la logica a `CombatController`. Il metodo `refresh()` aggiorna le singole sezioni tramite metodi privati dedicati: `refreshLabels()`, `refreshSpecialButton()`, `refreshHealButton()`, `refreshEquipButton()`, `refreshInventoryLabel()`.
+
+#### `view.menu`
+
+##### `StartScene`
 Schermata iniziale con campo nome, pulsanti nuova partita, carica e esci.
 
-#### `SaveSlotScene`
+##### `SaveSlotScene`
 Schermata di selezione slot riutilizzabile in modalità salvataggio e caricamento. Dipende dall'interfaccia `GamePersistence`.
 
-#### `VictoryScene`
+##### `VictoryScene`
 Schermata di vittoria finale. Riceve i dati del giocatore e una callback per tornare al menu. Non contiene logica di gioco.
