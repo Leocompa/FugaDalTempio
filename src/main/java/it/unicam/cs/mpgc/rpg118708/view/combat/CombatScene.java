@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.view.combat;
 
 import it.unicam.cs.mpgc.rpg118708.controller.CombatController;
+import it.unicam.cs.mpgc.rpg118708.engine.CombatManager;
 import it.unicam.cs.mpgc.rpg118708.engine.CombatResult;
 import it.unicam.cs.mpgc.rpg118708.model.*;
 import javafx.geometry.Insets;
@@ -252,14 +253,24 @@ public class CombatScene {
                 new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.2));
         pause.setOnFinished(e -> {
             int playerHpBeforeEnemy = player.getStats().getCurrentHp();
+            int enemyHpBefore = enemy.getStats().getCurrentHp();
             controller.handleEnemyTurn();
             int enemyDamage = playerHpBeforeEnemy - player.getStats().getCurrentHp();
+            int enemyHealed  = enemy.getStats().getCurrentHp() - enemyHpBefore;
 
             CombatResult afterResult = controller.getCombatManager().getLastResult();
+            String actionLabel = controller.getCombatManager().getLastEnemyAction() != null
+                    ? controller.getCombatManager().getLastEnemyAction().getLabel()
+                    : "Attacca";
 
-            if (enemyDamage > 0) {
-                String actionLabel = enemy.getAvailableActions()
-                        .get((int)(Math.random() * enemy.getAvailableActions().size())).getLabel();
+            if (enemyHealed > 0) {
+                int usesLeft = controller.getCombatManager().getEnemyHealUsesLeft();
+                String usesNote = usesLeft > 0
+                        ? " (" + usesLeft + "/" + CombatManager.MAX_ENEMY_HEAL_USES + " cure rimaste)"
+                        : " (cure esaurite)";
+                logLabel.setText(enemy.getName() + " usa " + actionLabel
+                        + " — recupera " + enemyHealed + " HP!" + usesNote);
+            } else if (enemyDamage > 0) {
                 logLabel.setText(enemy.getName() + " usa " + actionLabel
                         + " — subisci " + enemyDamage + " danni! (HP: "
                         + player.getStats().getCurrentHp() + "/" + player.getStats().getMaxHp() + ")");
@@ -318,6 +329,10 @@ public class CombatScene {
         fleeButton.setDisable(disabled);
     }
 
+    /**
+     * Aggiorna l'intera UI della scena di combattimento con lo stato corrente
+     * di giocatore e nemico (etichette HP/ATK, barre HP, stato pulsanti).
+     */
     public void refresh() {
         Player player = controller.getCombatManager().getPlayer();
         Enemy enemy = controller.getCombatManager().getEnemy();

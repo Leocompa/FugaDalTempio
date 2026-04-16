@@ -45,7 +45,7 @@ public class WorldBuilder implements WorldFactory {
     }
 
     private Zone buildZoneOne() {
-        Zone zone = new Zone("zone1", "Tempio di Persepoli", null);
+        Zone zone = new Zone("zone1", "Tempio di Persepoli");
 
         zone.addRoom(buildRoom("r1", "Corridoio d'Ingresso", 1));
         zone.addRoom(buildRoom("r2", "Sala delle Lame",      2));

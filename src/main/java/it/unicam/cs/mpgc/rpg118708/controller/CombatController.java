@@ -6,7 +6,7 @@ import it.unicam.cs.mpgc.rpg118708.model.CombatAction;
 import it.unicam.cs.mpgc.rpg118708.model.CombatActionType;
 
 /**
- * Controller del combattimento: fa da ponte tra la UI ({@link it.unicam.cs.mpgc.rpg118708.view.CombatScene})
+ * Controller del combattimento: fa da ponte tra la UI ({@link it.unicam.cs.mpgc.rpg118708.view.combat.CombatScene})
  * e la logica di combattimento ({@link CombatManager}).
  *
  * <p>Traduce i comandi dell'utente (tipo di azione) in {@link CombatAction}

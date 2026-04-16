@@ -7,7 +7,7 @@ import java.util.List;
  * Rappresenta una zona del tempio, composta da una sequenza ordinata di stanze.
  *
  * <p>Gestisce la progressione interna tra le stanze tramite un indice corrente.
- * La zona tiene traccia del proprio stato di completamento e del boss associato.
+ * La zona tiene traccia del proprio stato di completamento.
  * La navigazione avanti/indietro tra le stanze avviene tramite {@link #advanceRoom()}
  * e {@link #goBack()}.</p>
  */
@@ -16,7 +16,6 @@ public class Zone {
     private final String id;
     private final String name;
     private final List<Room> rooms;
-    private final Boss boss;
     private boolean completed;
     private int currentRoomIndex;
 
@@ -25,12 +24,10 @@ public class Zone {
      *
      * @param id   identificatore univoco
      * @param name nome visualizzato
-     * @param boss il boss finale della zona (può essere {@code null} se non previsto)
      */
-    public Zone(String id, String name, Boss boss) {
+    public Zone(String id, String name) {
         this.id = id;
         this.name = name;
-        this.boss = boss;
         this.rooms = new ArrayList<>();
         this.completed = false;
         this.currentRoomIndex = 0;
@@ -92,7 +89,6 @@ public class Zone {
     public String getId() { return id; }
     public String getName() { return name; }
     public List<Room> getRooms() { return rooms; }
-    public Boss getBoss() { return boss; }
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }
     public int getCurrentRoomIndex() { return currentRoomIndex; }

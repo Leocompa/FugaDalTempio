@@ -75,5 +75,4 @@ public class Enemy {
     public Stats getStats() { return stats; }
     public int getXpReward() { return xpReward; }
     public List<CombatAction> getAvailableActions() { return availableActions; }
-    public void setStats(Stats stats) { this.stats = stats; }
 }

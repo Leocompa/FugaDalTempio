@@ -25,6 +25,8 @@ public class CombatManager {
     private static final int AMULET_DEF_BONUS = 4;
     private static final int AMULET_HP_BONUS  = 10;
 
+    public static final int MAX_ENEMY_HEAL_USES = 2;
+
     private final Player player;
     private Enemy enemy;
     private boolean playerTurn;
@@ -33,6 +35,8 @@ public class CombatManager {
     private int maxSpecialUses;
     private int temporaryAttackBonus = 0;
     private boolean damageReductionActive = false;
+    private int enemyHealUsesLeft = MAX_ENEMY_HEAL_USES;
+    private CombatAction lastEnemyAction;
 
     /**
      * Crea un gestore di combattimento associato al giocatore.
@@ -58,6 +62,8 @@ public class CombatManager {
         this.lastResult = CombatResult.ONGOING;
         this.maxSpecialUses = Math.max(1, roomIndex);
         this.specialUsesLeft = this.maxSpecialUses;
+        this.enemyHealUsesLeft = MAX_ENEMY_HEAL_USES;
+        this.lastEnemyAction = null;
     }
 
     /**
@@ -114,6 +120,7 @@ public class CombatManager {
         if (playerTurn || lastResult != CombatResult.ONGOING) return lastResult;
 
         CombatAction action = enemy.chooseAction();
+        lastEnemyAction = action;
 
         switch (action.getType()) {
             case ATTACK -> {
@@ -124,7 +131,17 @@ public class CombatManager {
                 int damage = computeDamage(enemy.getStats().getAttack() * 2, action.getPower());
                 applyDamageToPlayer(damage);
             }
-            case HEAL -> enemy.heal(action.getPower());
+            case HEAL -> {
+                if (enemyHealUsesLeft > 0) {
+                    enemy.heal(action.getPower());
+                    enemyHealUsesLeft--;
+                } else {
+                    // cure esaurite: il nemico ripara all'attacco base
+                    int damage = computeDamage(enemy.getStats().getAttack(), 0);
+                    applyDamageToPlayer(damage);
+                    lastEnemyAction = new CombatAction("fallback", "Attacca", CombatActionType.ATTACK, 0);
+                }
+            }
             default -> {}
         }
 
@@ -223,4 +240,9 @@ public class CombatManager {
     public int getMaxSpecialUses() { return maxSpecialUses; }
     public int getTemporaryAttackBonus() { return temporaryAttackBonus; }
     public boolean isDamageReductionActive() { return damageReductionActive; }
+    /** @return il numero di cure ancora disponibili per il nemico nel combattimento corrente */
+    public int getEnemyHealUsesLeft() { return enemyHealUsesLeft; }
+
+    /** @return l'ultima azione eseguita dal nemico, o {@code null} se il nemico non ha ancora agito */
+    public CombatAction getLastEnemyAction() { return lastEnemyAction; }
 }

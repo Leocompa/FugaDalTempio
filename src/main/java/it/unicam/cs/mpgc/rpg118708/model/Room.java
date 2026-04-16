@@ -10,7 +10,7 @@ import java.util.List;
  * <p>Una stanza è un contenitore passivo di entità di gioco: nemici, trappole,
  * oggetti raccoglibili e NPC. Non contiene logica di gioco — le interazioni
  * con queste entità sono gestite da {@link it.unicam.cs.mpgc.rpg118708.engine.GameManager}
- * e da {@link it.unicam.cs.mpgc.rpg118708.view.ExplorationScene}.</p>
+ * e da {@link it.unicam.cs.mpgc.rpg118708.view.exploration.ExplorationScene}.</p>
  */
 public class Room {
 
