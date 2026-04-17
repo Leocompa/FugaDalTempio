@@ -22,26 +22,79 @@ class CombatSpriteRenderer {
 
     /**
      * Disegna lo sprite del giocatore (ladro) su un canvas 120×160.
+     * L'aspetto cambia visivamente in base al livello: spallacci al LV2,
+     * armatura più scura al LV3, bordi dorati al LV4, mantello e indaco
+     * profondo dal LV5.
      *
-     * @param gc il contesto grafico del canvas di destinazione
+     * @param gc    il contesto grafico del canvas di destinazione
+     * @param level il livello corrente del giocatore
      */
-    static void drawPlayer(GraphicsContext gc) {
-        gc.setFill(Color.web("#534AB7"));
+    static void drawPlayer(GraphicsContext gc, int level) {
+        String bodyColor = level >= 5 ? "#2E2680" : level >= 3 ? "#453CA6" : "#534AB7";
+        String headColor = level >= 5 ? "#6A61CC" : level >= 3 ? "#6E67CC" : "#7F77DD";
+        String beltColor = level >= 4 ? "#EF9F27" : "#3C3489";
+
+        if (level >= 5) {
+            gc.setFill(Color.web("#130d2a", 0.88));
+            gc.fillPolygon(
+                    new double[]{30, 90, 76, 44},
+                    new double[]{64, 64, 156, 156}, 4);
+        }
+
+        gc.setFill(Color.web(bodyColor));
         gc.fillRoundRect(38, 112, 18, 34, 4, 4);
         gc.fillRoundRect(64, 112, 18, 34, 4, 4);
         gc.fillRoundRect(18, 72, 14, 28, 4, 4);
         gc.fillRoundRect(88, 72, 14, 28, 4, 4);
         gc.fillRoundRect(28, 62, 64, 52, 6, 6);
-        gc.setFill(Color.web("#7F77DD"));
+
+        if (level >= 3) {
+            gc.setFill(Color.web(level >= 5 ? "#221c5a" : "#312a8a"));
+            gc.fillRoundRect(14, 64, 18, 12, 3, 3);
+            gc.fillRoundRect(88, 64, 18, 12, 3, 3);
+        }
+
+        if (level >= 4) {
+            gc.setFill(Color.web("#EF9F27", 0.55));
+            gc.fillRect(28, 62, 64, 2);
+            gc.fillRect(28, 112, 64, 2);
+        }
+
+        if (level >= 2) {
+            gc.setFill(Color.web("#5DCAA5"));
+            gc.fillOval(55, 80, 10, 10);
+        }
+
+        gc.setFill(Color.web(headColor));
         gc.fillRoundRect(34, 18, 52, 46, 10, 10);
+
+        if (level >= 3) {
+            gc.setFill(Color.web("#0e0c22"));
+            gc.fillArc(28, 10, 64, 34, 0, 180, javafx.scene.shape.ArcType.ROUND);
+        }
+
         gc.setFill(Color.web("#EEEDFE"));
         gc.fillOval(64, 32, 10, 10);
-        gc.setFill(Color.web("#3C3489"));
+
+        gc.setFill(Color.web(beltColor));
         gc.fillRoundRect(28, 106, 64, 10, 3, 3);
+
+        if (level >= 5) {
+            gc.setFill(Color.web("#FCDE5A"));
+            gc.fillOval(56, 107, 8, 8);
+        }
+
         gc.setFill(Color.web("#EF9F27"));
         gc.fillRoundRect(100, 70, 8, 36, 3, 3);
         gc.setFill(Color.web("#FCDE5A"));
         gc.fillRoundRect(98, 66, 12, 8, 2, 2);
+
+        if (level >= 4) {
+            gc.setFill(Color.web("#8B6914"));
+            gc.fillRoundRect(102, 98, 4, 10, 2, 2);
+            gc.setFill(Color.web("#FCDE5A"));
+            gc.fillOval(100, 106, 8, 8);
+        }
     }
 
     /**

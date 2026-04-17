@@ -93,7 +93,8 @@ public class CombatScene {
     private HBox buildBattleArea() {
         playerCanvas = new Canvas(120, 160);
         enemyCanvas = new Canvas(120, 160);
-        CombatSpriteRenderer.drawPlayer(playerCanvas.getGraphicsContext2D());
+        int playerLevel = controller.getCombatManager().getPlayer().getStats().getLevel();
+        CombatSpriteRenderer.drawPlayer(playerCanvas.getGraphicsContext2D(), playerLevel);
         CombatSpriteRenderer.drawEnemy(enemyCanvas.getGraphicsContext2D(),
                 controller.getCombatManager().getEnemy());
 

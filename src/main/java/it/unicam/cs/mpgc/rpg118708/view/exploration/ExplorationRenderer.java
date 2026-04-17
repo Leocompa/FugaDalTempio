@@ -153,6 +153,7 @@ class ExplorationRenderer {
 
     private void renderPlayer(long frame, boolean onGround, Set<KeyCode> keysPressed) {
         Player player = gameManager.getPlayer();
+        int    level  = player.getStats().getLevel();
         int px = player.getX();
         int py = player.getY();
         boolean moving = keysPressed.contains(KeyCode.LEFT)  || keysPressed.contains(KeyCode.A)
@@ -168,7 +169,18 @@ class ExplorationRenderer {
         gc.setFill(Color.web("#000000", 0.25));
         gc.fillOval(shadowX, GROUND_Y + PLAYER_H - 3, shadowW, 5);
 
-        gc.setFill(Color.web("#534AB7"));
+        String bodyColor = level >= 5 ? "#2E2680" : level >= 3 ? "#453CA6" : "#534AB7";
+        String headColor = level >= 5 ? "#6A61CC" : level >= 3 ? "#6E67CC" : "#7F77DD";
+        String beltColor = level >= 4 ? "#EF9F27" : "#3C3489";
+
+        if (level >= 5) {
+            gc.setFill(Color.web("#130d2a", 0.80));
+            gc.fillPolygon(
+                    new double[]{px - 2,  px + PLAYER_W + 2, px + PLAYER_W - 2, px + 2},
+                    new double[]{drawY + 20, drawY + 20,      drawY + 48,        drawY + 48}, 4);
+        }
+
+        gc.setFill(Color.web(bodyColor));
 
         if (!onGround) {
             gc.fillRoundRect(px + 4,  drawY + 26, 7, 8, 2, 2);
@@ -190,8 +202,39 @@ class ExplorationRenderer {
 
         gc.fillRoundRect(px - 2, drawY + 20, PLAYER_W + 4, 12, 3, 3);
 
-        gc.setFill(Color.web("#7F77DD"));
+        if (level >= 3) {
+            gc.setFill(Color.web(level >= 5 ? "#221c5a" : "#312a8a"));
+            gc.fillRoundRect(px - 6, drawY + 20, 6, 8, 2, 2);
+            gc.fillRoundRect(px + PLAYER_W, drawY + 20, 6, 8, 2, 2);
+        }
+
+        if (level >= 4) {
+            gc.setFill(Color.web("#EF9F27", 0.50));
+            gc.fillRect(px - 2, drawY + 20, PLAYER_W + 4, 2);
+            gc.fillRect(px - 2, drawY + 30, PLAYER_W + 4, 2);
+        }
+
+        gc.setFill(Color.web(beltColor));
+        gc.fillRoundRect(px - 1, drawY + 30, PLAYER_W + 2, 3, 1, 1);
+
+        if (level >= 5) {
+            gc.setFill(Color.web("#FCDE5A"));
+            gc.fillOval(px + PLAYER_W / 2 - 2, drawY + 29, 4, 5);
+        }
+
+        gc.setFill(Color.web(headColor));
         gc.fillRoundRect(px, drawY, PLAYER_W, 20, 4, 4);
+
+        if (level >= 3) {
+            gc.setFill(Color.web("#0e0c22"));
+            gc.fillArc(px - 2, drawY - 4, PLAYER_W + 4, 14, 0, 180,
+                    javafx.scene.shape.ArcType.ROUND);
+        }
+
+        if (level >= 2) {
+            gc.setFill(Color.web("#5DCAA5"));
+            gc.fillOval(px + 9, drawY + 22, 6, 6);
+        }
 
         gc.setFill(Color.web("#EEEDFE"));
         int eyeX = player.getDirection() == Direction.RIGHT ? px + 14 : px + 4;
