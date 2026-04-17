@@ -318,10 +318,18 @@ public class ExplorationScene {
     /** Mostra il messaggio di salvataggio avvenuto. */
     public void showSaveMessage() { renderer.showSaveMessage("Partita salvata!"); }
 
+    /** @return la scena JavaFX pronta per essere impostata sullo stage */
     public Scene getScene() { return scene; }
 
+    /** Registra la callback invocata quando il giocatore entra in combattimento. */
     public void setOnEnterCombat(Runnable cb) { this.onEnterCombat  = cb; }
+
+    /** Registra la callback invocata quando tutte le stanze della zona sono completate. */
     public void setOnZoneComplete(Runnable cb){ this.onZoneComplete = cb; }
+
+    /** Registra la callback invocata quando il giocatore richiede il salvataggio. */
     public void setOnSave(Runnable cb)        { this.onSave         = cb; }
+
+    /** Registra la callback invocata quando il giocatore torna al menu principale. */
     public void setOnExit(Runnable cb)        { this.onExit         = cb; }
 }

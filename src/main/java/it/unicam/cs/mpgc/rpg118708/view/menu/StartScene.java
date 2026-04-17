@@ -116,6 +116,9 @@ public class StartScene {
     /** @return il testo inserito dall'utente nel campo nome, ripulito da spazi */
     public String getPlayerName() { return nameField.getText().trim(); }
 
+    /** @return il pulsante "Nuova partita", su cui il controller registra il listener */
     public Button getNewGameButton() { return newGameButton; }
+
+    /** @return il pulsante "Carica partita", su cui il controller registra il listener */
     public Button getLoadGameButton() { return loadGameButton; }
 }

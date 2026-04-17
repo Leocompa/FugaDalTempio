@@ -41,6 +41,16 @@ gradlew.bat run
 
 ---
 
+## Come eseguire i test
+
+```bash
+./gradlew test
+```
+
+La suite JUnit 5 copre i package `model` ed `engine` (102+ test). I risultati vengono salvati in `build/reports/tests/test/index.html`.
+
+---
+
 ## Struttura del progetto
 
 ```
@@ -48,7 +58,10 @@ src/main/java/it/unicam/cs/mpgc/rpg118708/
 ├── Main.java               # Punto di ingresso e composition root
 ├── controller/             # GameController, CombatController, WorldBuilder, WorldFactory
 ├── engine/                 # GameManager, CombatManager, GameState, CombatResult
-├── model/                  # Player, Enemy, Boss, Stats, Inventory, Item, Room, Zone, NPC, Trap
+├── model/                  # Combatant, Player, Enemy, Boss, Stats, Inventory
+│                           # Item (astratta), Potion, Amulet, Scroll, Talisman
+│                           # Room, Zone, NPC, Trap
+│   └── exception/          # InvalidNameException, InvalidStatsException
 ├── persistence/            # GamePersistence (interfaccia), XmlGamePersistence, SlotInfo
 └── view/
     ├── combat/             # CombatScene, CombatSpriteRenderer, CombatVictoryScreen, CombatDefeatScreen
@@ -66,4 +79,4 @@ Non essendo un appassionato di videogiochi, ho usato l'AI come primo supporto pe
 
 Le scelte progettuali e il codice principale sono opera mia. Claude ha avuto il ruolo di revisore, non di autore.
 
-Per una descrizione dettagliata vedere la **[Wiki del repository](../../wiki)**.
+Per una descrizione dettagliata vedere la **[Wiki del repository](https://github.com/Leocompa/FugaDalTempio/wiki)**.

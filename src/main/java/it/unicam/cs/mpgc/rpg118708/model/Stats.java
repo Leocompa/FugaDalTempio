@@ -1,5 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.model;
 
+import it.unicam.cs.mpgc.rpg118708.model.exception.InvalidStatsException;
+
 /**
  * Contiene e gestisce le statistiche di combattimento di un'entità di gioco.
  *
@@ -21,12 +23,17 @@ public class Stats {
     /**
      * Crea un set di statistiche con HP pieni e XP azzerati.
      *
-     * @param maxHp    punti vita massimi
-     * @param attack   valore di attacco base
-     * @param defense  valore di difesa base
-     * @param level    livello iniziale
+     * @param maxHp    punti vita massimi (deve essere &gt; 0)
+     * @param attack   valore di attacco base (deve essere &ge; 0)
+     * @param defense  valore di difesa base (deve essere &ge; 0)
+     * @param level    livello iniziale (deve essere &gt; 0)
+     * @throws InvalidStatsException se uno dei vincoli numerici non è rispettato
      */
     public Stats(int maxHp, int attack, int defense, int level) {
+        if (maxHp <= 0)   throw new InvalidStatsException("maxHp deve essere positivo, ricevuto: " + maxHp);
+        if (attack < 0)   throw new InvalidStatsException("attack non può essere negativo, ricevuto: " + attack);
+        if (defense < 0)  throw new InvalidStatsException("defense non può essere negativo, ricevuto: " + defense);
+        if (level <= 0)   throw new InvalidStatsException("level deve essere positivo, ricevuto: " + level);
         this.maxHp = maxHp;
         this.currentHp = maxHp;
         this.attack = attack;

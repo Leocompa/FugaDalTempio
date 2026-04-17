@@ -8,6 +8,7 @@ it.unicam.cs.mpgc.rpg118708
 ├── controller/
 ├── engine/
 ├── model/
+│   └── exception/
 ├── persistence/
 └── view/
     ├── combat/
@@ -20,6 +21,7 @@ La separazione in package rispecchia la separazione delle responsabilità:
 | Package | Responsabilità |
 |---|---|
 | `model` | Dati puri del dominio di gioco (nessuna logica applicativa) |
+| `model.exception` | Eccezioni del dominio per valori non validi al boundary di creazione |
 | `engine` | Logica di gioco (combattimento, stato partita) senza dipendenze dalla UI |
 | `controller` | Coordinamento tra engine e view; costruzione del mondo |
 | `persistence` | Salvataggio e caricamento dello stato di gioco |
@@ -121,6 +123,16 @@ Valore immutabile che descrive un'azione di combattimento: tipo, label e potenza
 
 ---
 
+### Package `model.exception`
+
+#### `InvalidNameException` *(extends RuntimeException)*
+Eccezione del dominio lanciata quando un identificatore o un nome obbligatorio è `null` o vuoto. Viene sollevata nei costruttori di `Player`, `Enemy`, `Item`, `Room`, `Zone` e `NPC`.
+
+#### `InvalidStatsException` *(extends RuntimeException)*
+Eccezione del dominio lanciata quando i valori delle statistiche violano i vincoli del dominio (es. `maxHp ≤ 0`, `attack < 0`). Viene sollevata nel costruttore di `Stats` e in `Enemy` quando `stats` è `null`.
+
+---
+
 ### Package `engine`
 
 #### `GameManager`
@@ -208,6 +220,19 @@ Schermata di selezione slot riutilizzabile in modalità salvataggio e caricament
 
 ##### `VictoryScene`
 Schermata di vittoria finale. Riceve i dati del giocatore e una callback per tornare al menu. Non contiene logica di gioco.
+
+---
+
+## Validazione e gestione degli errori
+
+La validazione degli input avviene esclusivamente **al boundary di creazione degli oggetti**, cioè nei costruttori delle entità del dominio. Il principio adottato è *fail-fast*: un oggetto con dati non validi non viene mai costruito.
+
+| Eccezione (package `model.exception`) | Quando viene lanciata |
+|---|---|
+| `InvalidNameException` | `id` o `name` null/vuoti in `Player`, `Enemy`, `Item`, `Room`, `Zone`, `NPC` |
+| `InvalidStatsException` | `maxHp ≤ 0`, `attack < 0`, `defense < 0`, `level ≤ 0` in `Stats`; `stats == null` in `Enemy` |
+
+Entrambe estendono `RuntimeException`: non costringono il chiamante a un try/catch esplicito, ma interrompono l'esecuzione con un messaggio chiaro. Non vengono usate per gestire eccezioni di I/O o logica di gioco, che restano responsabilità del layer `engine` e `persistence`.
 
 ---
 

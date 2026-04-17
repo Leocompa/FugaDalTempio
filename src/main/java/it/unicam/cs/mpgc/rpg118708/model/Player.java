@@ -1,5 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.model;
 
+import it.unicam.cs.mpgc.rpg118708.model.exception.InvalidNameException;
+
 /**
  * Rappresenta il personaggio controllato dal giocatore.
  *
@@ -22,9 +24,11 @@ public class Player implements Combatant {
     /**
      * Crea un nuovo giocatore con le statistiche base e inventario vuoto.
      *
-     * @param name il nome del personaggio
+     * @param name il nome del personaggio (non null né vuoto)
+     * @throws InvalidNameException se {@code name} è null o vuoto
      */
     public Player(String name) {
+        if (name == null || name.isBlank()) throw new InvalidNameException("il nome del giocatore non può essere null o vuoto");
         this.name = name;
         this.stats = new Stats(40, 8, 4, 1);
         this.inventory = new Inventory();

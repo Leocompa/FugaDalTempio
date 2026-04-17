@@ -172,7 +172,15 @@ public class SaveSlotScene {
         return card;
     }
 
+    /** @return la scena JavaFX pronta per essere impostata sullo stage */
     public Scene getScene() { return scene; }
+
+    /**
+     * Registra la callback invocata quando l'utente seleziona uno slot.
+     * Riceve il numero dello slot (1-based), o {@code -1} se l'utente preme "Indietro".
+     *
+     * @param onSlotSelected callback con il numero dello slot selezionato
+     */
     public void setOnSlotSelected(Consumer<Integer> onSlotSelected) {
         this.onSlotSelected = onSlotSelected;
     }

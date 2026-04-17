@@ -71,29 +71,10 @@ public class CombatManager {
         if (!playerTurn || lastResult != CombatResult.ONGOING) return lastResult;
 
         switch (action.getType()) {
-            case ATTACK -> {
-                int damage = computeDamage(player.getStats().getAttack(), action.getPower());
-                enemy.takeDamage(damage);
-                checkBossEnrage();
-            }
-            case SPECIAL -> {
-                if (specialUsesLeft <= 0) break;
-                int damage = computeDamage((int)(player.getStats().getAttack() * 1.5), action.getPower());
-                enemy.takeDamage(damage);
-                specialUsesLeft--;
-                checkBossEnrage();
-            }
-            case HEAL -> {
-                Item potion = findPotion();
-                if (potion != null) {
-                    player.heal(action.getPower());
-                    player.getInventory().removeItem(potion);
-                }
-            }
-            case FLEE -> {
-                lastResult = CombatResult.FLED;
-                return lastResult;
-            }
+            case ATTACK  -> handlePlayerAttack(action);
+            case SPECIAL -> handlePlayerSpecial(action);
+            case HEAL    -> handlePlayerHeal(action);
+            case FLEE    -> { lastResult = CombatResult.FLED; return lastResult; }
         }
 
         if (!enemy.isAlive()) {
@@ -118,25 +99,10 @@ public class CombatManager {
         lastEnemyAction = action;
 
         switch (action.getType()) {
-            case ATTACK -> {
-                int damage = computeDamage(enemy.getStats().getAttack(), action.getPower());
-                applyDamageToPlayer(damage);
-            }
-            case SPECIAL -> {
-                int damage = computeDamage(enemy.getStats().getAttack() * 2, action.getPower());
-                applyDamageToPlayer(damage);
-            }
-            case HEAL -> {
-                if (enemyHealUsesLeft > 0) {
-                    enemy.heal(action.getPower());
-                    enemyHealUsesLeft--;
-                } else {
-                    int damage = computeDamage(enemy.getStats().getAttack(), 0);
-                    applyDamageToPlayer(damage);
-                    lastEnemyAction = new CombatAction("fallback", "Attacca", CombatActionType.ATTACK, 0);
-                }
-            }
-            default -> {}
+            case ATTACK  -> handleEnemyAttack(action);
+            case SPECIAL -> handleEnemySpecial(action);
+            case HEAL    -> handleEnemyHeal(action);
+            default      -> {}
         }
 
         if (!player.isAlive()) {
@@ -146,6 +112,46 @@ public class CombatManager {
 
         playerTurn = true;
         return CombatResult.ONGOING;
+    }
+
+    private void handlePlayerAttack(CombatAction action) {
+        int damage = computeDamage(player.getStats().getAttack(), action.getPower());
+        enemy.takeDamage(damage);
+        checkBossEnrage();
+    }
+
+    private void handlePlayerSpecial(CombatAction action) {
+        if (specialUsesLeft <= 0) return;
+        int damage = computeDamage((int)(player.getStats().getAttack() * 1.5), action.getPower());
+        enemy.takeDamage(damage);
+        specialUsesLeft--;
+        checkBossEnrage();
+    }
+
+    private void handlePlayerHeal(CombatAction action) {
+        Item potion = findPotion();
+        if (potion != null) {
+            player.heal(action.getPower());
+            player.getInventory().removeItem(potion);
+        }
+    }
+
+    private void handleEnemyAttack(CombatAction action) {
+        applyDamageToPlayer(computeDamage(enemy.getStats().getAttack(), action.getPower()));
+    }
+
+    private void handleEnemySpecial(CombatAction action) {
+        applyDamageToPlayer(computeDamage(enemy.getStats().getAttack() * 2, action.getPower()));
+    }
+
+    private void handleEnemyHeal(CombatAction action) {
+        if (enemyHealUsesLeft > 0) {
+            enemy.heal(action.getPower());
+            enemyHealUsesLeft--;
+        } else {
+            applyDamageToPlayer(computeDamage(enemy.getStats().getAttack(), 0));
+            lastEnemyAction = new CombatAction("fallback", "Attacca", CombatActionType.ATTACK, 0);
+        }
     }
 
     /**
@@ -226,13 +232,28 @@ public class CombatManager {
                 .orElse(null);
     }
 
+    /** @return il giocatore associato a questo manager */
     public Player getPlayer() { return player; }
+
+    /** @return il nemico del combattimento corrente, o {@code null} se il combattimento non è iniziato */
     public Enemy getEnemy() { return enemy; }
+
+    /** @return {@code true} se è il turno del giocatore */
     public boolean isPlayerTurn() { return playerTurn; }
+
+    /** @return l'esito più recente del combattimento */
     public CombatResult getLastResult() { return lastResult; }
+
+    /** @return il numero di mosse speciali ancora disponibili per il giocatore nel turno corrente */
     public int getSpecialUsesLeft() { return specialUsesLeft; }
+
+    /** @return il numero massimo di mosse speciali disponibili per il combattimento corrente */
     public int getMaxSpecialUses() { return maxSpecialUses; }
+
+    /** @return il bonus di attacco temporaneo attivo (da pergamena), azzerato dopo l'uso */
     public int getTemporaryAttackBonus() { return temporaryAttackBonus; }
+
+    /** @return {@code true} se il talismano è attivo e dimezzerà il prossimo attacco nemico */
     public boolean isDamageReductionActive() { return damageReductionActive; }
     /** @return il numero di cure ancora disponibili per il nemico nel combattimento corrente */
     public int getEnemyHealUsesLeft() { return enemyHealUsesLeft; }

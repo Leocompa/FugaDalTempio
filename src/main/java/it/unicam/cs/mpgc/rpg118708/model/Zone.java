@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg118708.model;
 
+import it.unicam.cs.mpgc.rpg118708.model.exception.InvalidNameException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +23,13 @@ public class Zone {
     /**
      * Crea una zona.
      *
-     * @param id   identificatore univoco
-     * @param name nome visualizzato
+     * @param id   identificatore univoco (non null né vuoto)
+     * @param name nome visualizzato (non null né vuoto)
+     * @throws InvalidNameException se {@code id} o {@code name} sono null o vuoti
      */
     public Zone(String id, String name) {
+        if (id == null || id.isBlank())     throw new InvalidNameException("l'id della zona non può essere null o vuoto");
+        if (name == null || name.isBlank()) throw new InvalidNameException("il nome della zona non può essere null o vuoto");
         this.id = id;
         this.name = name;
         this.rooms = new ArrayList<>();

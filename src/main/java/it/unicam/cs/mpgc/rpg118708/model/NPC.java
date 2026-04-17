@@ -1,5 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.model;
 
+import it.unicam.cs.mpgc.rpg118708.model.exception.InvalidNameException;
+
 /**
  * Rappresenta un personaggio non giocante (NPC) con cui il giocatore può interagire.
  *
@@ -18,12 +20,16 @@ public class NPC {
     /**
      * Crea un NPC con dialogo e ricompensa.
      *
-     * @param id       identificatore univoco
-     * @param name     nome visualizzato
-     * @param dialogue testo del dialogo mostrato al giocatore
+     * @param id       identificatore univoco (non null né vuoto)
+     * @param name     nome visualizzato (non null né vuoto)
+     * @param dialogue testo del dialogo mostrato al giocatore (non null né vuoto)
      * @param reward   oggetto offerto come ricompensa (può essere {@code null})
+     * @throws InvalidNameException se {@code id}, {@code name} o {@code dialogue} sono null o vuoti
      */
     public NPC(String id, String name, String dialogue, Item reward) {
+        if (id == null || id.isBlank())             throw new InvalidNameException("l'id dell'NPC non può essere null o vuoto");
+        if (name == null || name.isBlank())         throw new InvalidNameException("il nome dell'NPC non può essere null o vuoto");
+        if (dialogue == null || dialogue.isBlank()) throw new InvalidNameException("il dialogo dell'NPC non può essere null o vuoto");
         this.id = id;
         this.name = name;
         this.dialogue = dialogue;
@@ -34,9 +40,10 @@ public class NPC {
     /**
      * Crea un NPC senza ricompensa.
      *
-     * @param id       identificatore univoco
-     * @param name     nome visualizzato
-     * @param dialogue testo del dialogo mostrato al giocatore
+     * @param id       identificatore univoco (non null né vuoto)
+     * @param name     nome visualizzato (non null né vuoto)
+     * @param dialogue testo del dialogo mostrato al giocatore (non null né vuoto)
+     * @throws InvalidNameException se {@code id}, {@code name} o {@code dialogue} sono null o vuoti
      */
     public NPC(String id, String name, String dialogue) {
         this(id, name, dialogue, null);

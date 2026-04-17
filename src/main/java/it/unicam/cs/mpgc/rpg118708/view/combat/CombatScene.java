@@ -44,11 +44,22 @@ public class CombatScene {
     private Stage stage;
     private final CombatController controller;
 
+    /**
+     * Costruisce la scena del combattimento.
+     *
+     * @param controller il controller che gestisce la logica del combattimento
+     */
     public CombatScene(CombatController controller) {
         this.controller = controller;
         buildScene();
     }
 
+    /**
+     * Imposta lo stage corrente, necessario per la sostituzione della scena
+     * al termine del combattimento.
+     *
+     * @param stage lo stage JavaFX principale
+     */
     public void setStage(Stage stage) { this.stage = stage; }
 
     private void buildScene() {
@@ -433,6 +444,9 @@ public class CombatScene {
                 controller.getOnDefeat(), controller.getOnLoad()).getScene());
     }
 
+    /** @return la scena JavaFX pronta per essere impostata sullo stage */
     public Scene getScene() { return scene; }
+
+    /** @return l'etichetta del log di combattimento, usata dal controller per aggiungere messaggi */
     public Label getLogLabel() { return logLabel; }
 }

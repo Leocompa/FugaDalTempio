@@ -1,5 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.model;
 
+import it.unicam.cs.mpgc.rpg118708.model.exception.InvalidNameException;
+
 /**
  * Rappresenta un oggetto raccoglibile o utilizzabile nel gioco.
  *
@@ -21,11 +23,14 @@ public abstract class Item {
     /**
      * Crea un oggetto con i campi comuni a tutte le sottoclassi.
      *
-     * @param id    identificatore univoco
-     * @param name  nome visualizzato
+     * @param id    identificatore univoco (non null né vuoto)
+     * @param name  nome visualizzato (non null né vuoto)
      * @param value valore numerico (es. HP curati, bonus attacco)
+     * @throws InvalidNameException se {@code id} o {@code name} sono null o vuoti
      */
     protected Item(String id, String name, int value) {
+        if (id == null || id.isBlank())     throw new InvalidNameException("l'id dell'oggetto non può essere null o vuoto");
+        if (name == null || name.isBlank()) throw new InvalidNameException("il nome dell'oggetto non può essere null o vuoto");
         this.id   = id;
         this.name = name;
         this.value = value;

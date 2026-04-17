@@ -1,5 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.model;
 
+import it.unicam.cs.mpgc.rpg118708.model.exception.InvalidNameException;
+import it.unicam.cs.mpgc.rpg118708.model.exception.InvalidStatsException;
 import java.util.List;
 import java.util.Random;
 
@@ -24,13 +26,18 @@ public class Enemy implements Combatant {
     /**
      * Crea un nuovo nemico.
      *
-     * @param id               identificatore univoco
-     * @param name             nome visualizzato
-     * @param stats            statistiche di combattimento
+     * @param id               identificatore univoco (non null né vuoto)
+     * @param name             nome visualizzato (non null né vuoto)
+     * @param stats            statistiche di combattimento (non null)
      * @param xpReward         XP assegnati al giocatore alla sconfitta
-     * @param availableActions azioni disponibili durante il combattimento
+     * @param availableActions azioni disponibili durante il combattimento (non null)
+     * @throws InvalidNameException  se {@code id} o {@code name} sono null o vuoti
+     * @throws InvalidStatsException se {@code stats} è null
      */
     public Enemy(String id, String name, Stats stats, int xpReward, List<CombatAction> availableActions) {
+        if (id == null || id.isBlank())     throw new InvalidNameException("l'id del nemico non può essere null o vuoto");
+        if (name == null || name.isBlank()) throw new InvalidNameException("il nome del nemico non può essere null o vuoto");
+        if (stats == null)                  throw new InvalidStatsException("le statistiche del nemico non possono essere null");
         this.id = id;
         this.name = name;
         this.stats = stats;
