@@ -26,25 +26,18 @@ class CombatSpriteRenderer {
      * @param gc il contesto grafico del canvas di destinazione
      */
     static void drawPlayer(GraphicsContext gc) {
-        // gambe
         gc.setFill(Color.web("#534AB7"));
         gc.fillRoundRect(38, 112, 18, 34, 4, 4);
         gc.fillRoundRect(64, 112, 18, 34, 4, 4);
-        // braccia
         gc.fillRoundRect(18, 72, 14, 28, 4, 4);
         gc.fillRoundRect(88, 72, 14, 28, 4, 4);
-        // busto
         gc.fillRoundRect(28, 62, 64, 52, 6, 6);
-        // testa
         gc.setFill(Color.web("#7F77DD"));
         gc.fillRoundRect(34, 18, 52, 46, 10, 10);
-        // occhio
         gc.setFill(Color.web("#EEEDFE"));
         gc.fillOval(64, 32, 10, 10);
-        // cintura
         gc.setFill(Color.web("#3C3489"));
         gc.fillRoundRect(28, 106, 64, 10, 3, 3);
-        // daga
         gc.setFill(Color.web("#EF9F27"));
         gc.fillRoundRect(100, 70, 8, 36, 3, 3);
         gc.setFill(Color.web("#FCDE5A"));
@@ -64,58 +57,41 @@ class CombatSpriteRenderer {
         else                       drawGuard(gc);
     }
 
-    // -------------------------------------------------------------------------
-    // Sprite guardia
-    // -------------------------------------------------------------------------
-
     private static void drawGuard(GraphicsContext gc) {
-        // stivali
         gc.setFill(Color.web("#1a0e06"));
         gc.fillRoundRect(34, 140, 18, 20, 3, 3);
         gc.fillRoundRect(68, 140, 18, 20, 3, 3);
-        // gambali
         gc.setFill(Color.web("#7A2E14"));
         gc.fillRoundRect(36, 106, 16, 36, 3, 3);
         gc.fillRoundRect(68, 106, 16, 36, 3, 3);
-        // cintura
         gc.setFill(Color.web("#3D1A0A"));
         gc.fillRoundRect(26, 100, 68, 8, 2, 2);
-        // busto/pettorale
         gc.setFill(Color.web("#993C1D"));
         gc.fillRoundRect(26, 60, 68, 42, 6, 6);
-        // dettaglio petto
         gc.setFill(Color.web("#C4481F"));
         gc.fillRoundRect(40, 64, 40, 28, 4, 4);
-        // spalle
         gc.setFill(Color.web("#7A2E14"));
         gc.fillRoundRect(14, 62, 16, 16, 4, 4);
         gc.fillRoundRect(90, 62, 16, 16, 4, 4);
-        // braccia
         gc.setFill(Color.web("#7A2E14"));
         gc.fillRoundRect(16, 76, 12, 28, 3, 3);
         gc.fillRoundRect(92, 76, 12, 28, 3, 3);
-        // collo
         gc.setFill(Color.web("#993C1D"));
         gc.fillRoundRect(48, 52, 24, 10, 2, 2);
-        // testa
         gc.setFill(Color.web("#D85A30"));
         gc.fillRoundRect(34, 28, 52, 36, 8, 8);
-        // elmo
         gc.setFill(Color.web("#7A2E14"));
         gc.fillRoundRect(32, 22, 56, 22, 6, 6);
-        // pennacchio
         gc.setFill(Color.web("#EF9F27"));
         gc.fillRect(57, 8, 6, 16);
         gc.setFill(Color.web("#FCDE5A"));
         gc.fillPolygon(new double[]{60, 54, 66}, new double[]{2, 12, 12}, 3);
-        // occhi
         gc.setFill(Color.web("#FAECE7"));
         gc.fillOval(42, 36, 12, 10);
         gc.fillOval(66, 36, 12, 10);
         gc.setFill(Color.web("#400000"));
         gc.fillOval(45, 38, 6, 6);
         gc.fillOval(69, 38, 6, 6);
-        // spada
         gc.setFill(Color.web("#aaaaaa"));
         gc.fillRect(108, 52, 4, 82);
         gc.setFill(Color.web("#EF9F27"));
@@ -126,46 +102,31 @@ class CombatSpriteRenderer {
         gc.fillOval(107, 98, 6, 6);
     }
 
-    // -------------------------------------------------------------------------
-    // Sprite boss
-    // -------------------------------------------------------------------------
-
     private static void drawBoss(GraphicsContext gc) {
-        // stivali
         gc.setFill(Color.web("#1a0808"));
         gc.fillRoundRect(32, 138, 22, 22, 3, 3);
         gc.fillRoundRect(66, 138, 22, 22, 3, 3);
-        // gambe corazzate
         gc.setFill(Color.web("#5C1A1A"));
         gc.fillRoundRect(34, 104, 18, 36, 3, 3);
         gc.fillRoundRect(68, 104, 18, 36, 3, 3);
-        // cintura
         gc.setFill(Color.web("#2a0a0a"));
         gc.fillRoundRect(24, 98, 72, 8, 2, 2);
-        // busto
         gc.setFill(Color.web("#7A0000"));
         gc.fillRoundRect(22, 58, 76, 42, 6, 6);
-        // pettorale
         gc.setFill(Color.web("#9E1010"));
         gc.fillRoundRect(36, 62, 48, 30, 4, 4);
-        // emblema centrale
         gc.setFill(Color.web("#EF9F27"));
         gc.fillPolygon(new double[]{60, 52, 68}, new double[]{66, 82, 82}, 3);
-        // spalle massive
         gc.setFill(Color.web("#5C1A1A"));
         gc.fillRoundRect(8,  60, 18, 22, 4, 4);
         gc.fillRoundRect(94, 60, 18, 22, 4, 4);
-        // braccia
         gc.setFill(Color.web("#5C1A1A"));
         gc.fillRoundRect(10, 80, 14, 28, 3, 3);
         gc.fillRoundRect(96, 80, 14, 28, 3, 3);
-        // testa
         gc.setFill(Color.web("#C43030"));
         gc.fillRoundRect(32, 28, 56, 34, 8, 8);
-        // elmo
         gc.setFill(Color.web("#5C1A1A"));
         gc.fillRoundRect(30, 20, 60, 26, 6, 6);
-        // corona
         gc.setFill(Color.web("#EF9F27"));
         int[] cx  = {34, 42, 52, 60, 68, 76};
         int[] chs = {8, 14, 10, 14, 10, 8};
@@ -175,7 +136,6 @@ class CombatSpriteRenderer {
         gc.setFill(Color.web("#FCDE5A"));
         gc.fillOval(43, 4, 8, 8);
         gc.fillOval(63, 4, 8, 8);
-        // occhi rossi
         gc.setFill(Color.web("#FF4040"));
         gc.fillOval(40, 34, 14, 12);
         gc.fillOval(66, 34, 14, 12);

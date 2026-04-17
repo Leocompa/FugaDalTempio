@@ -28,7 +28,6 @@ class ExplorationRenderer {
     private static final int PLAYER_H    = 32;
     private static final int INTERACT_RANGE = 60;
 
-    // stato interno del renderer
     private int    enemyWarningTimer = 0;
     private int    saveMessageTimer  = 0;
     private String saveMessage       = "";
@@ -51,10 +50,6 @@ class ExplorationRenderer {
         this.GROUND_Y    = groundY;
     }
 
-    // -------------------------------------------------------------------------
-    // Notifiche dallo scene
-    // -------------------------------------------------------------------------
-
     /** Attiva il flash visivo di avviso nemico per circa 60 frame. */
     void triggerEnemyWarning() { enemyWarningTimer = 60; }
 
@@ -73,10 +68,6 @@ class ExplorationRenderer {
 
     /** Rimuove il testo del dialogo dalla schermata. */
     void clearDialogue()           { dialogueText = ""; }
-
-    // -------------------------------------------------------------------------
-    // Render principale
-    // -------------------------------------------------------------------------
 
     /**
      * Esegue un frame completo di rendering.
@@ -106,10 +97,6 @@ class ExplorationRenderer {
         if (state == GameState.VICTORY)   renderOverlay("VITTORIA!", "hai completato il tempio!", "#1D9E75");
     }
 
-    // -------------------------------------------------------------------------
-    // Sfondo e griglia
-    // -------------------------------------------------------------------------
-
     private void renderGrid() {
         gc.setStroke(Color.web("#161622"));
         gc.setLineWidth(0.5);
@@ -123,10 +110,6 @@ class ExplorationRenderer {
         gc.setFill(Color.web("#3a3a55"));
         gc.fillRect(0, GROUND_Y + PLAYER_H, W, 4);
     }
-
-    // -------------------------------------------------------------------------
-    // Stanza
-    // -------------------------------------------------------------------------
 
     private void renderRoom(long frame, boolean nearExit, boolean nearEntrance) {
         renderTraps();
@@ -176,49 +159,40 @@ class ExplorationRenderer {
             int baseY = GROUND_Y + PLAYER_H;
             int cx    = npcX + 10;
 
-            // orlo tunica (svasato in basso)
             gc.setFill(Color.web("#0A6B50"));
             gc.fillPolygon(
                 new double[]{cx - 14, cx + 14, cx + 16, cx - 16},
                 new double[]{baseY - 26, baseY - 26, baseY, baseY}, 4);
 
-            // busto/tunica
             gc.setFill(Color.web("#1D9E75"));
             gc.fillRoundRect(cx - 10, baseY - 50, 20, 26, 5, 5);
 
-            // maniche
             gc.setFill(Color.web("#0A6B50"));
             gc.fillRoundRect(cx - 18, baseY - 48, 10, 18, 3, 3);
             gc.fillRoundRect(cx + 8,  baseY - 48, 10, 18, 3, 3);
 
-            // mani
             gc.setFill(Color.web("#D4A96A"));
             gc.fillOval(cx - 13, baseY - 33, 7, 7);
             gc.fillOval(cx + 7,  baseY - 33, 7, 7);
 
-            // cappuccio
+
             gc.setFill(Color.web("#0A6B50"));
             gc.fillOval(cx - 11, baseY - 68, 22, 22);
 
-            // viso
             gc.setFill(Color.web("#D4A96A"));
             gc.fillOval(cx - 8, baseY - 65, 16, 15);
 
-            // occhi (amichevoli)
             gc.setFill(Color.web("#1D5C4A"));
             gc.fillOval(cx - 5, baseY - 61, 4, 4);
             gc.fillOval(cx + 2, baseY - 61, 4, 4);
 
-            // bastone (sinistra)
             gc.setFill(Color.web("#6B4A14"));
             gc.fillRect(cx - 20, baseY - 74, 3, 74);
-            // sfera del bastone
             gc.setFill(Color.web("#1D9E75"));
             gc.fillOval(cx - 23, baseY - 82, 9, 9);
             gc.setFill(Color.web("#5DCAA5", 0.75));
             gc.fillOval(cx - 22, baseY - 81, 7, 7);
 
-            // spilla tunica
             gc.setFill(Color.web("#EF9F27"));
             gc.fillOval(cx - 2, baseY - 48, 4, 4);
 
@@ -258,84 +232,62 @@ class ExplorationRenderer {
 
     private void drawExplorationEnemySprite(int cx, int baseY, boolean isBoss) {
         if (isBoss) {
-            // stivali
             gc.setFill(Color.web("#1a0e06"));
             gc.fillRoundRect(cx - 17, baseY - 16, 13, 16, 2, 2);
             gc.fillRoundRect(cx + 4,  baseY - 16, 13, 16, 2, 2);
-            // gambe corazzate
             gc.setFill(Color.web("#5C1A1A"));
             gc.fillRoundRect(cx - 16, baseY - 36, 12, 21, 2, 2);
             gc.fillRoundRect(cx + 4,  baseY - 36, 12, 21, 2, 2);
-            // cintura
             gc.setFill(Color.web("#2a0a0a"));
             gc.fillRoundRect(cx - 17, baseY - 40, 34, 6, 2, 2);
-            // busto
             gc.setFill(Color.web("#7A0000"));
             gc.fillRoundRect(cx - 16, baseY - 60, 32, 22, 5, 5);
-            // pettorale
             gc.setFill(Color.web("#9E1010"));
             gc.fillRoundRect(cx - 10, baseY - 58, 20, 15, 3, 3);
-            // spalle
             gc.setFill(Color.web("#5C1A1A"));
             gc.fillRoundRect(cx - 26, baseY - 60, 12, 12, 3, 3);
             gc.fillRoundRect(cx + 14, baseY - 60, 12, 12, 3, 3);
-            // braccia
             gc.setFill(Color.web("#5C1A1A"));
             gc.fillRoundRect(cx - 25, baseY - 50, 10, 18, 2, 2);
             gc.fillRoundRect(cx + 15, baseY - 50, 10, 18, 2, 2);
-            // testa
             gc.setFill(Color.web("#C43030"));
             gc.fillRoundRect(cx - 13, baseY - 78, 26, 20, 5, 5);
-            // elmo
             gc.setFill(Color.web("#5C1A1A"));
             gc.fillRoundRect(cx - 14, baseY - 82, 28, 14, 4, 4);
-            // corona
             gc.setFill(Color.web("#EF9F27"));
             int[] crownX = {cx-10, cx-8, cx-2, cx+2, cx+8, cx+10};
             int[] crownH = {6, 10, 7, 10, 7, 6};
             for (int i = 0; i < crownX.length; i++) {
                 gc.fillRect(crownX[i], baseY - 82 - crownH[i], 4, crownH[i]);
             }
-            // occhi (rosso brillante)
             gc.setFill(Color.web("#FF4040"));
             gc.fillOval(cx - 9, baseY - 74, 6, 5);
             gc.fillOval(cx + 3, baseY - 74, 6, 5);
         } else {
-            // stivali
             gc.setFill(Color.web("#1a0e06"));
             gc.fillRoundRect(cx - 13, baseY - 13, 10, 13, 2, 2);
             gc.fillRoundRect(cx + 3,  baseY - 13, 10, 13, 2, 2);
-            // gambali
             gc.setFill(Color.web("#7A2E14"));
             gc.fillRoundRect(cx - 12, baseY - 30, 9, 18, 2, 2);
             gc.fillRoundRect(cx + 3,  baseY - 30, 9, 18, 2, 2);
-            // cintura
             gc.setFill(Color.web("#3D1A0A"));
             gc.fillRoundRect(cx - 13, baseY - 34, 26, 5, 1, 1);
-            // busto
             gc.setFill(Color.web("#993C1D"));
             gc.fillRoundRect(cx - 13, baseY - 52, 26, 20, 4, 4);
-            // dettaglio pettorale
             gc.setFill(Color.web("#C4481F"));
             gc.fillRoundRect(cx - 7, baseY - 50, 14, 13, 2, 2);
-            // braccia
             gc.setFill(Color.web("#7A2E14"));
             gc.fillRoundRect(cx - 21, baseY - 50, 9, 16, 3, 3);
             gc.fillRoundRect(cx + 12, baseY - 50, 9, 16, 3, 3);
-            // testa
             gc.setFill(Color.web("#D85A30"));
             gc.fillRoundRect(cx - 9, baseY - 66, 18, 15, 4, 4);
-            // elmo
             gc.setFill(Color.web("#7A2E14"));
             gc.fillRoundRect(cx - 10, baseY - 68, 20, 11, 3, 3);
-            // pennacchio elmo
             gc.setFill(Color.web("#EF9F27"));
             gc.fillRect(cx - 1, baseY - 76, 4, 10);
-            // occhi
             gc.setFill(Color.web("#FAECE7"));
             gc.fillOval(cx - 7, baseY - 63, 5, 5);
             gc.fillOval(cx + 3, baseY - 63, 5, 5);
-            // spada (lato destro)
             gc.setFill(Color.web("#aaaaaa"));
             gc.fillRect(cx + 19, baseY - 72, 3, 52);
             gc.setFill(Color.web("#EF9F27"));
@@ -380,10 +332,6 @@ class ExplorationRenderer {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Giocatore
-    // -------------------------------------------------------------------------
-
     private void renderPlayer(long frame, boolean onGround, Set<KeyCode> keysPressed) {
         Player player = gameManager.getPlayer();
         int px = player.getX();
@@ -395,7 +343,6 @@ class ExplorationRenderer {
                 ? py + (int)(Math.sin(frame * 0.04) * 1.5)
                 : py;
 
-        // ombra a terra
         double shadowScale = onGround ? 1.0 : Math.max(0.3, 1.0 - (GROUND_Y - py) * 0.004);
         int shadowW = (int)(28 * shadowScale);
         int shadowX = px + PLAYER_W / 2 - shadowW / 2;
@@ -431,10 +378,6 @@ class ExplorationRenderer {
         int eyeX = player.getDirection() == Direction.RIGHT ? px + 14 : px + 4;
         gc.fillOval(eyeX, drawY + 6, 6, 6);
     }
-
-    // -------------------------------------------------------------------------
-    // Overlay e messaggi
-    // -------------------------------------------------------------------------
 
     private void renderEnemyWarning() {
         if (enemyWarningTimer <= 0) return;
@@ -479,10 +422,6 @@ class ExplorationRenderer {
         gc.setFont(new Font("Monospaced", 16));
         gc.fillText(subtitle, W / 2.0 - 110, H / 2.0 + 40);
     }
-
-    // -------------------------------------------------------------------------
-    // HUD
-    // -------------------------------------------------------------------------
 
     void renderHUD(boolean nearExit, boolean nearEntrance) {
         renderTopHud();

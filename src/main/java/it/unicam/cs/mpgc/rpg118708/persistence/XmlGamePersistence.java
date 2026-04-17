@@ -173,7 +173,6 @@ public class XmlGamePersistence implements GamePersistence {
             loadPlayerStats(doc, gameManager);
             loadProgress(doc, gameManager);
 
-            // La mappa è costruita PRIMA di svuotare le stanze, così il ripristino per id funziona.
             Map<String, Item> itemById = buildItemByIdMap(gameManager);
             loadZones(doc, gameManager, itemById);
             loadInventory(doc, gameManager);

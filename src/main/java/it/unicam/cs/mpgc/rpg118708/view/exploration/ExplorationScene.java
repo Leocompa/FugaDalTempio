@@ -75,10 +75,6 @@ public class ExplorationScene {
         buildScene(canvas);
     }
 
-    // -------------------------------------------------------------------------
-    // Costruzione scena
-    // -------------------------------------------------------------------------
-
     private void buildScene(Canvas canvas) {
         VBox root = new VBox();
         root.setStyle("-fx-background-color: #0d0d14;");
@@ -128,9 +124,6 @@ public class ExplorationScene {
         });
     }
 
-    // -------------------------------------------------------------------------
-    // Game loop
-    // -------------------------------------------------------------------------
 
     private void update() {
         if (handleGameOverInput()) return;
@@ -315,10 +308,6 @@ public class ExplorationScene {
                              int bx, int by, int bw, int bh) {
         return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
     }
-
-    // -------------------------------------------------------------------------
-    // API pubblica
-    // -------------------------------------------------------------------------
 
     /** Avvia il game loop. */
     public void start() { gameLoop.start(); }

@@ -136,7 +136,6 @@ public class CombatManager {
                     enemy.heal(action.getPower());
                     enemyHealUsesLeft--;
                 } else {
-                    // cure esaurite: il nemico ripara all'attacco base
                     int damage = computeDamage(enemy.getStats().getAttack(), 0);
                     applyDamageToPlayer(damage);
                     lastEnemyAction = new CombatAction("fallback", "Attacca", CombatActionType.ATTACK, 0);

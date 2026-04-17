@@ -73,10 +73,6 @@ public class GameController {
         stage.setScene(startScene.getScene());
     }
 
-    // -------------------------------------------------------------------------
-    // Flusso di gioco
-    // -------------------------------------------------------------------------
-
     private void startNewGame(String playerName) {
         gameManager = new GameManager(new Player(playerName), worldFactory.buildWorld());
         startExploration();
@@ -150,10 +146,6 @@ public class GameController {
         persistence.save(gameManager, currentSaveSlot);
         startExploration();
     }
-
-    // -------------------------------------------------------------------------
-    // Schermate secondarie
-    // -------------------------------------------------------------------------
 
     private void showVictoryScreen() {
         stage.setScene(new VictoryScene(gameManager.getPlayer(), this::start).getScene());
