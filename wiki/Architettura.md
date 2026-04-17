@@ -203,6 +203,9 @@ Il package `view` è suddiviso in tre sotto-package in base alla responsabilità
 #### `GameScene` *(interfaccia)*
 Contratto comune a tutte le scene dell'interfaccia grafica. Espone `getScene()` per consentire a `GameController` di lavorare con le scene tramite un'astrazione anziché dipendere dalle classi concrete (DIP).
 
+#### `SceneBackground`
+Utility condivisa per il rendering dello sfondo a mattoncini. Espone `createCanvas(w, h)` e `render(gc, w, h)` come metodi statici. Tutte le scene (menu, vittoria, sconfitta) la usano per mantenere la stessa griglia grafica dell'esplorazione e centralizzare il codice di disegno evitando duplicazioni (DRY).
+
 ---
 
 #### `view.exploration`
@@ -226,7 +229,7 @@ Orchestratore del rendering: disegna sfondo, suolo, sprite del giocatore (con an
 Responsabilità unica: renderizzare il HUD superiore (nome, barre HP/XP, zona, stanza) e il HUD inferiore (tasti contestuali, inventario rapido).
 
 ##### `RoomEntityRenderer`
-Responsabilità unica: renderizzare trappole (con glow pulsante se attive), oggetti, NPC, nemici (vivi con barra HP, sconfitti a terra) e porte di ingresso/uscita.
+Responsabilità unica: renderizzare trappole (con glow pulsante se attive), oggetti, NPC, nemici (vivi con barra HP, sconfitti a terra) e porte di ingresso/uscita. Il rendering degli oggetti è tipo-specifico: `Potion` → bottiglia verde, `Scroll` → pergamena con fiamma, `Talisman` → scudo con gemma, `Amulet` → ciondolo dorato.
 
 ---
 
@@ -236,26 +239,26 @@ Responsabilità unica: renderizzare trappole (con glow pulsante se attive), ogge
 Scena del combattimento a turni. Costruisce l'interfaccia (pulsanti, barre HP, log) e gestisce le interazioni utente. Delega la logica di gioco a `CombatController`, il disegno degli sprite a `CombatSpriteRenderer` e le schermate di fine combattimento a `CombatVictoryScreen` / `CombatDefeatScreen`.
 
 ##### `CombatSpriteRenderer`
-Renderer degli sprite del combattimento su canvas JavaFX. Metodi statici. Disegna il giocatore con aspetto che varia per soglie di livello (LV2: gemma, LV3: spallacci e cappuccio, LV4: bordi dorati, LV5: mantello). Distingue automaticamente tra guardia normale e boss.
+Renderer degli sprite del combattimento su canvas JavaFX. Classe e metodi pubblici per consentire l'uso anche fuori dal package (es. `VictoryScene`). Disegna il giocatore con aspetto che varia per soglie di livello (LV2: gemma, LV3: spallacci e cappuccio, LV4: bordi dorati, LV5: mantello). Distingue automaticamente tra guardia normale e boss.
 
 ##### `CombatVictoryScreen` *(implementa GameScene)*
-Schermata mostrata al termine di un combattimento vinto. Mostra il canvas del personaggio al livello corrente, XP guadagnati e, in caso di level-up, le nuove statistiche. Non contiene logica di gioco.
+Schermata mostrata al termine di un combattimento vinto. Sfondo a mattoncini tramite `SceneBackground`. Mostra il canvas del personaggio al livello corrente, XP guadagnati e, in caso di level-up, le nuove statistiche. Non contiene logica di gioco.
 
 ##### `CombatDefeatScreen` *(implementa GameScene)*
-Schermata mostrata al termine di un combattimento perso. Offre due opzioni (ricominciare o caricare) tramite callback. Non contiene logica di gioco.
+Schermata mostrata al termine di un combattimento perso. Sfondo a mattoncini tramite `SceneBackground`. Mostra lo sprite del personaggio con opacità ridotta (30%) per comunicare la sconfitta. Offre due opzioni (ricominciare o caricare) tramite callback. Non contiene logica di gioco.
 
 ---
 
 #### `view.menu`
 
 ##### `StartScene` *(implementa GameScene)*
-Schermata iniziale con campo nome, pulsanti nuova partita, carica e esci. Mostra un messaggio di errore inline se il nome è vuoto.
+Schermata iniziale con campo nome, pulsanti nuova partita, carica e esci. Sfondo a mattoncini (`SceneBackground`) con pannello centrale semitrasparente. Mostra un messaggio di errore inline se il nome è vuoto.
 
 ##### `SaveSlotScene` *(implementa GameScene)*
-Schermata di selezione slot riutilizzabile in modalità salvataggio e caricamento. Dipende dall'interfaccia `GamePersistence`. In modalità salvataggio, mostra un dialogo di conferma prima di sovrascrivere uno slot occupato.
+Schermata di selezione slot riutilizzabile in modalità salvataggio e caricamento. Sfondo a mattoncini (`SceneBackground`) con pannello centrato. Dipende dall'interfaccia `GamePersistence`. In modalità salvataggio, mostra un dialogo di conferma prima di sovrascrivere uno slot occupato.
 
 ##### `VictoryScene` *(implementa GameScene)*
-Schermata di vittoria finale. Riceve i dati del giocatore e una callback per tornare al menu. Non contiene logica di gioco.
+Schermata di vittoria finale. Sfondo a mattoncini (`SceneBackground`). Mostra lo sprite del personaggio al livello raggiunto (tramite `CombatSpriteRenderer`) affiancato alle statistiche finali. Non contiene logica di gioco.
 
 ---
 

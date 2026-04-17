@@ -55,7 +55,6 @@ public class SceneBackground {
             }
         }
 
-        // Vignetta: quattro fasce scure ai bordi
         gc.setFill(Color.web("#000000", 0.65));
         gc.fillRect(0,     0,     120, h);
         gc.fillRect(w-120, 0,     120, h);

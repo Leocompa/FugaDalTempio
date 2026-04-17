@@ -146,7 +146,6 @@ class RoomEntityRenderer {
         }
     }
 
-    /** Disegna una bottiglia di pozione verde con sughero e riflesso teal. */
     private void drawPotionSprite(int x, int baseY, double bob, long frame) {
         double glow = 0.08 + 0.06 * Math.abs(Math.sin(frame * 0.05));
         gc.setFill(Color.web("#1D9E75", glow));
@@ -173,7 +172,6 @@ class RoomEntityRenderer {
         gc.fillRoundRect(x + 5, baseY - 37 + bob, 6, 3, 1, 1);
     }
 
-    /** Disegna una pergamena arrotolata con fiamma arancione in cima (Pergamena di Fuoco). */
     private void drawScrollSprite(int x, int baseY, double bob, long frame) {
         double glow = 0.07 + 0.05 * Math.abs(Math.sin(frame * 0.05));
         gc.setFill(Color.web("#EF9F27", glow));
@@ -209,7 +207,6 @@ class RoomEntityRenderer {
             new double[]{baseY - 39 + bob, baseY - 34 + bob, baseY - 34 + bob}, 3);
     }
 
-    /** Disegna uno scudo a forma di targa con gemma viola al centro (Talismano). */
     private void drawTalismanSprite(int x, int baseY, double bob, long frame) {
         double glow = 0.08 + 0.06 * Math.abs(Math.sin(frame * 0.05));
         gc.setFill(Color.web("#534AB7", glow));
@@ -238,7 +235,6 @@ class RoomEntityRenderer {
         gc.fillOval(x + 7, baseY - 20 + bob, 3, 3);
     }
 
-    /** Disegna un ciondolo d'oro con gemma e catenella (Amuleto). */
     private void drawAmuletSprite(int x, int baseY, double bob, long frame) {
         double glow = 0.06 + 0.05 * Math.abs(Math.sin(frame * 0.04));
         gc.setFill(Color.web("#EF9F27", glow));

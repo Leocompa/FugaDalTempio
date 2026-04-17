@@ -48,7 +48,6 @@ public class VictoryScene implements GameScene {
 
         Stats stats = player.getStats();
 
-        // ---- sprite del personaggio ----
         Canvas playerCanvas = new Canvas(120, 160);
         CombatSpriteRenderer.drawPlayer(playerCanvas.getGraphicsContext2D(), stats.getLevel());
 
@@ -67,7 +66,6 @@ public class VictoryScene implements GameScene {
                 -fx-background-radius: 6;
                 """);
 
-        // ---- riquadro statistiche ----
         Label title = new Label("Fuga riuscita!");
         title.setFont(new Font("Monospaced", 30));
         title.setStyle("-fx-text-fill: #EF9F27;");
@@ -104,7 +102,6 @@ public class VictoryScene implements GameScene {
         VBox infoBox = new VBox(16, title, subtitle, divider, statsLabel, menuBtn);
         infoBox.setAlignment(Pos.CENTER_LEFT);
 
-        // ---- riga principale: sprite + info ----
         HBox mainRow = new HBox(40, spriteBox, infoBox);
         mainRow.setAlignment(Pos.CENTER);
         mainRow.setPadding(new Insets(48));

@@ -66,6 +66,7 @@ src/main/java/it/unicam/cs/mpgc/rpg118708/
 ├── persistence/            # GamePersistence (interfaccia), XmlGamePersistence, SlotInfo
 └── view/
     │   GameScene           # interfaccia comune a tutte le scene
+    │   SceneBackground     # utility condivisa per il rendering dello sfondo
     ├── combat/             # CombatScene, CombatSpriteRenderer, CombatVictoryScreen, CombatDefeatScreen
     ├── exploration/        # ExplorationScene, ExplorationRenderer, PlayerPhysics
     │                       # ExplorationInteractionHandler, HudRenderer, RoomEntityRenderer

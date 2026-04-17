@@ -48,7 +48,6 @@ public class CombatDefeatScreen implements GameScene {
 
         Stats ps = player.getStats();
 
-        // ---- sprite del personaggio (dissolvenza: sconfitto) ----
         Canvas playerCanvas = new Canvas(120, 160);
         CombatSpriteRenderer.drawPlayer(playerCanvas.getGraphicsContext2D(), ps.getLevel());
         playerCanvas.setOpacity(0.30);
@@ -68,7 +67,6 @@ public class CombatDefeatScreen implements GameScene {
                 -fx-background-radius: 6;
                 """);
 
-        // ---- riquadro info ----
         Label title = new Label("Sei caduto...");
         title.setFont(new Font("Monospaced", 26));
         title.setStyle("-fx-text-fill: #E24B4A;");
@@ -112,7 +110,6 @@ public class CombatDefeatScreen implements GameScene {
         VBox infoBox = new VBox(16, title, msg, statsLabel, retryBtn, loadBtn);
         infoBox.setAlignment(Pos.CENTER_LEFT);
 
-        // ---- riga principale: sprite + info ----
         HBox mainRow = new HBox(40, spriteBox, infoBox);
         mainRow.setAlignment(Pos.CENTER);
         mainRow.setPadding(new Insets(48));
