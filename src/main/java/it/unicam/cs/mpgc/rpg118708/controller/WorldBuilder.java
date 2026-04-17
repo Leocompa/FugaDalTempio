@@ -71,8 +71,8 @@ public class WorldBuilder implements WorldFactory {
         Room room = new Room(id, name);
         room.addNpc(new NPC("npc1", "Ombra del Sacerdote",
                 "Straniero... questo tempio custodisce segreti antichi. Prendi questa pozione, ne avrai bisogno.",
-                new Item("potion_npc1", "Pozione del Sacerdote", ItemType.POTION, 20)));
-        room.addItem(new Item("potion1", "Pozione", ItemType.POTION, 15));
+                new Potion("potion_npc1", "Pozione del Sacerdote", 20)));
+        room.addItem(new Potion("potion1", "Pozione", 15));
         return room;
     }
 
@@ -91,7 +91,7 @@ public class WorldBuilder implements WorldFactory {
     private Room buildArcherRoom(String id, String name) {
         Room room = new Room(id, name);
         room.addTrap(new Trap("trap2", 8));
-        room.addItem(new Item("potion2", "Pozione", ItemType.POTION, 15));
+        room.addItem(new Potion("potion2", "Pozione", 15));
         room.addEnemy(new Enemy("e_" + id, "Arciere Persiano",
                 new Stats(32, 9, 3, 2), 90,
                 List.of(
@@ -107,7 +107,7 @@ public class WorldBuilder implements WorldFactory {
         room.addTrap(new Trap("trap3", 10));
         room.addNpc(new NPC("npc2", "Ombra del Guerriero",
                 "Il boss ti aspetta. Prendi questa Pergamena di Fuoco — aumenterà il tuo attacco per un turno.",
-                new Item("scroll_npc2", "Pergamena di Fuoco", ItemType.SCROLL, 8)));
+                new Scroll("scroll_npc2", "Pergamena di Fuoco", 8)));
         room.addEnemy(new Enemy("e_" + id, "Capitano della Guardia",
                 new Stats(45, 11, 4, 3), 130,
                 List.of(
@@ -120,10 +120,10 @@ public class WorldBuilder implements WorldFactory {
 
     private Room buildBossRoom(String id, String name) {
         Room room = new Room(id, name);
-        room.addItem(new Item("amulet1", "Amuleto del Tempio", ItemType.AMULET, 0));
+        room.addItem(new Amulet("amulet1", "Amuleto del Tempio", 0));
         room.addNpc(new NPC("npc3", "Voce del Tempio",
                 "Hai raggiunto il cuore del tempio... il Dio Serpente non ti lascerà passare. Prendi questo Talismano.",
-                new Item("talisman_npc3", "Talismano della Luna", ItemType.TALISMAN, 5)));
+                new Talisman("talisman_npc3", "Talismano della Luna", 5)));
         room.addEnemy(new Boss(
                 "boss_finale", "Dio Serpente Apep", "Signore del Caos",
                 new Stats(80, 14, 6, 6), 300,

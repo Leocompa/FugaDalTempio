@@ -545,14 +545,14 @@ class ExplorationRenderer {
     private void renderInventorySummary(int hudY, int spacing) {
         Player player = gameManager.getPlayer();
         long potions = player.getInventory().getItems().stream()
-                .filter(i -> i.getType() == ItemType.POTION).count();
+                .filter(i -> i instanceof Potion).count();
         gc.setFill(Color.web("#EF9F27"));
         gc.fillText("pozioni:", spacing * 6, hudY);
         gc.setFill(Color.web("#888"));
         gc.fillText(String.valueOf(potions), spacing * 6 + 78, hudY);
 
         String nonPotions = player.getInventory().getItems().stream()
-                .filter(i -> i.getType() != ItemType.POTION)
+                .filter(i -> !(i instanceof Potion))
                 .map(Item::getName)
                 .reduce((a, b) -> a + " " + b)
                 .orElse("vuoto");

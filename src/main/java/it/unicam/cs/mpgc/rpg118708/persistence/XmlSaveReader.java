@@ -173,7 +173,7 @@ class XmlSaveReader {
         NodeList invItems = inventoryEl.getElementsByTagName("item");
         for (int i = 0; i < invItems.getLength(); i++) {
             Element itemEl = (Element) invItems.item(i);
-            Item item = new Item(
+            Item item = Item.create(
                     itemEl.getAttribute("id"),
                     itemEl.getAttribute("name"),
                     ItemType.valueOf(itemEl.getAttribute("type")),

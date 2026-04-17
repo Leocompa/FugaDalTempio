@@ -73,13 +73,14 @@ Per un nuovo tipo di nemico con comportamento diverso (es. un nemico che schiva 
 
 ## Nuovi oggetti e tipi di oggetto
 
-Per aggiungere un nuovo tipo di oggetto:
+`Item` è una classe astratta: ogni tipo di oggetto è una sottoclasse concreta. Per aggiungere un nuovo tipo (es. `Shield`):
 
-1. Aggiungere il valore a `ItemType`
-2. Gestire il nuovo tipo in `CombatManager.useItem()` o `equipItem()`
-3. Aggiungere la logica di rendering in `view.exploration.ExplorationScene` e `view.combat.CombatScene`
+1. Creare `Shield extends Item` con `getType()` che restituisce il valore dell'enum corrispondente
+2. Aggiungere il valore a `ItemType` (usato solo per la serializzazione XML)
+3. Aggiungere la gestione dell'effetto in `CombatManager.useItem()` o `equipItem()` tramite `instanceof Shield`
+4. Aggiornare `Item.create()` per supportare il nuovo tipo nella deserializzazione
 
-L'oggetto `Item` è generico: il campo `value` può essere usato come parametro per qualsiasi effetto numerico.
+Le classi esistenti (`Potion`, `Amulet`, `Scroll`, `Talisman`, `CombatManager`) non vengono modificate se non per aggiungere il nuovo `case` in `useItem()`/`equipItem()`. Il campo `value` è il parametro numerico dell'effetto (quantità di cura, bonus, ecc.).
 
 ---
 
@@ -107,6 +108,6 @@ La struttura `Zone → List<Room>` è già predisposta per più zone. `GameManag
 | Nuovo formato persistenza | Nuova classe che implementa `GamePersistence` |
 | Nuovo tipo di mondo | Nuova classe che implementa `WorldFactory` |
 | Nuovo tipo di nemico | Estendere `Enemy` |
-| Nuovo tipo di oggetto | Aggiungere valore a `ItemType`, gestire in `CombatManager` |
+| Nuovo tipo di oggetto | Estendere `Item`, aggiungere valore a `ItemType`, gestire in `CombatManager` |
 | Nuovo stato di gioco | Aggiungere valore a `GameState`, gestire in `ExplorationScene` |
 | Nuova zona | Aggiungere in `WorldBuilder.buildWorld()` |

@@ -9,7 +9,7 @@ package it.unicam.cs.mpgc.rpg118708.model;
  * mantenendo la propria responsabilità sulla gestione degli oggetti equipaggiati
  * e sul movimento.</p>
  */
-public class Player {
+public class Player implements Combatant {
 
     private String name;
     private Stats stats;
@@ -84,7 +84,7 @@ public class Player {
      * @return {@code true} se l'oggetto è stato equipaggiato con successo
      */
     public boolean equip(Item item) {
-        if (item.getType() == ItemType.AMULET) {
+        if (item instanceof Amulet) {
             this.equippedItem = item;
             return true;
         }

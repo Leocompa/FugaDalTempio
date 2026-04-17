@@ -71,10 +71,13 @@ La separazione in package rispecchia la separazione delle responsabilità:
 
 ### Package `model`
 
-#### `Player`
+#### `Combatant` *(interfaccia)*
+Contratto comune a tutte le entità che partecipano al combattimento: `getName()`, `getStats()`, `isAlive()`, `takeDamage(int)`, `heal(int)`. Permette a `CombatManager` di trattare giocatore e nemici in modo uniforme senza conoscere le implementazioni concrete.
+
+#### `Player` *(implementa Combatant)*
 Rappresenta il personaggio del giocatore. Aggrega `Stats` (statistiche), `Inventory` (oggetti) e la posizione nella scena. Delega i calcoli numerici a `Stats`.
 
-#### `Enemy`
+#### `Enemy` *(implementa Combatant)*
 Nemico con un set di `CombatAction` tra cui sceglie casualmente ogni turno. Contiene le statistiche e la ricompensa XP.
 
 #### `Boss` *(estende Enemy)*
@@ -86,11 +89,14 @@ Gestisce tutti i valori numerici di un'entità: HP, attacco, difesa, livello, XP
 #### `Inventory`
 Gestisce la collezione di oggetti del giocatore con capienza massima. Espone la lista in sola lettura; le modifiche passano obbligatoriamente per `addItem` e `removeItem`.
 
-#### `Item`
-Oggetto raccoglibile o utilizzabile. Immutabile dopo la creazione. Il tipo (`ItemType`) determina il comportamento, gestito da `CombatManager`.
+#### `Item` *(classe astratta)*
+Classe base per tutti gli oggetti raccoglibili o utilizzabili. Immutabile dopo la creazione (id, nome, valore). Ogni sottoclasse concreta rappresenta un tipo specifico di oggetto e sovrascrive `getType()`. Il factory method statico `Item.create(id, name, ItemType, value)` è usato esclusivamente dal layer di persistenza per deserializzare oggetti da XML. Aggiungere un nuovo tipo di oggetto richiede solo una nuova sottoclasse, senza modificare il codice esistente (OCP).
+
+#### `Potion`, `Amulet`, `Scroll`, `Talisman` *(estendono Item)*
+Implementazioni concrete di `Item`. Ogni classe dichiara il proprio `ItemType` tramite `getType()`. Il comportamento specifico (cura, bonus difesa, bonus attacco, riduzione danno) è gestito da `CombatManager` tramite pattern matching (`instanceof`), mantenendo il model privo di logica di gioco.
 
 #### `ItemType` *(enum)*
-`POTION`, `AMULET`, `SCROLL`, `TALISMAN`
+`POTION`, `AMULET`, `SCROLL`, `TALISMAN` — usato principalmente per la serializzazione XML tramite `Item.create()`.
 
 #### `Room`
 Contenitore passivo di entità: nemici, trappole, oggetti, NPC. Non contiene logica di gioco. Le liste interne sono esposte in sola lettura.

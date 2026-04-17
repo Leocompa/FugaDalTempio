@@ -11,7 +11,7 @@ import java.util.Random;
  * alla sconfitta del nemico. {@link Boss} estende questa classe aggiungendo
  * comportamento speciale (enrage).</p>
  */
-public class Enemy {
+public class Enemy implements Combatant {
 
     private static final Random RANDOM = new Random();
 

@@ -1,12 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.engine;
 
-import it.unicam.cs.mpgc.rpg118708.model.Boss;
-import it.unicam.cs.mpgc.rpg118708.model.CombatAction;
-import it.unicam.cs.mpgc.rpg118708.model.CombatActionType;
-import it.unicam.cs.mpgc.rpg118708.model.Enemy;
-import it.unicam.cs.mpgc.rpg118708.model.Item;
-import it.unicam.cs.mpgc.rpg118708.model.ItemType;
-import it.unicam.cs.mpgc.rpg118708.model.Player;
+import it.unicam.cs.mpgc.rpg118708.model.*;
+
 
 /**
  * Gestisce la logica di un singolo combattimento a turni.
@@ -161,7 +156,7 @@ public class CombatManager {
      * @return {@code true} se l'oggetto è stato equipaggiato
      */
     public boolean equipItem(Item item) {
-        if (item.getType() == ItemType.AMULET) {
+        if (item instanceof Amulet) {
             if (player.hasEquipped()) {
                 player.getStats().removeEquipBonus(AMULET_DEF_BONUS, AMULET_HP_BONUS);
             }
@@ -180,12 +175,12 @@ public class CombatManager {
      * @return messaggio descrittivo dell'effetto, stringa vuota se l'oggetto non è usabile
      */
     public String useItem(Item item) {
-        if (item.getType() == ItemType.SCROLL) {
+        if (item instanceof Scroll) {
             temporaryAttackBonus = item.getValue();
             player.getInventory().removeItem(item);
             return "Pergamena usata — ATK +" + item.getValue() + " per questo turno!";
         }
-        if (item.getType() == ItemType.TALISMAN) {
+        if (item instanceof Talisman) {
             damageReductionActive = true;
             player.getInventory().removeItem(item);
             return "Talismano attivato — il prossimo attacco nemico sarà dimezzato!";
@@ -226,7 +221,7 @@ public class CombatManager {
     /** Cerca la prima pozione disponibile nell'inventario del giocatore. */
     private Item findPotion() {
         return player.getInventory().getItems().stream()
-                .filter(i -> i.getType() == ItemType.POTION)
+                .filter(i -> i instanceof Potion)
                 .findFirst()
                 .orElse(null);
     }

@@ -293,11 +293,11 @@ public class CombatScene {
         Player player = controller.getCombatManager().getPlayer();
 
         Item amulet = player.getInventory().getItems().stream()
-                .filter(i -> i.getType() == ItemType.AMULET)
+                .filter(i -> i instanceof Amulet)
                 .findFirst().orElse(null);
 
         Item usable = player.getInventory().getItems().stream()
-                .filter(i -> i.getType() == ItemType.SCROLL || i.getType() == ItemType.TALISMAN)
+                .filter(i -> i instanceof Scroll || i instanceof Talisman)
                 .findFirst().orElse(null);
 
         if (amulet == null && usable == null) {
@@ -362,16 +362,14 @@ public class CombatScene {
 
     private void refreshHealButton(Player player) {
         long potions = player.getInventory().getItems().stream()
-                .filter(i -> i.getType() == ItemType.POTION).count();
+                .filter(i -> i instanceof Potion).count();
         healButton.setText(potions > 0 ? "Usa pozione (" + potions + ")" : "Usa pozione");
         applyButtonStyle(healButton, potions > 0, "#0F6E56", "#5DCAA5");
     }
 
     private void refreshEquipButton(Player player) {
         boolean hasUsable = player.getInventory().getItems().stream()
-                .anyMatch(i -> i.getType() == ItemType.AMULET
-                        || i.getType() == ItemType.SCROLL
-                        || i.getType() == ItemType.TALISMAN);
+                .anyMatch(i -> i instanceof Amulet || i instanceof Scroll || i instanceof Talisman);
         applyButtonStyle(equipButton, hasUsable, "#1e1e30", "#AFA9EC");
     }
 
