@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
  * <p>Per il nemico distingue automaticamente tra guardia normale e boss
  * ({@link Boss}) applicando uno schema visivo diverso.</p>
  */
-class CombatSpriteRenderer {
+public class CombatSpriteRenderer {
 
     private CombatSpriteRenderer() {}
 
@@ -29,7 +29,7 @@ class CombatSpriteRenderer {
      * @param gc    il contesto grafico del canvas di destinazione
      * @param level il livello corrente del giocatore
      */
-    static void drawPlayer(GraphicsContext gc, int level) {
+    public static void drawPlayer(GraphicsContext gc, int level) {
         String bodyColor = level >= 5 ? "#2E2680" : level >= 3 ? "#453CA6" : "#534AB7";
         String headColor = level >= 5 ? "#6A61CC" : level >= 3 ? "#6E67CC" : "#7F77DD";
         String beltColor = level >= 4 ? "#EF9F27" : "#3C3489";
@@ -105,7 +105,7 @@ class CombatSpriteRenderer {
      * @param gc    il contesto grafico del canvas di destinazione
      * @param enemy il nemico da rappresentare
      */
-    static void drawEnemy(GraphicsContext gc, Enemy enemy) {
+    public static void drawEnemy(GraphicsContext gc, Enemy enemy) {
         if (enemy instanceof Boss) drawBoss(gc);
         else                       drawGuard(gc);
     }

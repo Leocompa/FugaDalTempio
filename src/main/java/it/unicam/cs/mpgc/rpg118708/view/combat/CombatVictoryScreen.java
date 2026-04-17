@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.view.combat;
 
 import it.unicam.cs.mpgc.rpg118708.view.GameScene;
+import it.unicam.cs.mpgc.rpg118708.view.SceneBackground;
 import it.unicam.cs.mpgc.rpg118708.model.Enemy;
 import it.unicam.cs.mpgc.rpg118708.model.Player;
 import it.unicam.cs.mpgc.rpg118708.model.Stats;
@@ -12,6 +13,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
@@ -39,21 +41,19 @@ public class CombatVictoryScreen implements GameScene {
     }
 
     private Scene buildScene(Player player, Enemy enemy, boolean leveledUp, Runnable onContinue) {
-        Stats ps = player.getStats();
+        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+        double W = screen.getWidth();
+        double H = screen.getHeight();
 
-        VBox root = new VBox(16);
-        root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(40));
-        root.setStyle("-fx-background-color: #0d1f0d;");
+        Canvas bg = SceneBackground.createCanvas(W, H);
+
+        Stats ps = player.getStats();
 
         Label title = new Label("Nemico sconfitto!");
         title.setFont(new Font("Monospaced", 22));
         title.setStyle("-fx-text-fill: #5DCAA5;");
 
-        root.getChildren().add(title);
-
         HBox contentRow = buildContentRow(player, enemy, leveledUp, ps);
-        root.getChildren().add(contentRow);
 
         Button continueBtn = new Button("Continua  ▶");
         continueBtn.setStyle("""
@@ -66,10 +66,21 @@ public class CombatVictoryScreen implements GameScene {
                 -fx-cursor: hand;
                 """);
         continueBtn.setOnAction(e -> { if (onContinue != null) onContinue.run(); });
-        root.getChildren().add(continueBtn);
 
-        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
-        return new Scene(root, screen.getWidth(), screen.getHeight());
+        VBox panel = new VBox(20, title, contentRow, continueBtn);
+        panel.setAlignment(Pos.CENTER);
+        panel.setPadding(new Insets(48));
+        panel.setMaxWidth(640);
+        panel.setStyle("""
+                -fx-background-color: rgba(8, 8, 16, 0.90);
+                -fx-border-color: #1D9E75;
+                -fx-border-width: 2;
+                -fx-border-radius: 8;
+                -fx-background-radius: 8;
+                """);
+
+        StackPane root = new StackPane(bg, panel);
+        return new Scene(root, W, H);
     }
 
     private HBox buildContentRow(Player player, Enemy enemy, boolean leveledUp, Stats ps) {
@@ -84,12 +95,13 @@ public class CombatVictoryScreen implements GameScene {
 
         VBox spriteBox = new VBox(8, playerCanvas, levelBadge);
         spriteBox.setAlignment(Pos.CENTER);
+        spriteBox.setPadding(new Insets(16, 20, 16, 20));
         spriteBox.setStyle("""
-                -fx-background-color: #0a180a;
+                -fx-background-color: rgba(8, 20, 8, 0.75);
                 -fx-border-color: #1D9E75;
+                -fx-border-width: 1;
                 -fx-border-radius: 6;
                 -fx-background-radius: 6;
-                -fx-padding: 16px 20px;
                 """);
 
         VBox statsBox = buildStatsBox(enemy, leveledUp, ps);

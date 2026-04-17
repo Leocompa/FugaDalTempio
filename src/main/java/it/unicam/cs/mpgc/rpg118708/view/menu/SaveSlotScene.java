@@ -2,15 +2,20 @@ package it.unicam.cs.mpgc.rpg118708.view.menu;
 
 import it.unicam.cs.mpgc.rpg118708.persistence.GamePersistence;
 import it.unicam.cs.mpgc.rpg118708.view.GameScene;
+import it.unicam.cs.mpgc.rpg118708.view.SceneBackground;
 import it.unicam.cs.mpgc.rpg118708.persistence.SlotInfo;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Screen;
 
 import java.util.function.Consumer;
 
@@ -43,19 +48,22 @@ public class SaveSlotScene implements GameScene {
     }
 
     private void buildScene() {
-        VBox root = new VBox(24);
-        root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(60));
-        root.setStyle("-fx-background-color: #0d0d14;");
+        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+        double W = screen.getWidth();
+        double H = screen.getHeight();
+
+        Canvas bg = SceneBackground.createCanvas(W, H);
 
         Label title = new Label(isSaveMode ? "Scegli uno slot di salvataggio" : "Scegli una partita da caricare");
         title.setFont(new Font("Monospaced", 24));
         title.setStyle("-fx-text-fill: #EF9F27;");
 
-        root.getChildren().add(title);
+        VBox content = new VBox(20);
+        content.setAlignment(Pos.CENTER);
+        content.getChildren().add(title);
 
         for (int slot = 1; slot <= persistence.getMaxSlots(); slot++) {
-            root.getChildren().add(buildSlotCard(slot));
+            content.getChildren().add(buildSlotCard(slot));
         }
 
         Button backBtn = new Button("← Indietro");
@@ -71,12 +79,23 @@ public class SaveSlotScene implements GameScene {
                 -fx-cursor: hand;
                 """);
         backBtn.setOnAction(e -> { if (onSlotSelected != null) onSlotSelected.accept(-1); });
+        content.getChildren().add(backBtn);
 
-        root.getChildren().add(backBtn);
+        VBox panel = new VBox();
+        panel.setAlignment(Pos.CENTER);
+        panel.setPadding(new Insets(48));
+        panel.setMaxWidth(700);
+        panel.setStyle("""
+                -fx-background-color: rgba(8, 8, 16, 0.88);
+                -fx-border-color: #2a2a42;
+                -fx-border-width: 2;
+                -fx-border-radius: 6;
+                -fx-background-radius: 6;
+                """);
+        panel.getChildren().add(content);
 
-        javafx.geometry.Rectangle2D screen =
-                javafx.stage.Screen.getPrimary().getVisualBounds();
-        scene = new Scene(root, screen.getWidth(), screen.getHeight());
+        StackPane root = new StackPane(bg, panel);
+        scene = new Scene(root, W, H);
     }
 
     /**
@@ -161,7 +180,7 @@ public class SaveSlotScene implements GameScene {
         HBox card = new HBox(20, details, actionBtn);
         card.setAlignment(Pos.CENTER_LEFT);
         card.setPadding(new Insets(16, 24, 16, 24));
-        card.setPrefWidth(600);
+        card.setPrefWidth(580);
         card.setStyle("""
                 -fx-background-color: #13131f;
                 -fx-border-color: #2a2a40;
