@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.view.menu;
 
 import it.unicam.cs.mpgc.rpg118708.persistence.GamePersistence;
+import it.unicam.cs.mpgc.rpg118708.view.GameScene;
 import it.unicam.cs.mpgc.rpg118708.persistence.SlotInfo;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,7 +23,7 @@ import java.util.function.Consumer;
  * per leggere le informazioni degli slot senza essere accoppiata a una
  * specifica implementazione di persistenza.</p>
  */
-public class SaveSlotScene {
+public class SaveSlotScene implements GameScene {
 
     private Scene scene;
     private final GamePersistence persistence;

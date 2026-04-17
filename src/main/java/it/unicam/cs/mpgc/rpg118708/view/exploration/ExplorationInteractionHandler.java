@@ -23,7 +23,7 @@ class ExplorationInteractionHandler {
     private static final int INTERACT_RANGE = 60;
 
     private final GameManager         gameManager;
-    private final ExplorationRenderer renderer;
+    private final SceneRenderer renderer;
     private final int                 W;
     private final int                 GROUND_Y;
 
@@ -40,7 +40,7 @@ class ExplorationInteractionHandler {
      * @param w           larghezza del canvas
      * @param groundY     coordinata Y del suolo
      */
-    ExplorationInteractionHandler(GameManager gameManager, ExplorationRenderer renderer,
+    ExplorationInteractionHandler(GameManager gameManager, SceneRenderer renderer,
                                   int w, int groundY) {
         this.gameManager = gameManager;
         this.renderer    = renderer;

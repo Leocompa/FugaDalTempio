@@ -19,7 +19,7 @@ import java.util.Set;
  * Non contiene logica di gioco: legge solo lo stato e disegna sul
  * {@link GraphicsContext}.</p>
  */
-class ExplorationRenderer {
+class ExplorationRenderer implements SceneRenderer {
 
     private final GraphicsContext    gc;
     private final GameManager        gameManager;
@@ -55,23 +55,23 @@ class ExplorationRenderer {
     }
 
     /** Attiva il flash visivo di avviso nemico per circa 60 frame. */
-    void triggerEnemyWarning() { enemyWarningTimer = 60; }
+    public void triggerEnemyWarning() { enemyWarningTimer = 60; }
 
     /**
      * Mostra un messaggio di salvataggio in sovrimpressione per circa 2 secondi.
      *
      * @param msg il testo da visualizzare
      */
-    void showSaveMessage(String msg) {
+    public void showSaveMessage(String msg) {
         saveMessage      = msg;
         saveMessageTimer = 120;
     }
 
     /** Imposta il testo del dialogo da mostrare in sovrimpressione. */
-    void showDialogue(String text) { dialogueText = text; }
+    public void showDialogue(String text) { dialogueText = text; }
 
     /** Rimuove il testo del dialogo dalla schermata. */
-    void clearDialogue()           { dialogueText = ""; }
+    public void clearDialogue()           { dialogueText = ""; }
 
     /**
      * Esegue un frame completo di rendering.
@@ -82,7 +82,7 @@ class ExplorationRenderer {
      * @param onGround     {@code true} se il giocatore è a terra
      * @param keysPressed  insieme dei tasti premuti in questo frame
      */
-    void render(long frame, boolean nearExit, boolean nearEntrance,
+    public void render(long frame, boolean nearExit, boolean nearEntrance,
                 boolean onGround, Set<KeyCode> keysPressed) {
         gc.setFill(Color.web("#080810"));
         gc.fillRect(0, 0, W, H);

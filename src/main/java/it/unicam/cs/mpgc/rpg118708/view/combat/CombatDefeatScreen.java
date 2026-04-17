@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg118708.view.combat;
 
+import it.unicam.cs.mpgc.rpg118708.view.GameScene;
 import it.unicam.cs.mpgc.rpg118708.model.Player;
 import it.unicam.cs.mpgc.rpg118708.model.Stats;
 import javafx.geometry.Insets;
@@ -19,7 +20,7 @@ import javafx.stage.Screen;
  * un salvataggio. Le azioni sono gestite tramite callback esterne.
  * Non contiene logica di gioco.</p>
  */
-public class CombatDefeatScreen {
+public class CombatDefeatScreen implements GameScene {
 
     private final Scene scene;
 

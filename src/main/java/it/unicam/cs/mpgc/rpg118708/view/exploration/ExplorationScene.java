@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg118708.view.exploration;
 
+import it.unicam.cs.mpgc.rpg118708.view.GameScene;
 import it.unicam.cs.mpgc.rpg118708.engine.GameManager;
 import it.unicam.cs.mpgc.rpg118708.engine.GameState;
 import it.unicam.cs.mpgc.rpg118708.model.Player;
@@ -25,13 +26,13 @@ import java.util.Set;
  * callback ({@code onEnterCombat}, {@code onZoneComplete}, {@code onSave},
  * {@code onExit}).</p>
  */
-public class ExplorationScene {
+public class ExplorationScene implements GameScene {
 
     private final int W, H, GROUND_Y;
     private static final int PLAYER_W = 24;
 
     private final GameManager                  gameManager;
-    private final ExplorationRenderer          renderer;
+    private final SceneRenderer                renderer;
     private final PlayerPhysics                physics;
     private final ExplorationInteractionHandler handler;
     private       Scene                        scene;

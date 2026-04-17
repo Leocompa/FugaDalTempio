@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg118708.view.menu;
 
+import it.unicam.cs.mpgc.rpg118708.view.GameScene;
 import it.unicam.cs.mpgc.rpg118708.model.Player;
 import it.unicam.cs.mpgc.rpg118708.model.Stats;
 import javafx.geometry.Insets;
@@ -19,7 +20,7 @@ import javafx.stage.Screen;
  * Non contiene logica di gioco: è responsabile esclusivamente del layout e
  * degli stili della schermata di completamento.</p>
  */
-public class VictoryScene {
+public class VictoryScene implements GameScene {
 
     private final Scene scene;
 

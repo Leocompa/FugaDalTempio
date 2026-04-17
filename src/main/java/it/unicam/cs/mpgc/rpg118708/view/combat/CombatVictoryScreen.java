@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg118708.view.combat;
 
+import it.unicam.cs.mpgc.rpg118708.view.GameScene;
 import it.unicam.cs.mpgc.rpg118708.model.Enemy;
 import it.unicam.cs.mpgc.rpg118708.model.Player;
 import it.unicam.cs.mpgc.rpg118708.model.Stats;
@@ -21,7 +22,7 @@ import javafx.stage.Screen;
  * <p>Riceve i dati del giocatore, del nemico sconfitto e una callback
  * per continuare l'esplorazione. Non contiene logica di gioco.</p>
  */
-public class CombatVictoryScreen {
+public class CombatVictoryScreen implements GameScene {
 
     private final Scene scene;
 

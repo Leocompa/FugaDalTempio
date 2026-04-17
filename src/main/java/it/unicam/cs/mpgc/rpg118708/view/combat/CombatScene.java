@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg118708.view.combat;
 
+import it.unicam.cs.mpgc.rpg118708.view.GameScene;
 import it.unicam.cs.mpgc.rpg118708.controller.CombatController;
 import it.unicam.cs.mpgc.rpg118708.engine.CombatManager;
 import it.unicam.cs.mpgc.rpg118708.engine.CombatResult;
@@ -24,7 +25,7 @@ import javafx.stage.Stage;
  * Gestisce anche le schermate di game-over e vittoria mostrate al termine
  * dello scontro.</p>
  */
-public class CombatScene {
+public class CombatScene implements GameScene {
 
     private Scene scene;
     private Label logLabel;

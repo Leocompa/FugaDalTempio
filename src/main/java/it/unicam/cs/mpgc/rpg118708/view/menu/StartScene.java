@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg118708.view.menu;
 
+import it.unicam.cs.mpgc.rpg118708.view.GameScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,7 +18,7 @@ import javafx.scene.text.Font;
  * o uscire dall'applicazione. I listener sui pulsanti sono registrati
  * esternamente dal {@link it.unicam.cs.mpgc.rpg118708.controller.GameController}.</p>
  */
-public class StartScene {
+public class StartScene implements GameScene {
 
     private Scene scene;
     private TextField nameField;
