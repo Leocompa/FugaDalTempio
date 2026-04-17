@@ -24,6 +24,7 @@ public class StartScene {
     private Button newGameButton;
     private Button loadGameButton;
     private Button exitButton;
+    private Label errorLabel;
 
     /** Costruisce e inizializza la scena del menu principale. */
     public StartScene() {
@@ -100,12 +101,17 @@ public class StartScene {
                 """);
         exitButton.setOnAction(e -> javafx.application.Platform.exit());
 
+        errorLabel = new Label();
+        errorLabel.setFont(new Font("Monospaced", 13));
+        errorLabel.setStyle("-fx-text-fill: #E24B4A;");
+        errorLabel.setVisible(false);
+
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(60));
         root.setStyle("-fx-background-color: #0d0d14;");
         root.getChildren().addAll(title, subtitle, nameLabel, nameField,
-                newGameButton, loadGameButton, exitButton);
+                errorLabel, newGameButton, loadGameButton, exitButton);
 
         scene = new Scene(root, 800, 600);
     }
@@ -115,6 +121,21 @@ public class StartScene {
 
     /** @return il testo inserito dall'utente nel campo nome, ripulito da spazi */
     public String getPlayerName() { return nameField.getText().trim(); }
+
+    /**
+     * Mostra un messaggio di errore inline sotto il campo nome.
+     *
+     * @param message il testo da mostrare
+     */
+    public void showError(String message) {
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
+    }
+
+    /** Nasconde l'eventuale messaggio di errore. */
+    public void clearError() {
+        errorLabel.setVisible(false);
+    }
 
     /** @return il pulsante "Nuova partita", su cui il controller registra il listener */
     public Button getNewGameButton() { return newGameButton; }

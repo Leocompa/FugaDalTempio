@@ -172,13 +172,17 @@ class XmlSaveReader {
         if (inventoryEl == null) return;
         NodeList invItems = inventoryEl.getElementsByTagName("item");
         for (int i = 0; i < invItems.getLength(); i++) {
-            Element itemEl = (Element) invItems.item(i);
-            Item item = Item.create(
-                    itemEl.getAttribute("id"),
-                    itemEl.getAttribute("name"),
-                    ItemType.valueOf(itemEl.getAttribute("type")),
-                    Integer.parseInt(itemEl.getAttribute("value")));
-            gameManager.getPlayer().getInventory().addItem(item);
+            try {
+                Element itemEl = (Element) invItems.item(i);
+                Item item = Item.create(
+                        itemEl.getAttribute("id"),
+                        itemEl.getAttribute("name"),
+                        ItemType.valueOf(itemEl.getAttribute("type")),
+                        Integer.parseInt(itemEl.getAttribute("value")));
+                gameManager.getPlayer().getInventory().addItem(item);
+            } catch (Exception e) {
+                System.err.println("Oggetto inventario non valido nel salvataggio, ignorato: " + e.getMessage());
+            }
         }
     }
 

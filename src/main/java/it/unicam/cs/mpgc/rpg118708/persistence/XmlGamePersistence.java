@@ -51,7 +51,7 @@ public class XmlGamePersistence implements GamePersistence {
         try {
             reader.read(gameManager, slot);
         } catch (Exception e) {
-            System.err.println("Errore durante il caricamento: " + e.getMessage());
+            System.err.println("Errore durante il caricamento dello slot " + slot + ": " + e.getMessage());
         }
     }
 

@@ -58,7 +58,11 @@ public class GameController {
 
         startScene.getNewGameButton().setOnAction(e -> {
             String name = startScene.getPlayerName();
-            if (name.isEmpty()) name = "Ladro";
+            if (name.isEmpty()) {
+                startScene.showError("Inserisci un nome per il tuo ladro prima di iniziare.");
+                return;
+            }
+            startScene.clearError();
             startNewGame(name);
         });
 
@@ -178,7 +182,7 @@ public class GameController {
             }
             currentSaveSlot = slot;
             String name = persistence.loadPlayerName(slot);
-            if (name.isEmpty()) name = "Ladro";
+            if (name == null || name.isBlank()) name = "Ladro";
             gameManager = new GameManager(new Player(name), worldFactory.buildWorld());
             persistence.load(gameManager, slot);
             startExploration();

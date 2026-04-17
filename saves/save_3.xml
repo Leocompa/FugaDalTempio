@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<savegame timestamp="17/04/2026 10:59">
+    <player attack="8" defense="4" hp="40" level="1" maxHp="40" name="leo" xp="0" xpToNextLevel="20"/>
+    <progress enemiesDefeated="0" roomIndex="0" zoneIndex="0"/>
+    <zones>
+        <zone completed="false" id="zone1">
+            <room id="r1">
+                <item id="potion1"/>
+                <npc id="npc1" rewardGiven="false"/>
+            </room>
+            <room id="r2">
+                <enemy alive="true" hp="28" id="e_r2"/>
+            </room>
+            <room id="r3">
+                <enemy alive="true" hp="38" id="e_r3"/>
+                <item id="potion2"/>
+            </room>
+            <room id="r4">
+                <enemy alive="true" hp="54" id="e_r4"/>
+                <npc id="npc2" rewardGiven="false"/>
+            </room>
+            <room id="r5">
+                <enemy alive="true" hp="92" id="boss_finale"/>
+                <item id="amulet1"/>
+                <npc id="npc3" rewardGiven="false"/>
+            </room>
+        </zone>
+    </zones>
+    <inventory/>
+</savegame>
