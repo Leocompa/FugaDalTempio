@@ -1,44 +1,36 @@
 package it.unicam.cs.mpgc.rpg118708.persistence;
 
 import it.unicam.cs.mpgc.rpg118708.engine.GameManager;
-import it.unicam.cs.mpgc.rpg118708.model.*;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
- * Implementazione della persistenza di gioco tramite file XML.
- * Gestisce salvataggio e caricamento di partite in slot numerati.
+ * Implementazione della persistenza di gioco tramite file XML su tre slot.
+ *
+ * <p>Questa classe funge da facade: coordina {@link XmlSaveWriter} (serializzazione)
+ * e {@link XmlSaveReader} (deserializzazione), mantenendo la sola responsabilità
+ * di gestire gli slot e di esporre l'interfaccia {@link GamePersistence}.</p>
  */
 public class XmlGamePersistence implements GamePersistence {
 
-    private static final String SAVE_DIR = "saves/";
-    private static final int MAX_SLOTS = 3;
+    private static final String SAVE_DIR  = "saves/";
+    private static final int    MAX_SLOTS = 3;
 
+    private final XmlSaveWriter writer = new XmlSaveWriter();
+    private final XmlSaveReader reader = new XmlSaveReader();
+
+    /** Crea la directory di salvataggio se non esiste. */
     public XmlGamePersistence() {
         new File(SAVE_DIR).mkdirs();
     }
 
     /**
-     * Restituisce il percorso del file di salvataggio per lo slot indicato.
+     * Restituisce il percorso del file XML per lo slot indicato.
      *
      * @param slot il numero dello slot
-     * @return il percorso del file XML
+     * @return il percorso del file
      */
-    public static String getSavePath(int slot) {
+    static String getSavePath(int slot) {
         return SAVE_DIR + "save_" + slot + ".xml";
     }
 
@@ -48,245 +40,18 @@ public class XmlGamePersistence implements GamePersistence {
     @Override
     public void save(GameManager gameManager, int slot) {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.newDocument();
-
-            Element root = doc.createElement("savegame");
-            doc.appendChild(root);
-            root.setAttribute("timestamp", LocalDateTime.now()
-                    .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-
-            root.appendChild(buildPlayerElement(doc, gameManager.getPlayer()));
-            root.appendChild(buildProgressElement(doc, gameManager));
-            root.appendChild(buildZonesElement(doc, gameManager));
-            root.appendChild(buildInventoryElement(doc, gameManager.getPlayer()));
-
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.transform(new DOMSource(doc),
-                    new StreamResult(new File(getSavePath(slot))));
-
+            writer.write(gameManager, slot);
         } catch (Exception e) {
             System.err.println("Errore durante il salvataggio: " + e.getMessage());
         }
     }
 
-    private Element buildPlayerElement(Document doc, Player player) {
-        Stats stats = player.getStats();
-        Element playerEl = doc.createElement("player");
-        playerEl.setAttribute("name", player.getName());
-        playerEl.setAttribute("hp", String.valueOf(stats.getCurrentHp()));
-        playerEl.setAttribute("maxHp", String.valueOf(stats.getMaxHp()));
-        playerEl.setAttribute("attack", String.valueOf(stats.getAttack()));
-        playerEl.setAttribute("defense", String.valueOf(stats.getDefense()));
-        playerEl.setAttribute("level", String.valueOf(stats.getLevel()));
-        playerEl.setAttribute("xp", String.valueOf(stats.getCurrentXp()));
-        playerEl.setAttribute("xpToNextLevel", String.valueOf(stats.getXpToNextLevel()));
-        return playerEl;
-    }
-
-    private Element buildProgressElement(Document doc, GameManager gameManager) {
-        Element progressEl = doc.createElement("progress");
-        progressEl.setAttribute("zoneIndex",
-                String.valueOf(gameManager.getCurrentZoneIndex()));
-        progressEl.setAttribute("roomIndex",
-                String.valueOf(gameManager.getCurrentZone().getCurrentRoomIndex()));
-        progressEl.setAttribute("enemiesDefeated",
-                String.valueOf(gameManager.getTotalEnemiesDefeated()));
-        return progressEl;
-    }
-
-    private Element buildZonesElement(Document doc, GameManager gameManager) {
-        Element zonesEl = doc.createElement("zones");
-        for (Zone zone : gameManager.getZones()) {
-            Element zoneEl = doc.createElement("zone");
-            zoneEl.setAttribute("id", zone.getId());
-            zoneEl.setAttribute("completed", String.valueOf(zone.isCompleted()));
-            for (Room room : zone.getRooms()) {
-                zoneEl.appendChild(buildRoomElement(doc, room));
-            }
-            zonesEl.appendChild(zoneEl);
-        }
-        return zonesEl;
-    }
-
-    private Element buildRoomElement(Document doc, Room room) {
-        Element roomEl = doc.createElement("room");
-        roomEl.setAttribute("id", room.getId());
-        for (Enemy enemy : room.getEnemies()) {
-            Element enemyEl = doc.createElement("enemy");
-            enemyEl.setAttribute("id", enemy.getId());
-            enemyEl.setAttribute("alive", String.valueOf(enemy.isAlive()));
-            enemyEl.setAttribute("hp", String.valueOf(enemy.getStats().getCurrentHp()));
-            roomEl.appendChild(enemyEl);
-        }
-        for (Item item : room.getItems()) {
-            Element itemEl = doc.createElement("item");
-            itemEl.setAttribute("id", item.getId());
-            roomEl.appendChild(itemEl);
-        }
-        for (NPC npc : room.getNpcs()) {
-            Element npcEl = doc.createElement("npc");
-            npcEl.setAttribute("id", npc.getId());
-            npcEl.setAttribute("rewardGiven", String.valueOf(npc.isRewardGiven()));
-            roomEl.appendChild(npcEl);
-        }
-        return roomEl;
-    }
-
-    private Element buildInventoryElement(Document doc, Player player) {
-        Element inventoryEl = doc.createElement("inventory");
-        for (Item item : player.getInventory().getItems()) {
-            Element itemEl = doc.createElement("item");
-            itemEl.setAttribute("id", item.getId());
-            itemEl.setAttribute("name", item.getName());
-            itemEl.setAttribute("type", item.getType().name());
-            itemEl.setAttribute("value", String.valueOf(item.getValue()));
-            inventoryEl.appendChild(itemEl);
-        }
-        return inventoryEl;
-    }
-
-    /**
-     * Apre e parsa il file XML dello slot indicato.
-     *
-     * @param slot il numero dello slot
-     * @return il documento XML, o {@code null} se il file non esiste
-     * @throws Exception in caso di errore di parsing
-     */
-    private Document parseDocument(int slot) throws Exception {
-        File file = new File(getSavePath(slot));
-        if (!file.exists()) return null;
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document doc = factory.newDocumentBuilder().parse(file);
-        doc.getDocumentElement().normalize();
-        return doc;
-    }
-
     @Override
     public void load(GameManager gameManager, int slot) {
         try {
-            Document doc = parseDocument(slot);
-            if (doc == null) return;
-
-            loadPlayerStats(doc, gameManager);
-            loadProgress(doc, gameManager);
-
-            Map<String, Item> itemById = buildItemByIdMap(gameManager);
-            loadZones(doc, gameManager, itemById);
-            loadInventory(doc, gameManager);
-
+            reader.read(gameManager, slot);
         } catch (Exception e) {
             System.err.println("Errore durante il caricamento: " + e.getMessage());
-        }
-    }
-
-    private void loadPlayerStats(Document doc, GameManager gameManager) {
-        Element playerEl = (Element) doc.getElementsByTagName("player").item(0);
-        Stats stats = gameManager.getPlayer().getStats();
-        stats.setMaxHp(Integer.parseInt(playerEl.getAttribute("maxHp")));
-        stats.setCurrentHp(Integer.parseInt(playerEl.getAttribute("hp")));
-        stats.setAttack(Integer.parseInt(playerEl.getAttribute("attack")));
-        stats.setDefense(Integer.parseInt(playerEl.getAttribute("defense")));
-        stats.setLevel(Integer.parseInt(playerEl.getAttribute("level")));
-        stats.setCurrentXp(Integer.parseInt(playerEl.getAttribute("xp")));
-        stats.setXpToNextLevel(Integer.parseInt(playerEl.getAttribute("xpToNextLevel")));
-    }
-
-    private void loadProgress(Document doc, GameManager gameManager) {
-        Element progressEl = (Element) doc.getElementsByTagName("progress").item(0);
-        gameManager.setCurrentZoneIndex(Integer.parseInt(progressEl.getAttribute("zoneIndex")));
-        gameManager.getCurrentZone().setCurrentRoomIndex(
-                Integer.parseInt(progressEl.getAttribute("roomIndex")));
-        if (progressEl.hasAttribute("enemiesDefeated")) {
-            gameManager.setTotalEnemiesDefeated(
-                    Integer.parseInt(progressEl.getAttribute("enemiesDefeated")));
-        }
-    }
-
-    private Map<String, Item> buildItemByIdMap(GameManager gameManager) {
-        return gameManager.getZones().stream()
-                .flatMap(z -> z.getRooms().stream())
-                .flatMap(r -> r.getItems().stream())
-                .collect(Collectors.toMap(Item::getId, i -> i));
-    }
-
-    private void loadZones(Document doc, GameManager gameManager, Map<String, Item> itemById) {
-        NodeList zoneNodes = doc.getElementsByTagName("zone");
-        for (int i = 0; i < zoneNodes.getLength(); i++) {
-            Element zoneEl = (Element) zoneNodes.item(i);
-            String zoneId = zoneEl.getAttribute("id");
-            gameManager.getZones().stream()
-                    .filter(z -> z.getId().equals(zoneId))
-                    .findFirst().ifPresent(zone -> {
-                        zone.setCompleted(Boolean.parseBoolean(zoneEl.getAttribute("completed")));
-                        NodeList roomNodes = zoneEl.getElementsByTagName("room");
-                        for (int j = 0; j < roomNodes.getLength(); j++) {
-                            loadRoom((Element) roomNodes.item(j), zone, itemById);
-                        }
-                    });
-        }
-    }
-
-    private void loadInventory(Document doc, GameManager gameManager) {
-        Element inventoryEl = (Element) doc.getElementsByTagName("inventory").item(0);
-        if (inventoryEl == null) return;
-        NodeList invItems = inventoryEl.getElementsByTagName("item");
-        for (int i = 0; i < invItems.getLength(); i++) {
-            Element itemEl = (Element) invItems.item(i);
-            Item item = new Item(
-                    itemEl.getAttribute("id"),
-                    itemEl.getAttribute("name"),
-                    ItemType.valueOf(itemEl.getAttribute("type")),
-                    Integer.parseInt(itemEl.getAttribute("value")));
-            gameManager.getPlayer().getInventory().addItem(item);
-        }
-    }
-
-    private void loadRoom(Element roomEl, Zone zone, Map<String, Item> itemById) {
-        String roomId = roomEl.getAttribute("id");
-        zone.getRooms().stream()
-                .filter(r -> r.getId().equals(roomId))
-                .findFirst().ifPresent(room -> {
-                    loadRoomEnemies(roomEl, room);
-                    loadRoomNpcs(roomEl, room);
-                    loadRoomItems(roomEl, room, itemById);
-                });
-    }
-
-    private void loadRoomEnemies(Element roomEl, Room room) {
-        NodeList enemyNodes = roomEl.getElementsByTagName("enemy");
-        for (int k = 0; k < enemyNodes.getLength(); k++) {
-            Element enemyEl = (Element) enemyNodes.item(k);
-            String enemyId = enemyEl.getAttribute("id");
-            boolean alive = Boolean.parseBoolean(enemyEl.getAttribute("alive"));
-            int hp = Integer.parseInt(enemyEl.getAttribute("hp"));
-            room.getEnemies().stream()
-                    .filter(e -> e.getId().equals(enemyId))
-                    .findFirst().ifPresent(e -> e.getStats().setCurrentHp(alive ? hp : 0));
-        }
-    }
-
-    private void loadRoomNpcs(Element roomEl, Room room) {
-        NodeList npcNodes = roomEl.getElementsByTagName("npc");
-        for (int k = 0; k < npcNodes.getLength(); k++) {
-            Element npcEl = (Element) npcNodes.item(k);
-            String npcId = npcEl.getAttribute("id");
-            boolean rewardGiven = Boolean.parseBoolean(npcEl.getAttribute("rewardGiven"));
-            room.getNpcs().stream()
-                    .filter(n -> n.getId().equals(npcId))
-                    .findFirst().ifPresent(n -> n.setRewardGiven(rewardGiven));
-        }
-    }
-
-    private void loadRoomItems(Element roomEl, Room room, Map<String, Item> itemById) {
-        NodeList itemNodes = roomEl.getElementsByTagName("item");
-        room.clearItems();
-        for (int k = 0; k < itemNodes.getLength(); k++) {
-            Element itemEl = (Element) itemNodes.item(k);
-            Item item = itemById.get(itemEl.getAttribute("id"));
-            if (item != null) room.addItem(item);
         }
     }
 
@@ -306,10 +71,7 @@ public class XmlGamePersistence implements GamePersistence {
     @Override
     public String loadPlayerName(int slot) {
         try {
-            Document doc = parseDocument(slot);
-            if (doc == null) return "";
-            Element playerEl = (Element) doc.getElementsByTagName("player").item(0);
-            return playerEl.getAttribute("name");
+            return reader.readPlayerName(slot);
         } catch (Exception e) {
             return "";
         }
@@ -318,17 +80,7 @@ public class XmlGamePersistence implements GamePersistence {
     @Override
     public SlotInfo getSlotInfo(int slot) {
         try {
-            Document doc = parseDocument(slot);
-            if (doc == null) return null;
-            String timestamp = doc.getDocumentElement().getAttribute("timestamp");
-            Element playerEl = (Element) doc.getElementsByTagName("player").item(0);
-            Element progressEl = (Element) doc.getElementsByTagName("progress").item(0);
-            return new SlotInfo(
-                    slot,
-                    playerEl.getAttribute("name"),
-                    Integer.parseInt(playerEl.getAttribute("level")),
-                    Integer.parseInt(progressEl.getAttribute("roomIndex")) + 1,
-                    timestamp);
+            return reader.readSlotInfo(slot);
         } catch (Exception e) {
             return null;
         }

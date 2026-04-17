@@ -153,7 +153,13 @@ Costruisce il mondo in modo hardcoded: zone, stanze, nemici, NPC, trappole, ogge
 Contratto per salvataggio e caricamento. Permette di sostituire l'implementazione (XML, JSON, database) senza modificare la logica di gioco.
 
 #### `XmlGamePersistence` *(implementa GamePersistence)*
-Implementazione della persistenza tramite file XML su 3 slot. Gestisce save, load, lettura delle informazioni degli slot e verifica dell'esistenza dei salvataggi.
+Facade pubblica che coordina `XmlSaveWriter` e `XmlSaveReader`. Gestisce gli slot, verifica l'esistenza dei file e traduce le eccezioni in messaggi di errore. Non contiene logica di serializzazione.
+
+#### `XmlSaveWriter`
+Serializza lo stato del gioco in un Document XML e scrive il file su disco. Responsabilità unica: costruire la struttura DOM a partire dal `GameManager` e salvarla.
+
+#### `XmlSaveReader`
+Deserializza un file XML e applica lo stato salvato al `GameManager`. Responsabilità unica: leggere il DOM e ripristinare statistiche, progressione, stanze, NPC e inventario.
 
 #### `SlotInfo`
 Oggetto immutabile con le informazioni sintetiche di uno slot (nome, livello, stanza, timestamp) da mostrare nella schermata di selezione.
