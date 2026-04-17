@@ -255,8 +255,6 @@ public class CombatScene {
         }
 
         if (result == CombatResult.FLED) {
-            logLabel.setText("Sei fuggito dal combattimento.");
-            javafx.application.Platform.runLater(() -> showEndButtons(false));
             return;
         }
 

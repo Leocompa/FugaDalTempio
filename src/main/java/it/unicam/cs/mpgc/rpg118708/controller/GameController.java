@@ -111,7 +111,11 @@ public class GameController {
         combatController.setOnVictory(this::handleVictory);
         combatController.setOnDefeat(this::handleDefeat);
         combatController.setOnLoad(this::handleCombatLoad);
-        combatController.setOnFlee(() -> { gameManager.endCombat(); startExploration(); });
+        combatController.setOnFlee(() -> {
+            gameManager.endCombat();
+            gameManager.getPlayer().setX(40);
+            startExploration();
+        });
     }
 
     private void handleVictory() {
