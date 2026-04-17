@@ -118,20 +118,151 @@ class RoomEntityRenderer {
     }
 
     private void renderItems(long frame) {
-        int itemX = W / 2;
-        int px    = gameManager.getPlayer().getX();
-        for (Item item : gameManager.getCurrentRoom().getItems()) {
-            double bob = Math.sin(frame * 0.05) * 3;
-            gc.setFill(Color.web("#EF9F27"));
-            gc.fillOval(itemX, GROUND_Y + PLAYER_H - 40 + bob, 16, 16);
-            gc.setFill(Color.web("#FCDE5A"));
-            gc.fillOval(itemX + 3, GROUND_Y + PLAYER_H - 37 + bob, 6, 6);
+        var  items  = gameManager.getCurrentRoom().getItems();
+        if (items.isEmpty()) return;
+        int  px     = gameManager.getPlayer().getX();
+        int  baseY  = GROUND_Y + PLAYER_H;
+        int  startX = W / 2 - (items.size() - 1) * 18;
+        int  idx    = 0;
+        for (Item item : items) {
+            int    itemX = startX + idx * 36;
+            double bob   = Math.sin(frame * 0.05 + idx * 1.2) * 3;
+            if      (item instanceof Potion)   drawPotionSprite(itemX, baseY, bob, frame);
+            else if (item instanceof Scroll)   drawScrollSprite(itemX, baseY, bob, frame);
+            else if (item instanceof Talisman) drawTalismanSprite(itemX, baseY, bob, frame);
+            else if (item instanceof Amulet)   drawAmuletSprite(itemX, baseY, bob, frame);
+            else {
+                gc.setFill(Color.web("#EF9F27"));
+                gc.fillOval(itemX, baseY - 40 + bob, 16, 16);
+                gc.setFill(Color.web("#FCDE5A"));
+                gc.fillOval(itemX + 3, baseY - 37 + bob, 6, 6);
+            }
             if (Math.abs(px - itemX) < INTERACT_RANGE) {
                 gc.setFill(Color.web("#EF9F27"));
                 gc.setFont(new Font("Monospaced", 12));
-                gc.fillText("[E] raccogli", itemX - 10, GROUND_Y + PLAYER_H - 50 + bob);
+                gc.fillText("[E] raccogli", itemX - 10, baseY - 54 + bob);
             }
+            idx++;
         }
+    }
+
+    /** Disegna una bottiglia di pozione verde con sughero e riflesso teal. */
+    private void drawPotionSprite(int x, int baseY, double bob, long frame) {
+        double glow = 0.08 + 0.06 * Math.abs(Math.sin(frame * 0.05));
+        gc.setFill(Color.web("#1D9E75", glow));
+        gc.fillOval(x - 6, baseY - 44 + bob, 28, 40);
+
+        gc.setFill(Color.web("#000000", 0.5));
+        gc.fillOval(x - 1, baseY - 4 + bob, 18, 5);
+
+        gc.setFill(Color.web("#0d5c3a"));
+        gc.fillOval(x, baseY - 26 + bob, 16, 22);
+        gc.setFill(Color.web("#1D9E75"));
+        gc.fillOval(x + 1, baseY - 25 + bob, 14, 20);
+        gc.setFill(Color.web("#5DCAA5", 0.55));
+        gc.fillOval(x + 3, baseY - 22 + bob, 8, 12);
+
+        gc.setFill(Color.web("#1D9E75"));
+        gc.fillRoundRect(x + 5, baseY - 32 + bob, 6, 8, 2, 2);
+        gc.setFill(Color.web("#0d5c3a"));
+        gc.fillRect(x + 5, baseY - 32 + bob, 2, 8);
+
+        gc.setFill(Color.web("#8B6914"));
+        gc.fillRoundRect(x + 4, baseY - 38 + bob, 8, 6, 2, 2);
+        gc.setFill(Color.web("#A87A18"));
+        gc.fillRoundRect(x + 5, baseY - 37 + bob, 6, 3, 1, 1);
+    }
+
+    /** Disegna una pergamena arrotolata con fiamma arancione in cima (Pergamena di Fuoco). */
+    private void drawScrollSprite(int x, int baseY, double bob, long frame) {
+        double glow = 0.07 + 0.05 * Math.abs(Math.sin(frame * 0.05));
+        gc.setFill(Color.web("#EF9F27", glow));
+        gc.fillOval(x - 5, baseY - 44 + bob, 26, 40);
+
+        gc.setFill(Color.web("#000000", 0.5));
+        gc.fillOval(x - 1, baseY - 4 + bob, 18, 5);
+
+        gc.setFill(Color.web("#6B4A14"));
+        gc.fillRoundRect(x, baseY - 30 + bob, 16, 26, 3, 3);
+        gc.setFill(Color.web("#C8A86E"));
+        gc.fillRoundRect(x + 2, baseY - 29 + bob, 12, 24, 2, 2);
+        gc.setFill(Color.web("#D4B47A", 0.6));
+        gc.fillRoundRect(x + 3, baseY - 28 + bob, 7, 18, 1, 1);
+
+        gc.setFill(Color.web("#8B6420", 0.7));
+        for (int l = 0; l < 3; l++) gc.fillRect(x + 3, baseY - 24 + l * 6 + bob, 10, 2);
+
+        gc.setFill(Color.web("#6B4A14"));
+        gc.fillOval(x - 1, baseY - 34 + bob, 18, 8);
+        gc.fillOval(x - 1, baseY - 8  + bob, 18, 8);
+        gc.setFill(Color.web("#8B6420"));
+        gc.fillOval(x,     baseY - 33 + bob, 16, 6);
+        gc.fillOval(x,     baseY - 7  + bob, 16, 6);
+
+        gc.setFill(Color.web("#EF9F27", 0.9));
+        gc.fillPolygon(
+            new double[]{x + 8, x + 4,   x + 12},
+            new double[]{baseY - 40 + bob, baseY - 34 + bob, baseY - 34 + bob}, 3);
+        gc.setFill(Color.web("#FCDE5A", 0.7));
+        gc.fillPolygon(
+            new double[]{x + 8, x + 5.5, x + 10.5},
+            new double[]{baseY - 39 + bob, baseY - 34 + bob, baseY - 34 + bob}, 3);
+    }
+
+    /** Disegna uno scudo a forma di targa con gemma viola al centro (Talismano). */
+    private void drawTalismanSprite(int x, int baseY, double bob, long frame) {
+        double glow = 0.08 + 0.06 * Math.abs(Math.sin(frame * 0.05));
+        gc.setFill(Color.web("#534AB7", glow));
+        gc.fillOval(x - 5, baseY - 40 + bob, 26, 38);
+
+        gc.setFill(Color.web("#000000", 0.5));
+        gc.fillOval(x - 1, baseY - 4 + bob, 18, 5);
+
+        gc.setFill(Color.web("#312a8a"));
+        gc.fillRoundRect(x, baseY - 32 + bob, 18, 20, 4, 4);
+        gc.fillPolygon(
+            new double[]{x,      x + 18, x + 9},
+            new double[]{baseY - 14 + bob, baseY - 14 + bob, baseY - 2 + bob}, 3);
+
+        gc.setFill(Color.web("#534AB7"));
+        gc.fillRoundRect(x + 2, baseY - 30 + bob, 14, 16, 3, 3);
+        gc.fillPolygon(
+            new double[]{x + 2,  x + 16, x + 9},
+            new double[]{baseY - 15 + bob, baseY - 15 + bob, baseY - 4 + bob}, 3);
+
+        gc.setFill(Color.web("#7F77DD"));
+        gc.fillOval(x + 5, baseY - 23 + bob, 8, 8);
+        gc.setFill(Color.web("#AFA9EC", 0.8));
+        gc.fillOval(x + 6, baseY - 21 + bob, 6, 6);
+        gc.setFill(Color.web("#EEEDFE", 0.6));
+        gc.fillOval(x + 7, baseY - 20 + bob, 3, 3);
+    }
+
+    /** Disegna un ciondolo d'oro con gemma e catenella (Amuleto). */
+    private void drawAmuletSprite(int x, int baseY, double bob, long frame) {
+        double glow = 0.06 + 0.05 * Math.abs(Math.sin(frame * 0.04));
+        gc.setFill(Color.web("#EF9F27", glow));
+        gc.fillOval(x - 6, baseY - 42 + bob, 28, 40);
+
+        gc.setFill(Color.web("#000000", 0.5));
+        gc.fillOval(x - 1, baseY - 4 + bob, 18, 5);
+
+        gc.setFill(Color.web("#8B6914"));
+        gc.fillRect(x + 6, baseY - 38 + bob, 4, 8);
+
+        gc.setFill(Color.web("#8B6914"));
+        gc.fillOval(x, baseY - 32 + bob, 16, 16);
+        gc.setFill(Color.web("#EF9F27"));
+        gc.fillOval(x + 2, baseY - 30 + bob, 12, 12);
+        gc.setFill(Color.web("#FCDE5A", 0.8));
+        gc.fillOval(x + 4, baseY - 28 + bob, 7, 7);
+        gc.setFill(Color.web("#FFFFFF", 0.55));
+        gc.fillOval(x + 5, baseY - 27 + bob, 3, 3);
+
+        gc.setFill(Color.web("#C4750A", 0.5));
+        gc.fillPolygon(
+            new double[]{x + 8,      x + 3,      x + 13},
+            new double[]{baseY - 18 + bob, baseY - 22 + bob, baseY - 22 + bob}, 3);
     }
 
     private void renderNpcs() {

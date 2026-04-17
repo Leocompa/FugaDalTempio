@@ -4,10 +4,14 @@ import it.unicam.cs.mpgc.rpg118708.view.GameScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 /**
@@ -15,10 +19,15 @@ import javafx.scene.text.Font;
  *
  * <p>Mostra il titolo, un campo per inserire il nome del personaggio e
  * i pulsanti per avviare una nuova partita, caricare una partita salvata
- * o uscire dall'applicazione. I listener sui pulsanti sono registrati
- * esternamente dal {@link it.unicam.cs.mpgc.rpg118708.controller.GameController}.</p>
+ * o uscire dall'applicazione. Lo sfondo riproduce la griglia di mattoncini
+ * delle stanze di esplorazione per coerenza visiva. I listener sui pulsanti
+ * sono registrati esternamente dal
+ * {@link it.unicam.cs.mpgc.rpg118708.controller.GameController}.</p>
  */
 public class StartScene implements GameScene {
+
+    private static final int W = 800;
+    private static final int H = 600;
 
     private Scene scene;
     private TextField nameField;
@@ -33,6 +42,9 @@ public class StartScene implements GameScene {
     }
 
     private void buildScene() {
+        Canvas bg = new Canvas(W, H);
+        renderBricks(bg.getGraphicsContext2D());
+
         Label title = new Label("Fuga dal Tempio");
         title.setFont(new Font("Monospaced", 38));
         title.setStyle("-fx-text-fill: #EF9F27;");
@@ -107,14 +119,50 @@ public class StartScene implements GameScene {
         errorLabel.setStyle("-fx-text-fill: #E24B4A;");
         errorLabel.setVisible(false);
 
-        VBox root = new VBox(20);
-        root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(60));
-        root.setStyle("-fx-background-color: #0d0d14;");
-        root.getChildren().addAll(title, subtitle, nameLabel, nameField,
+        VBox panel = new VBox(20);
+        panel.setAlignment(Pos.CENTER);
+        panel.setPadding(new Insets(48));
+        panel.setMaxWidth(440);
+        panel.setStyle("""
+                -fx-background-color: rgba(8, 8, 16, 0.90);
+                -fx-border-color: #2a2a42;
+                -fx-border-width: 2;
+                -fx-border-radius: 6;
+                -fx-background-radius: 6;
+                """);
+        panel.getChildren().addAll(title, subtitle, nameLabel, nameField,
                 errorLabel, newGameButton, loadGameButton, exitButton);
 
-        scene = new Scene(root, 800, 600);
+        StackPane root = new StackPane(bg, panel);
+        scene = new Scene(root, W, H);
+    }
+
+    /**
+     * Disegna la griglia di mattoncini identica allo sfondo delle stanze
+     * di esplorazione, più una vignetta scura sui bordi per dare profondità.
+     */
+    private void renderBricks(GraphicsContext gc) {
+        gc.setFill(Color.web("#080810"));
+        gc.fillRect(0, 0, W, H);
+
+        int bW = 50, bH = 22, gap = 2;
+        String[] shades = {"#131320", "#111118", "#161626", "#12121e", "#141422"};
+        for (int row = 0; row * (bH + gap) < H + bH; row++) {
+            int y       = row * (bH + gap);
+            int offsetX = (row % 2 == 0) ? 0 : (bW + gap) / 2;
+            for (int col = -1; col * (bW + gap) - offsetX < W + bW; col++) {
+                int x = col * (bW + gap) - offsetX;
+                gc.setFill(Color.web(shades[Math.abs((row * 3 + col * 2) % shades.length)]));
+                gc.fillRect(x, y, bW, bH);
+            }
+        }
+
+        // Vignetta: quattro fasce scure ai bordi per incorniciare il pannello
+        gc.setFill(Color.web("#00000080"));
+        gc.fillRect(0,     0,     100, H);       // sinistra
+        gc.fillRect(W-100, 0,     100, H);       // destra
+        gc.fillRect(0,     0,     W,   80);      // superiore
+        gc.fillRect(0,     H-80,  W,   80);      // inferiore
     }
 
     /** @return la scena JavaFX pronta per essere impostata sullo stage */
