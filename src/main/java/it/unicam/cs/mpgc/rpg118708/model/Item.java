@@ -44,6 +44,21 @@ public abstract class Item {
     public abstract ItemType getType();
 
     /**
+     * Applica l'effetto dell'oggetto durante il combattimento.
+     *
+     * <p>Ogni sottoclasse definisce il proprio comportamento: le pozioni curano
+     * il giocatore, le pergamene aggiungono un bonus temporaneo all'attacco,
+     * i talismani attivano la riduzione del danno, gli amuleti gestiscono
+     * l'equipaggiamento. L'oggetto è responsabile di rimuoversi dall'inventario
+     * se consumabile.</p>
+     *
+     * @param player  il giocatore che usa l'oggetto
+     * @param context il contesto di combattimento su cui applicare effetti di stato
+     * @return messaggio descrittivo dell'effetto da mostrare nel log di combattimento
+     */
+    public abstract String applyInCombat(Player player, CombatItemContext context);
+
+    /**
      * Crea l'istanza concreta corretta a partire da un {@link ItemType}.
      * Utilizzato dalla persistenza per ricostruire gli oggetti dal file XML.
      *

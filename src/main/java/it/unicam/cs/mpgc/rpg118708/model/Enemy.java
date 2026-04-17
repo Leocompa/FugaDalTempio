@@ -69,6 +69,12 @@ public class Enemy implements Combatant {
     }
 
     /**
+     * Invocato dal motore di combattimento dopo ogni danno subito.
+     * Le sottoclassi possono sovrascriverlo per reagire (es. enrage del boss).
+     */
+    public void onDamageTaken() {}
+
+    /**
      * Sceglie casualmente una delle azioni disponibili per il turno nemico.
      *
      * @return l'azione selezionata

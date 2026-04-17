@@ -50,6 +50,12 @@ public class Boss extends Enemy {
         return false;
     }
 
+    /**
+     * Invocato dopo ogni danno subito: verifica e attiva l'enrage se necessario.
+     */
+    @Override
+    public void onDamageTaken() { checkEnrage(); }
+
     public String getTitle() { return title; }
     public boolean isEnraged() { return enraged; }
 }

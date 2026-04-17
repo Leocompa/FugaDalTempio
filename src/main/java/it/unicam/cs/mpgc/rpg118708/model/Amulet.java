@@ -6,6 +6,12 @@ package it.unicam.cs.mpgc.rpg118708.model;
  */
 public class Amulet extends Item {
 
+    /** Bonus di difesa applicato all'equip. */
+    public static final int DEF_BONUS = 4;
+
+    /** Bonus di HP massimi applicato all'equip. */
+    public static final int HP_BONUS  = 10;
+
     /**
      * Crea un amuleto.
      *
@@ -19,4 +25,17 @@ public class Amulet extends Item {
 
     @Override
     public ItemType getType() { return ItemType.AMULET; }
+
+    /**
+     * Gli amuleti si equipaggiano tramite flusso separato: questo metodo
+     * non produce effetti e restituisce una stringa vuota.
+     *
+     * @param player  il giocatore (non utilizzato)
+     * @param context il contesto di combattimento (non utilizzato)
+     * @return stringa vuota
+     */
+    @Override
+    public String applyInCombat(Player player, CombatItemContext context) {
+        return "";
+    }
 }

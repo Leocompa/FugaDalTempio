@@ -236,22 +236,29 @@ class CombatManagerTest {
 
     @Test
     void equipAmuletApplicaBonusSuStats() {
-        Item amuleto = new Amulet("am1", "Amuleto", 0);
+        Amulet amuleto = new Amulet("am1", "Amuleto", 0);
         player.getInventory().addItem(amuleto);
         int defPrima = player.getStats().getDefense();
         int maxHpPrima = player.getStats().getMaxHp();
 
         manager.equipItem(amuleto);
 
-        assertEquals(defPrima + 4, player.getStats().getDefense());
-        assertEquals(maxHpPrima + 10, player.getStats().getMaxHp());
+        assertEquals(defPrima + Amulet.DEF_BONUS, player.getStats().getDefense());
+        assertEquals(maxHpPrima + Amulet.HP_BONUS, player.getStats().getMaxHp());
         assertFalse(player.getInventory().hasItem(amuleto));
     }
 
     @Test
-    void equipNonAmuletRestituisceFalse() {
-        Item pozione = new Potion("p1", "Pozione", 15);
-        player.getInventory().addItem(pozione);
-        assertFalse(manager.equipItem(pozione));
+    void equipAmuletRimuoveBonusPrecedente() {
+        Amulet amuleto = new Amulet("am1", "Amuleto", 0);
+        player.getInventory().addItem(amuleto);
+        manager.equipItem(amuleto);
+        int defDopoEquip = player.getStats().getDefense();
+
+        Amulet secondo = new Amulet("am2", "Amuleto 2", 0);
+        player.getInventory().addItem(secondo);
+        manager.equipItem(secondo);
+
+        assertEquals(defDopoEquip, player.getStats().getDefense());
     }
 }

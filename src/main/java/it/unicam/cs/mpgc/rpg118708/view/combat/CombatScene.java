@@ -328,7 +328,7 @@ public class CombatScene implements GameScene {
             return;
         }
 
-        controller.getCombatManager().equipItem(amulet);
+        controller.getCombatManager().equipItem((Amulet) amulet);
         logLabel.setText("Hai equipaggiato " + amulet.getName() + " — DEF +4, HP max +10!");
         refresh();
     }

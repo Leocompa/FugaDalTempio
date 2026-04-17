@@ -80,10 +80,10 @@ Contratto comune a tutte le entità che partecipano al combattimento: `getName()
 Rappresenta il personaggio del giocatore. Aggrega `Stats` (statistiche), `Inventory` (oggetti) e la posizione nella scena. Delega i calcoli numerici a `Stats`.
 
 #### `Enemy` *(implementa Combatant)*
-Nemico con un set di `CombatAction` tra cui sceglie casualmente ogni turno. Contiene le statistiche e la ricompensa XP.
+Nemico con un set di `CombatAction` tra cui sceglie casualmente ogni turno. Contiene le statistiche e la ricompensa XP. Espone il metodo hook `onDamageTaken()` (no-op per default), invocato da `CombatManager` dopo ogni danno: le sottoclassi possono sovrascriverlo per reagire senza che il motore debba fare type-checking.
 
 #### `Boss` *(estende Enemy)*
-Aggiunge il meccanismo di **enrage**: quando gli HP scendono sotto il 50%, l'attacco aumenta di `ENRAGE_ATTACK_BONUS`. L'enrage si attiva una sola volta per combattimento.
+Aggiunge il meccanismo di **enrage**: quando gli HP scendono sotto il 50%, l'attacco aumenta di `ENRAGE_ATTACK_BONUS`. L'enrage si attiva una sola volta per combattimento. Sovrascrive `onDamageTaken()` per richiamare `checkEnrage()` automaticamente, eliminando la necessità di `instanceof Boss` in `CombatManager`.
 
 #### `Stats`
 Gestisce tutti i valori numerici di un'entità: HP, attacco, difesa, livello, XP. Calcola il danno effettivo tenendo conto della difesa, gestisce il level-up e i bonus da equipaggiamento.
@@ -94,8 +94,20 @@ Gestisce la collezione di oggetti del giocatore con capienza massima. Espone la 
 #### `Item` *(classe astratta)*
 Classe base per tutti gli oggetti raccoglibili o utilizzabili. Immutabile dopo la creazione (id, nome, valore). Ogni sottoclasse concreta rappresenta un tipo specifico di oggetto e sovrascrive `getType()`. Il factory method statico `Item.create(id, name, ItemType, value)` è usato esclusivamente dal layer di persistenza per deserializzare oggetti da XML. Aggiungere un nuovo tipo di oggetto richiede solo una nuova sottoclasse, senza modificare il codice esistente (OCP).
 
+#### `CombatItemContext` *(interfaccia)*
+Contratto esposto agli oggetti durante il loro utilizzo in combattimento. Dichiara `addTemporaryAttackBonus(int)` e `activateDamageReduction()`. Permette alle sottoclassi di `Item` di applicare i propri effetti senza dipendere direttamente da `CombatManager` (DIP). `CombatManager` implementa questa interfaccia.
+
 #### `Potion`, `Amulet`, `Scroll`, `Talisman` *(estendono Item)*
-Implementazioni concrete di `Item`. Ogni classe dichiara il proprio `ItemType` tramite `getType()`. Il comportamento specifico (cura, bonus difesa, bonus attacco, riduzione danno) è gestito da `CombatManager` tramite pattern matching (`instanceof`), mantenendo il model privo di logica di gioco.
+Implementazioni concrete di `Item`. Ogni classe dichiara il proprio `ItemType` tramite `getType()` e implementa il metodo astratto `applyInCombat(Player, CombatItemContext)`, che incapsula il comportamento specifico in combattimento:
+
+| Classe | Effetto di `applyInCombat` |
+|---|---|
+| `Potion` | Cura il giocatore e si rimuove dall'inventario |
+| `Scroll` | Aggiunge un bonus temporaneo all'attacco via `CombatItemContext` e si rimuove |
+| `Talisman` | Attiva la riduzione del danno via `CombatItemContext` e si rimuove |
+| `Amulet` | Non utilizzato (l'equip avviene tramite flusso separato); restituisce stringa vuota |
+
+`Amulet` espone le costanti pubbliche `DEF_BONUS` e `HP_BONUS` usate da `CombatManager` all'equip.
 
 #### `ItemType` *(enum)*
 `POTION`, `AMULET`, `SCROLL`, `TALISMAN` — usato principalmente per la serializzazione XML tramite `Item.create()`.
@@ -138,8 +150,8 @@ Eccezione del dominio lanciata quando i valori delle statistiche violano i vinco
 #### `GameManager`
 Gestisce lo stato globale della partita: zona e stanza corrente, transizioni di stato, raccolta oggetti, respawn. Non conosce la UI.
 
-#### `CombatManager`
-Esegue la logica del combattimento a turni: calcola i danni con varianza, gestisce gli effetti degli oggetti consumabili (pergamena, talismano), determina l'esito. Restituisce `CombatResult`; non interagisce con la UI.
+#### `CombatManager` *(implementa CombatItemContext)*
+Esegue la logica del combattimento a turni: calcola i danni con varianza, determina l'esito. Implementa `CombatItemContext` esponendo `addTemporaryAttackBonus` e `activateDamageReduction`: gli oggetti applicano i propri effetti chiamando questi metodi, senza che il manager debba fare type-checking. Restituisce `CombatResult`; non interagisce con la UI.
 
 #### `GameState` *(enum)*
 `EXPLORING`, `COMBAT`, `DIALOGUE`, `GAME_OVER`, `VICTORY`
@@ -186,39 +198,63 @@ Oggetto immutabile con le informazioni sintetiche di uno slot (nome, livello, st
 
 ### Package `view`
 
-Il package `view` è suddiviso in tre sotto-package in base alla responsabilità della scena.
+Il package `view` è suddiviso in tre sotto-package in base alla responsabilità della scena. Tutte le scene pubbliche implementano l'interfaccia `GameScene`.
+
+#### `GameScene` *(interfaccia)*
+Contratto comune a tutte le scene dell'interfaccia grafica. Espone `getScene()` per consentire a `GameController` di lavorare con le scene tramite un'astrazione anziché dipendere dalle classi concrete (DIP).
+
+---
 
 #### `view.exploration`
 
-##### `ExplorationScene`
-Scena di esplorazione con game loop (`AnimationTimer`). Gestisce esclusivamente: input da tastiera, fisica del personaggio (gravità, salto, vincolo al suolo), collisioni con trappole e nemici, interazioni con oggetti e NPC. Notifica il `GameController` tramite callback (`onEnterCombat`, `onZoneComplete`, `onSave`, `onExit`). Tutto il rendering è delegato a `ExplorationRenderer`.
+##### `ExplorationScene` *(implementa GameScene)*
+Orchestratore della scena di esplorazione: gestisce il game loop (`AnimationTimer`) e l'input da tastiera. Delega la fisica del personaggio a `PlayerPhysics`, le interazioni e le collisioni a `ExplorationInteractionHandler` e il rendering a `ExplorationRenderer` (tramite l'interfaccia `SceneRenderer`). Notifica il `GameController` tramite callback.
 
-##### `ExplorationRenderer`
-Responsabile di tutto il disegno su `Canvas` durante l'esplorazione. Riceve lo stato necessario a ogni frame tramite `render(frame, nearExit, nearEntrance, onGround, keysPressed)`. Include: griglia di sfondo, terreno, rendering della stanza (trappole, oggetti, NPC, nemici con barra HP, porte), sprite del giocatore con animazione di camminata (braccia e gambe oscillanti), posa di salto, idle bobbing e ombra a terra, overlay di game-over e dialogo, HUD superiore (HP, XP, livello, zona, stanza) e HUD inferiore contestuale (`[E]` e `[R]` solo quando rilevanti).
+##### `PlayerPhysics`
+Responsabilità unica: aggiornare posizione e velocità verticale del giocatore in base all'input e alla gravità. Gestisce le costanti fisiche (GRAVITY, JUMP\_FORCE, PLAYER\_SPEED) e lo stato `onGround`. Non conosce la scena né il renderer.
+
+##### `ExplorationInteractionHandler`
+Responsabilità unica: rilevare collisioni con trappole e nemici, aggiornare i flag di prossimità a uscite e ingressi, rispondere all'input [E] per raccolta oggetti, dialoghi NPC e navigazione tra stanze. Utilizza `SceneRenderer` per notifiche visive (warning nemico, dialogo).
+
+##### `SceneRenderer` *(interfaccia, package-private)*
+Contratto del renderer di esplorazione. Espone i metodi che `ExplorationScene` e `ExplorationInteractionHandler` devono invocare: `render(...)`, `triggerEnemyWarning()`, `showSaveMessage(String)`, `showDialogue(String)`, `clearDialogue()`.
+
+##### `ExplorationRenderer` *(implementa SceneRenderer)*
+Orchestratore del rendering: disegna sfondo, suolo, sprite del giocatore (con animazione livello-dipendente) e overlay. Delega il rendering delle entità della stanza a `RoomEntityRenderer` e il HUD a `HudRenderer`.
+
+##### `HudRenderer`
+Responsabilità unica: renderizzare il HUD superiore (nome, barre HP/XP, zona, stanza) e il HUD inferiore (tasti contestuali, inventario rapido).
+
+##### `RoomEntityRenderer`
+Responsabilità unica: renderizzare trappole (con glow pulsante se attive), oggetti, NPC, nemici (vivi con barra HP, sconfitti a terra) e porte di ingresso/uscita.
+
+---
 
 #### `view.combat`
 
-##### `CombatScene`
-Scena del combattimento a turni. Costruisce l'interfaccia (pulsanti, barre HP, log) e gestisce le interazioni utente. Delega la logica di gioco a `CombatController`, il disegno degli sprite a `CombatSpriteRenderer` e le schermate di fine combattimento a `CombatVictoryScreen` / `CombatDefeatScreen`. Il metodo `refresh()` aggiorna le singole sezioni tramite metodi privati dedicati.
+##### `CombatScene` *(implementa GameScene)*
+Scena del combattimento a turni. Costruisce l'interfaccia (pulsanti, barre HP, log) e gestisce le interazioni utente. Delega la logica di gioco a `CombatController`, il disegno degli sprite a `CombatSpriteRenderer` e le schermate di fine combattimento a `CombatVictoryScreen` / `CombatDefeatScreen`.
 
 ##### `CombatSpriteRenderer`
-Renderer degli sprite del combattimento su canvas JavaFX. Contiene esclusivamente la logica di disegno del giocatore e del nemico (metodi statici). Distingue automaticamente tra guardia normale e boss applicando schemi visivi diversi.
+Renderer degli sprite del combattimento su canvas JavaFX. Metodi statici. Disegna il giocatore con aspetto che varia per soglie di livello (LV2: gemma, LV3: spallacci e cappuccio, LV4: bordi dorati, LV5: mantello). Distingue automaticamente tra guardia normale e boss.
 
-##### `CombatVictoryScreen`
-Schermata mostrata al termine di un combattimento vinto. Riceve giocatore, nemico e una callback per continuare. Non contiene logica di gioco.
+##### `CombatVictoryScreen` *(implementa GameScene)*
+Schermata mostrata al termine di un combattimento vinto. Mostra il canvas del personaggio al livello corrente, XP guadagnati e, in caso di level-up, le nuove statistiche. Non contiene logica di gioco.
 
-##### `CombatDefeatScreen`
+##### `CombatDefeatScreen` *(implementa GameScene)*
 Schermata mostrata al termine di un combattimento perso. Offre due opzioni (ricominciare o caricare) tramite callback. Non contiene logica di gioco.
+
+---
 
 #### `view.menu`
 
-##### `StartScene`
-Schermata iniziale con campo nome, pulsanti nuova partita, carica e esci.
+##### `StartScene` *(implementa GameScene)*
+Schermata iniziale con campo nome, pulsanti nuova partita, carica e esci. Mostra un messaggio di errore inline se il nome è vuoto.
 
-##### `SaveSlotScene`
-Schermata di selezione slot riutilizzabile in modalità salvataggio e caricamento. Dipende dall'interfaccia `GamePersistence`. In modalità salvataggio, se lo slot è già occupato mostra un dialogo di conferma prima di sovrascrivere i dati esistenti.
+##### `SaveSlotScene` *(implementa GameScene)*
+Schermata di selezione slot riutilizzabile in modalità salvataggio e caricamento. Dipende dall'interfaccia `GamePersistence`. In modalità salvataggio, mostra un dialogo di conferma prima di sovrascrivere uno slot occupato.
 
-##### `VictoryScene`
+##### `VictoryScene` *(implementa GameScene)*
 Schermata di vittoria finale. Riceve i dati del giocatore e una callback per tornare al menu. Non contiene logica di gioco.
 
 ---

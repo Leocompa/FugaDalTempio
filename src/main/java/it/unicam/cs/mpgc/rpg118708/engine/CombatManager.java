@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg118708.engine;
 
 import it.unicam.cs.mpgc.rpg118708.model.*;
+import it.unicam.cs.mpgc.rpg118708.model.CombatItemContext;
 
 
 /**
@@ -15,10 +16,7 @@ import it.unicam.cs.mpgc.rpg118708.model.*;
  * alternando {@link #executePlayerAction(CombatAction)} e {@link #executeEnemyTurn()}
  * finché il risultato non è diverso da {@link CombatResult#ONGOING}.</p>
  */
-public class CombatManager {
-
-    private static final int AMULET_DEF_BONUS = 4;
-    private static final int AMULET_HP_BONUS  = 10;
+public class CombatManager implements CombatItemContext {
 
     public static final int MAX_ENEMY_HEAL_USES = 2;
 
@@ -117,7 +115,7 @@ public class CombatManager {
     private void handlePlayerAttack(CombatAction action) {
         int damage = computeDamage(player.getStats().getAttack(), action.getPower());
         enemy.takeDamage(damage);
-        checkBossEnrage();
+        enemy.onDamageTaken();
     }
 
     private void handlePlayerSpecial(CombatAction action) {
@@ -125,14 +123,13 @@ public class CombatManager {
         int damage = computeDamage((int)(player.getStats().getAttack() * 1.5), action.getPower());
         enemy.takeDamage(damage);
         specialUsesLeft--;
-        checkBossEnrage();
+        enemy.onDamageTaken();
     }
 
     private void handlePlayerHeal(CombatAction action) {
         Item potion = findPotion();
         if (potion != null) {
-            player.heal(action.getPower());
-            player.getInventory().removeItem(potion);
+            potion.applyInCombat(player, this);
         }
     }
 
@@ -158,41 +155,42 @@ public class CombatManager {
      * Equipaggia un amuleto dall'inventario, applicando il bonus alle statistiche.
      * Se era già equipaggiato un amuleto, il bonus precedente viene prima rimosso.
      *
-     * @param item l'oggetto da equipaggiare
+     * @param item l'amuleto da equipaggiare
      * @return {@code true} se l'oggetto è stato equipaggiato
      */
-    public boolean equipItem(Item item) {
-        if (item instanceof Amulet) {
-            if (player.hasEquipped()) {
-                player.getStats().removeEquipBonus(AMULET_DEF_BONUS, AMULET_HP_BONUS);
-            }
-            player.equip(item);
-            player.getStats().applyEquipBonus(AMULET_DEF_BONUS, AMULET_HP_BONUS);
-            player.getInventory().removeItem(item);
-            return true;
+    public boolean equipItem(Amulet item) {
+        if (player.hasEquipped()) {
+            player.getStats().removeEquipBonus(Amulet.DEF_BONUS, Amulet.HP_BONUS);
         }
-        return false;
+        player.equip(item);
+        player.getStats().applyEquipBonus(Amulet.DEF_BONUS, Amulet.HP_BONUS);
+        player.getInventory().removeItem(item);
+        return true;
     }
 
     /**
-     * Usa un oggetto consumabile dall'inventario applicandone l'effetto immediato.
+     * Usa un oggetto consumabile delegando l'effetto all'oggetto stesso.
      *
      * @param item l'oggetto da usare
-     * @return messaggio descrittivo dell'effetto, stringa vuota se l'oggetto non è usabile
+     * @return messaggio descrittivo dell'effetto
      */
     public String useItem(Item item) {
-        if (item instanceof Scroll) {
-            temporaryAttackBonus = item.getValue();
-            player.getInventory().removeItem(item);
-            return "Pergamena usata — ATK +" + item.getValue() + " per questo turno!";
-        }
-        if (item instanceof Talisman) {
-            damageReductionActive = true;
-            player.getInventory().removeItem(item);
-            return "Talismano attivato — il prossimo attacco nemico sarà dimezzato!";
-        }
-        return "";
+        return item.applyInCombat(player, this);
     }
+
+    /**
+     * Aggiunge un bonus temporaneo all'attacco del giocatore per il turno corrente.
+     *
+     * @param bonus il valore del bonus
+     */
+    @Override
+    public void addTemporaryAttackBonus(int bonus) { temporaryAttackBonus = bonus; }
+
+    /**
+     * Attiva la riduzione del danno per il prossimo attacco nemico.
+     */
+    @Override
+    public void activateDamageReduction() { damageReductionActive = true; }
 
     /**
      * Calcola il danno effettivo aggiungendo un bonus temporaneo e una varianza casuale.
@@ -215,13 +213,6 @@ public class CombatManager {
             damageReductionActive = false;
         }
         player.takeDamage(damage);
-    }
-
-    /** Verifica e attiva l'enrage del boss se le condizioni sono soddisfatte. */
-    private void checkBossEnrage() {
-        if (enemy instanceof Boss boss) {
-            boss.checkEnrage();
-        }
     }
 
     /** Cerca la prima pozione disponibile nell'inventario del giocatore. */

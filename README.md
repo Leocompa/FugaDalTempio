@@ -47,7 +47,7 @@ gradlew.bat run
 ./gradlew test
 ```
 
-La suite JUnit 5 copre i package `model` ed `engine` (102+ test). I risultati vengono salvati in `build/reports/tests/test/index.html`.
+La suite JUnit 5 copre i package `model` ed `engine` (110+ test). I risultati vengono salvati in `build/reports/tests/test/index.html`.
 
 ---
 
@@ -61,11 +61,15 @@ src/main/java/it/unicam/cs/mpgc/rpg118708/
 ├── model/                  # Combatant, Player, Enemy, Boss, Stats, Inventory
 │                           # Item (astratta), Potion, Amulet, Scroll, Talisman
 │                           # Room, Zone, NPC, Trap
+│                           # CombatItemContext (interfaccia)
 │   └── exception/          # InvalidNameException, InvalidStatsException
 ├── persistence/            # GamePersistence (interfaccia), XmlGamePersistence, SlotInfo
 └── view/
+    │   GameScene           # interfaccia comune a tutte le scene
     ├── combat/             # CombatScene, CombatSpriteRenderer, CombatVictoryScreen, CombatDefeatScreen
-    ├── exploration/        # ExplorationScene, ExplorationRenderer
+    ├── exploration/        # ExplorationScene, ExplorationRenderer, PlayerPhysics
+    │                       # ExplorationInteractionHandler, HudRenderer, RoomEntityRenderer
+    │                       # SceneRenderer (interfaccia)
     └── menu/               # StartScene, SaveSlotScene, VictoryScene
 ```
 
