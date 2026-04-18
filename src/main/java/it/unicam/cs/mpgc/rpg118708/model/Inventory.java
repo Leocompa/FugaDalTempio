@@ -55,18 +55,28 @@ public class Inventory {
     }
 
     /**
-     * @return vista non modificabile degli oggetti correnti
+     * Restituisce una vista non modificabile degli oggetti correnti.
+     *
+     * @return lista non modificabile degli oggetti nell'inventario
      */
     public List<Item> getItems() {
         return Collections.unmodifiableList(items);
     }
 
-    /** @return {@code true} se l'inventario ha raggiunto la capienza massima */
+    /**
+     * Verifica se l'inventario ha raggiunto la capienza massima.
+     *
+     * @return {@code true} se non è possibile aggiungere altri oggetti
+     */
     public boolean isFull() {
         return items.size() >= MAX_SIZE;
     }
 
-    /** @return il numero di oggetti attualmente nell'inventario */
+    /**
+     * Restituisce il numero di oggetti attualmente nell'inventario.
+     *
+     * @return numero di oggetti presenti
+     */
     public int size() {
         return items.size();
     }

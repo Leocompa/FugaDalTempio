@@ -16,6 +16,9 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
+    /** Costruisce l'istanza principale dell'applicazione (richiesto da JavaFX). */
+    public Main() {}
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Fuga dal Tempio");
@@ -31,6 +34,11 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Avvia l'applicazione JavaFX.
+     *
+     * @param args argomenti della riga di comando (non utilizzati)
+     */
     public static void main(String[] args) {
         launch(args);
     }

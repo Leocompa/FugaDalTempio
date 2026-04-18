@@ -37,10 +37,16 @@ public class Zone {
         this.currentRoomIndex = 0;
     }
 
-    /** Aggiunge una stanza in coda alla sequenza della zona. */
+    /**
+     * Aggiunge una stanza in coda alla sequenza della zona.
+     *
+     * @param room la stanza da aggiungere
+     */
     public void addRoom(Room room) { rooms.add(room); }
 
     /**
+     * Restituisce la stanza attualmente attiva nella zona.
+     *
      * @return la stanza corrente, o {@code null} se l'indice è fuori range
      */
     public Room getCurrentRoom() {
@@ -64,6 +70,8 @@ public class Zone {
     }
 
     /**
+     * Verifica se la stanza corrente è l'ultima della zona.
+     *
      * @return {@code true} se la stanza corrente è l'ultima della zona
      */
     public boolean isLastRoom() {
@@ -71,6 +79,8 @@ public class Zone {
     }
 
     /**
+     * Verifica se tutte le stanze della zona sono state ripulite dai nemici.
+     *
      * @return {@code true} se tutte le stanze della zona sono state ripulite
      */
     public boolean allRoomsCleared() {
@@ -90,11 +100,32 @@ public class Zone {
         return false;
     }
 
+    /** Restituisce l'identificatore univoco della zona. @return id della zona */
     public String getId() { return id; }
+
+    /** Restituisce il nome visualizzato della zona. @return nome della zona */
     public String getName() { return name; }
+
+    /** Restituisce la lista di stanze della zona. @return lista di stanze */
     public List<Room> getRooms() { return rooms; }
+
+    /** Indica se la zona è stata marcata come completata. @return {@code true} se completata */
     public boolean isCompleted() { return completed; }
+
+    /**
+     * Imposta lo stato di completamento della zona.
+     *
+     * @param completed {@code true} se la zona è da considerarsi completata
+     */
     public void setCompleted(boolean completed) { this.completed = completed; }
+
+    /** Restituisce l'indice della stanza corrente. @return indice 0-based della stanza corrente */
     public int getCurrentRoomIndex() { return currentRoomIndex; }
+
+    /**
+     * Imposta l'indice della stanza corrente (usato dal caricamento da slot).
+     *
+     * @param index il nuovo indice di stanza
+     */
     public void setCurrentRoomIndex(int index) { this.currentRoomIndex = index; }
 }

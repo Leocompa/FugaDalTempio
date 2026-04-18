@@ -44,12 +44,20 @@ public class GameManager {
         this.combatManager = new CombatManager(player);
     }
 
-    /** @return la zona attualmente attiva */
+    /**
+     * Restituisce la zona attualmente attiva.
+     *
+     * @return la zona corrente
+     */
     public Zone getCurrentZone() {
         return zones.get(currentZoneIndex);
     }
 
-    /** @return la stanza attualmente attiva nella zona corrente */
+    /**
+     * Restituisce la stanza attualmente attiva nella zona corrente.
+     *
+     * @return la stanza corrente
+     */
     public Room getCurrentRoom() {
         return getCurrentZone().getCurrentRoom();
     }
@@ -126,10 +134,18 @@ public class GameManager {
         state = GameState.EXPLORING;
     }
 
-    /** @return {@code true} se lo stato corrente è {@link GameState#GAME_OVER} */
+    /**
+     * Verifica se la partita è terminata con una sconfitta.
+     *
+     * @return {@code true} se lo stato corrente è {@link GameState#GAME_OVER}
+     */
     public boolean isGameOver() { return state == GameState.GAME_OVER; }
 
-    /** @return {@code true} se lo stato corrente è {@link GameState#VICTORY} */
+    /**
+     * Verifica se la partita è terminata con una vittoria.
+     *
+     * @return {@code true} se lo stato corrente è {@link GameState#VICTORY}
+     */
     public boolean isVictory() { return state == GameState.VICTORY; }
 
     /**
@@ -144,13 +160,42 @@ public class GameManager {
     /** Incrementa di uno il contatore dei nemici sconfitti nella partita corrente. */
     public void registerEnemyDefeated() { totalEnemiesDefeated++; }
 
+    /** Restituisce il giocatore della partita corrente. @return il giocatore */
     public Player getPlayer() { return player; }
+
+    /** Restituisce la lista ordinata di zone che compongono il mondo. @return lista di zone */
     public List<Zone> getZones() { return zones; }
+
+    /** Restituisce l'indice della zona corrente nella lista delle zone. @return indice zona corrente */
     public int getCurrentZoneIndex() { return currentZoneIndex; }
+
+    /**
+     * Imposta l'indice della zona corrente (usato dal caricamento da slot).
+     *
+     * @param index il nuovo indice di zona
+     */
     public void setCurrentZoneIndex(int index) { this.currentZoneIndex = index; }
+
+    /** Restituisce lo stato corrente della partita. @return lo stato di gioco */
     public GameState getState() { return state; }
+
+    /**
+     * Imposta lo stato della partita.
+     *
+     * @param state il nuovo stato
+     */
     public void setState(GameState state) { this.state = state; }
+
+    /** Restituisce il gestore del combattimento corrente. @return il {@link CombatManager} */
     public CombatManager getCombatManager() { return combatManager; }
+
+    /** Restituisce il contatore totale dei nemici sconfitti. @return nemici sconfitti nella partita */
     public int getTotalEnemiesDefeated() { return totalEnemiesDefeated; }
+
+    /**
+     * Imposta il contatore dei nemici sconfitti (usato dal caricamento da slot).
+     *
+     * @param value il nuovo valore del contatore
+     */
     public void setTotalEnemiesDefeated(int value) { this.totalEnemiesDefeated = value; }
 }

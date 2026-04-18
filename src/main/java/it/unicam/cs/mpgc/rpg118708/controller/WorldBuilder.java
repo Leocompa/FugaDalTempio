@@ -20,6 +20,9 @@ import java.util.List;
  */
 public class WorldBuilder implements WorldFactory {
 
+    /** Costruisce un nuovo {@code WorldBuilder} con configurazione hardcoded. */
+    public WorldBuilder() {}
+
     /**
      * {@inheritDoc}
      *

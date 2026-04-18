@@ -74,13 +74,46 @@ public class CombatController {
         };
     }
 
+    /**
+     * Registra la callback invocata al termine di un combattimento vinto.
+     *
+     * @param onVictory la callback di vittoria
+     */
     public void setOnVictory(Runnable onVictory) { this.onVictory = onVictory; }
+
+    /**
+     * Registra la callback invocata al termine di un combattimento perso.
+     *
+     * @param onDefeat la callback di sconfitta
+     */
     public void setOnDefeat(Runnable onDefeat) { this.onDefeat = onDefeat; }
+
+    /**
+     * Registra la callback invocata quando il giocatore fugge dal combattimento.
+     *
+     * @param onFlee la callback di fuga
+     */
     public void setOnFlee(Runnable onFlee) { this.onFlee = onFlee; }
+
+    /**
+     * Registra la callback invocata quando il giocatore sceglie di caricare un salvataggio.
+     *
+     * @param onLoad la callback di caricamento
+     */
     public void setOnLoad(Runnable onLoad) { this.onLoad = onLoad; }
+
+    /** Restituisce il gestore della logica di combattimento. @return il {@link CombatManager} */
     public CombatManager getCombatManager() { return combatManager; }
+
+    /** Restituisce la callback di vittoria. @return la callback, o {@code null} se non registrata */
     public Runnable getOnVictory() { return onVictory; }
+
+    /** Restituisce la callback di sconfitta. @return la callback, o {@code null} se non registrata */
     public Runnable getOnDefeat() { return onDefeat; }
+
+    /** Restituisce la callback di fuga. @return la callback, o {@code null} se non registrata */
     public Runnable getOnFlee() { return onFlee; }
+
+    /** Restituisce la callback di caricamento. @return la callback, o {@code null} se non registrata */
     public Runnable getOnLoad() { return onLoad; }
 }

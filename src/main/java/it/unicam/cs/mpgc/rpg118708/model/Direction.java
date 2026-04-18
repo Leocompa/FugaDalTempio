@@ -5,5 +5,8 @@ package it.unicam.cs.mpgc.rpg118708.model;
  * Utilizzata per determinare il verso degli sprite animati.
  */
 public enum Direction {
-    LEFT, RIGHT
+    /** Orientamento verso sinistra. */
+    LEFT,
+    /** Orientamento verso destra. */
+    RIGHT
 }

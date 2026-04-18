@@ -444,9 +444,18 @@ public class CombatScene implements GameScene {
                 controller.getOnDefeat(), controller.getOnLoad()).getScene());
     }
 
-    /** @return la scena JavaFX pronta per essere impostata sullo stage */
+    /**
+     * Restituisce la scena JavaFX pronta per essere impostata sullo stage.
+     *
+     * @return la scena di combattimento
+     */
     public Scene getScene() { return scene; }
 
-    /** @return l'etichetta del log di combattimento, usata dal controller per aggiungere messaggi */
+    /**
+     * Restituisce l'etichetta del log di combattimento.
+     * Usata dal controller per aggiungere messaggi descrittivi delle azioni.
+     *
+     * @return il label del log
+     */
     public Label getLogLabel() { return logLabel; }
 }

@@ -37,7 +37,11 @@ public class Player implements Combatant {
         this.direction = Direction.RIGHT;
     }
 
-    /** @return {@code true} se il giocatore ha HP maggiori di zero */
+    /**
+     * Verifica se il giocatore è ancora in vita.
+     *
+     * @return {@code true} se gli HP correnti sono maggiori di zero
+     */
     public boolean isAlive() {
         return !stats.isDead();
     }
@@ -98,14 +102,41 @@ public class Player implements Combatant {
     /** Rimuove l'oggetto attualmente equipaggiato. */
     public void unequip() { this.equippedItem = null; }
 
+    /** Restituisce l'oggetto attualmente equipaggiato. @return l'oggetto equipaggiato, o {@code null} */
     public Item getEquippedItem() { return equippedItem; }
+
+    /** Indica se il giocatore ha un oggetto equipaggiato. @return {@code true} se è equipaggiato qualcosa */
     public boolean hasEquipped() { return equippedItem != null; }
+
+    /** Restituisce il nome del personaggio. @return nome del giocatore */
     public String getName() { return name; }
+
+    /** Restituisce le statistiche di combattimento del giocatore. @return le statistiche */
     public Stats getStats() { return stats; }
+
+    /** Restituisce l'inventario del giocatore. @return l'inventario */
     public Inventory getInventory() { return inventory; }
+
+    /** Restituisce la coordinata X del giocatore nella scena. @return posizione orizzontale */
     public int getX() { return x; }
+
+    /** Restituisce la coordinata Y del giocatore nella scena. @return posizione verticale */
     public int getY() { return y; }
+
+    /** Restituisce la direzione corrente del personaggio. @return la direzione */
     public Direction getDirection() { return direction; }
+
+    /**
+     * Imposta la coordinata X del giocatore.
+     *
+     * @param x la nuova posizione orizzontale
+     */
     public void setX(int x) { this.x = x; }
+
+    /**
+     * Imposta la direzione del personaggio.
+     *
+     * @param direction la nuova direzione
+     */
     public void setDirection(Direction direction) { this.direction = direction; }
 }

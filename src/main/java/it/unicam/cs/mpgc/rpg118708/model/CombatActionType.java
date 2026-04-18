@@ -11,8 +11,12 @@ package it.unicam.cs.mpgc.rpg118708.model;
  * </ul>
  */
 public enum CombatActionType {
+    /** Attacco base, sempre disponibile. */
     ATTACK,
+    /** Attacco potenziato con numero limitato di usi per combattimento. */
     SPECIAL,
+    /** Cura tramite pozione (giocatore) o rigenerazione (nemico). */
     HEAL,
+    /** Tentativo di fuga dal combattimento. */
     FLEE
 }

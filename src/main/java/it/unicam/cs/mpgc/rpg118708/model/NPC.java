@@ -64,13 +64,32 @@ public class NPC {
         return null;
     }
 
-    /** @return {@code true} se la ricompensa esiste e non è ancora stata consegnata */
+    /**
+     * Verifica se la ricompensa esiste e non è ancora stata consegnata.
+     *
+     * @return {@code true} se c'è una ricompensa disponibile
+     */
     public boolean hasReward() { return reward != null && !rewardGiven; }
 
+    /** Restituisce l'identificatore univoco dell'NPC. @return id dell'NPC */
     public String getId() { return id; }
+
+    /** Restituisce il nome visualizzato dell'NPC. @return nome dell'NPC */
     public String getName() { return name; }
+
+    /** Restituisce il testo del dialogo mostrato al giocatore. @return testo del dialogo */
     public String getDialogue() { return dialogue; }
+
+    /** Restituisce l'oggetto ricompensa, anche se già consegnato. @return la ricompensa, o {@code null} */
     public Item getReward() { return reward; }
+
+    /** Indica se la ricompensa è già stata consegnata. @return {@code true} se già consegnata */
     public boolean isRewardGiven() { return rewardGiven; }
+
+    /**
+     * Imposta il flag di ricompensa già consegnata (usato dal caricamento da slot).
+     *
+     * @param rewardGiven {@code true} se la ricompensa è da considerarsi già consegnata
+     */
     public void setRewardGiven(boolean rewardGiven) { this.rewardGiven = rewardGiven; }
 }

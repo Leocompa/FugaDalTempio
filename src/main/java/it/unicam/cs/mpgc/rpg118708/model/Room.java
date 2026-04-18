@@ -40,16 +40,32 @@ public class Room {
         this.npcs = new ArrayList<>();
     }
 
-    /** Aggiunge un nemico alla stanza. */
+    /**
+     * Aggiunge un nemico alla stanza.
+     *
+     * @param enemy il nemico da aggiungere
+     */
     public void addEnemy(Enemy enemy) { enemies.add(enemy); }
 
-    /** Aggiunge una trappola alla stanza. */
+    /**
+     * Aggiunge una trappola alla stanza.
+     *
+     * @param trap la trappola da aggiungere
+     */
     public void addTrap(Trap trap) { traps.add(trap); }
 
-    /** Aggiunge un oggetto raccoglibile alla stanza. */
+    /**
+     * Aggiunge un oggetto raccoglibile alla stanza.
+     *
+     * @param item l'oggetto da aggiungere
+     */
     public void addItem(Item item) { items.add(item); }
 
-    /** Aggiunge un NPC alla stanza. */
+    /**
+     * Aggiunge un NPC alla stanza.
+     *
+     * @param npc il personaggio non giocante da aggiungere
+     */
     public void addNpc(NPC npc) { npcs.add(npc); }
 
     /**
@@ -61,16 +77,31 @@ public class Room {
         return enemies.stream().allMatch(e -> !e.isAlive());
     }
 
-    /** Rimuove un oggetto dalla stanza (es. dopo che il giocatore lo raccoglie). */
+    /**
+     * Rimuove un oggetto dalla stanza (es. dopo che il giocatore lo raccoglie).
+     *
+     * @param item l'oggetto da rimuovere
+     */
     public void removeItem(Item item) { items.remove(item); }
 
     /** Rimuove tutti gli oggetti dalla stanza (usato dalla persistenza al caricamento). */
     public void clearItems() { items.clear(); }
 
+    /** Restituisce l'identificatore univoco della stanza. @return id della stanza */
     public String getId() { return id; }
+
+    /** Restituisce il nome visualizzato della stanza. @return nome della stanza */
     public String getName() { return name; }
+
+    /** Restituisce i nemici presenti nella stanza. @return lista non modificabile di nemici */
     public List<Enemy> getEnemies() { return Collections.unmodifiableList(enemies); }
+
+    /** Restituisce le trappole presenti nella stanza. @return lista non modificabile di trappole */
     public List<Trap> getTraps() { return Collections.unmodifiableList(traps); }
+
+    /** Restituisce gli oggetti raccoglibili presenti nella stanza. @return lista non modificabile di oggetti */
     public List<Item> getItems() { return Collections.unmodifiableList(items); }
+
+    /** Restituisce gli NPC presenti nella stanza. @return lista non modificabile di NPC */
     public List<NPC> getNpcs() { return Collections.unmodifiableList(npcs); }
 }

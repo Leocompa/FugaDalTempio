@@ -11,8 +11,12 @@ package it.unicam.cs.mpgc.rpg118708.model;
  * </ul>
  */
 public enum ItemType {
+    /** Pozione che ripristina HP durante o fuori dal combattimento. */
     POTION,
+    /** Amuleto equipaggiabile che aumenta difesa e HP massimi. */
     AMULET,
+    /** Pergamena consumabile che aumenta l'attacco per un turno. */
     SCROLL,
+    /** Talismano consumabile che dimezza il prossimo danno ricevuto. */
     TALISMAN
 }

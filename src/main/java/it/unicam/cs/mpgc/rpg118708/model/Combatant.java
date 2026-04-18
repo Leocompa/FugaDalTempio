@@ -9,13 +9,25 @@ package it.unicam.cs.mpgc.rpg118708.model;
  */
 public interface Combatant {
 
-    /** @return il nome visualizzato dell'entità */
+    /**
+     * Restituisce il nome visualizzato dell'entità.
+     *
+     * @return il nome dell'entità
+     */
     String getName();
 
-    /** @return le statistiche di combattimento dell'entità */
+    /**
+     * Restituisce le statistiche di combattimento dell'entità.
+     *
+     * @return le statistiche dell'entità
+     */
     Stats getStats();
 
-    /** @return {@code true} se l'entità è ancora in vita */
+    /**
+     * Verifica se l'entità è ancora in vita.
+     *
+     * @return {@code true} se gli HP correnti sono maggiori di zero
+     */
     boolean isAlive();
 
     /**

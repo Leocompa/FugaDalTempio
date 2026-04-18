@@ -18,6 +18,7 @@ import it.unicam.cs.mpgc.rpg118708.model.CombatItemContext;
  */
 public class CombatManager implements CombatItemContext {
 
+    /** Numero massimo di cure che un nemico può utilizzare per combattimento. */
     public static final int MAX_ENEMY_HEAL_USES = 2;
 
     private final Player player;
@@ -223,32 +224,74 @@ public class CombatManager implements CombatItemContext {
                 .orElse(null);
     }
 
-    /** @return il giocatore associato a questo manager */
+    /**
+     * Restituisce il giocatore associato a questo manager.
+     *
+     * @return il giocatore
+     */
     public Player getPlayer() { return player; }
 
-    /** @return il nemico del combattimento corrente, o {@code null} se il combattimento non è iniziato */
+    /**
+     * Restituisce il nemico del combattimento corrente.
+     *
+     * @return il nemico, o {@code null} se il combattimento non è ancora iniziato
+     */
     public Enemy getEnemy() { return enemy; }
 
-    /** @return {@code true} se è il turno del giocatore */
+    /**
+     * Indica se è il turno del giocatore.
+     *
+     * @return {@code true} se è il turno del giocatore
+     */
     public boolean isPlayerTurn() { return playerTurn; }
 
-    /** @return l'esito più recente del combattimento */
+    /**
+     * Restituisce l'esito più recente del combattimento.
+     *
+     * @return l'ultimo {@link CombatResult} calcolato
+     */
     public CombatResult getLastResult() { return lastResult; }
 
-    /** @return il numero di mosse speciali ancora disponibili per il giocatore nel turno corrente */
+    /**
+     * Restituisce il numero di mosse speciali ancora disponibili per il giocatore.
+     *
+     * @return usi speciali rimanenti nel combattimento corrente
+     */
     public int getSpecialUsesLeft() { return specialUsesLeft; }
 
-    /** @return il numero massimo di mosse speciali disponibili per il combattimento corrente */
+    /**
+     * Restituisce il numero massimo di mosse speciali per il combattimento corrente.
+     *
+     * @return limite di usi speciali assegnato all'inizio del combattimento
+     */
     public int getMaxSpecialUses() { return maxSpecialUses; }
 
-    /** @return il bonus di attacco temporaneo attivo (da pergamena), azzerato dopo l'uso */
+    /**
+     * Restituisce il bonus di attacco temporaneo attivo (da pergamena).
+     * Il valore viene azzerato automaticamente dopo l'uso.
+     *
+     * @return il bonus temporaneo corrente
+     */
     public int getTemporaryAttackBonus() { return temporaryAttackBonus; }
 
-    /** @return {@code true} se il talismano è attivo e dimezzerà il prossimo attacco nemico */
+    /**
+     * Indica se il talismano è attivo e dimezzerà il prossimo attacco nemico.
+     *
+     * @return {@code true} se la riduzione del danno è attiva
+     */
     public boolean isDamageReductionActive() { return damageReductionActive; }
-    /** @return il numero di cure ancora disponibili per il nemico nel combattimento corrente */
+
+    /**
+     * Restituisce il numero di cure ancora disponibili per il nemico.
+     *
+     * @return cure rimanenti al nemico nel combattimento corrente
+     */
     public int getEnemyHealUsesLeft() { return enemyHealUsesLeft; }
 
-    /** @return l'ultima azione eseguita dal nemico, o {@code null} se il nemico non ha ancora agito */
+    /**
+     * Restituisce l'ultima azione eseguita dal nemico.
+     *
+     * @return l'ultima {@link CombatAction} del nemico, o {@code null} se non ha ancora agito
+     */
     public CombatAction getLastEnemyAction() { return lastEnemyAction; }
 }

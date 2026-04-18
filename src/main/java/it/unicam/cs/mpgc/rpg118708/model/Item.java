@@ -77,7 +77,12 @@ public abstract class Item {
         };
     }
 
+    /** Restituisce l'identificatore univoco dell'oggetto. @return id dell'oggetto */
     public String getId()   { return id; }
+
+    /** Restituisce il nome visualizzato dell'oggetto. @return nome dell'oggetto */
     public String getName() { return name; }
+
+    /** Restituisce il valore numerico dell'oggetto (es. HP curati, bonus attacco). @return valore dell'oggetto */
     public int getValue()   { return value; }
 }

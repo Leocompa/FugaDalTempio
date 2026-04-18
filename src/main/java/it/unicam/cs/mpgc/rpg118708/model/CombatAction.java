@@ -29,8 +29,15 @@ public class CombatAction {
         this.power = power;
     }
 
+    /** Restituisce l'identificatore univoco dell'azione. @return id dell'azione */
     public String getId() { return id; }
+
+    /** Restituisce il testo visualizzato nel pulsante di combattimento. @return label dell'azione */
     public String getLabel() { return label; }
+
+    /** Restituisce la categoria di questa azione. @return il tipo di azione */
     public CombatActionType getType() { return type; }
+
+    /** Restituisce il bonus numerico aggiunto all'attacco o alla cura base. @return potenza dell'azione */
     public int getPower() { return power; }
 }

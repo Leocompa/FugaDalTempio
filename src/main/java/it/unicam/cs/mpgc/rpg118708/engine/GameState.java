@@ -12,9 +12,14 @@ package it.unicam.cs.mpgc.rpg118708.engine;
  * </ul>
  */
 public enum GameState {
+    /** Giocatore in esplorazione nella scena a piattaforme. */
     EXPLORING,
+    /** Combattimento a turni in corso. */
     COMBAT,
+    /** Giocatore in dialogo con un NPC. */
     DIALOGUE,
+    /** Giocatore sconfitto, schermata di game over attiva. */
     GAME_OVER,
+    /** Giocatore ha completato il tempio. */
     VICTORY
 }

@@ -153,15 +153,31 @@ public class ExplorationScene implements GameScene {
     /** @return la scena JavaFX pronta per essere impostata sullo stage */
     public Scene getScene() { return scene; }
 
-    /** Registra la callback invocata quando il giocatore entra in combattimento. */
+    /**
+     * Registra la callback invocata quando il giocatore entra in combattimento.
+     *
+     * @param cb la callback da invocare
+     */
     public void setOnEnterCombat(Runnable cb) { handler.setOnEnterCombat(cb); }
 
-    /** Registra la callback invocata quando tutte le stanze della zona sono completate. */
+    /**
+     * Registra la callback invocata quando tutte le stanze della zona sono completate.
+     *
+     * @param cb la callback da invocare
+     */
     public void setOnZoneComplete(Runnable cb){ handler.setOnZoneComplete(cb); }
 
-    /** Registra la callback invocata quando il giocatore richiede il salvataggio. */
+    /**
+     * Registra la callback invocata quando il giocatore richiede il salvataggio.
+     *
+     * @param cb la callback da invocare
+     */
     public void setOnSave(Runnable cb)        { this.onSave = cb; }
 
-    /** Registra la callback invocata quando il giocatore torna al menu principale. */
+    /**
+     * Registra la callback invocata quando il giocatore torna al menu principale.
+     *
+     * @param cb la callback da invocare
+     */
     public void setOnExit(Runnable cb)        { this.onExit = cb; }
 }

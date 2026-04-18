@@ -56,6 +56,9 @@ public class Boss extends Enemy {
     @Override
     public void onDamageTaken() { checkEnrage(); }
 
+    /** Restituisce il titolo del boss (es. "Guardiano del Tempio"). @return titolo del boss */
     public String getTitle() { return title; }
+
+    /** Indica se il boss è entrato in stato di enrage. @return {@code true} se enraged è attivo */
     public boolean isEnraged() { return enraged; }
 }
