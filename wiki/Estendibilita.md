@@ -79,10 +79,12 @@ Per un nuovo tipo di nemico con comportamento diverso (es. un nemico che si cura
 
 1. Creare `Shield extends Item` con `getType()` che restituisce il valore dell'enum corrispondente
 2. Aggiungere il valore a `ItemType` (usato solo per la serializzazione XML)
-3. Aggiungere la gestione dell'effetto in `CombatManager.useItem()` o `equipItem()` tramite `instanceof Shield`
+3. Implementare `applyInCombat(Player, CombatItemContext)` con l'effetto desiderato
 4. Aggiornare `Item.create()` per supportare il nuovo tipo nella deserializzazione
 
-Le classi esistenti (`Potion`, `Amulet`, `Scroll`, `Talisman`, `CombatManager`) non vengono modificate se non per aggiungere il nuovo `case` in `useItem()`/`equipItem()`. Il campo `value` è il parametro numerico dell'effetto (quantità di cura, bonus, ecc.).
+**Caso speciale — oggetti curativi**: se il nuovo oggetto cura il giocatore tramite l'azione `HEAL`, sovrascrivere anche `isHealing()` restituendo `true`. `CombatManager` lo troverà automaticamente senza richiedere modifiche. Per oggetti equipaggiabili o usabili tramite il pulsante "Equipaggia", aggiungere il riconoscimento nel metodo `handleEquip()` di `CombatScene`.
+
+Il campo `value` è il parametro numerico dell'effetto (quantità di cura, bonus, ecc.).
 
 ---
 
