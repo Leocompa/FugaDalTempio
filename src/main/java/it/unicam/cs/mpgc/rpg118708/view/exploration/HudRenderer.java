@@ -166,7 +166,7 @@ class HudRenderer {
     private void renderInventorySummary(int hudY, int spacing) {
         Player player = gameManager.getPlayer();
         long potions = player.getInventory().getItems().stream()
-                .filter(i -> i instanceof Potion).count();
+                .filter(Item::isHealing).count();
         gc.setFill(Color.web("#EF9F27"));
         gc.fillText("pozioni:", spacing * 6, hudY);
         gc.setFill(Color.web("#888"));

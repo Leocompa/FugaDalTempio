@@ -121,7 +121,7 @@ public class GameController {
     private void handleVictory() {
         gameManager.endCombat();
         gameManager.registerEnemyDefeated();
-        boolean lastRoom = gameManager.getCurrentZone().getCurrentRoomIndex() == 4;
+        boolean lastRoom = gameManager.getCurrentZone().isLastRoom();
         boolean allEnemiesDead = gameManager.getCurrentRoom().getEnemies()
                 .stream().noneMatch(Enemy::isAlive);
         if (lastRoom && allEnemiesDead) {

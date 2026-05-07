@@ -15,7 +15,7 @@ public class InvalidStatsException extends RuntimeException {
     /**
      * Crea l'eccezione con un messaggio descrittivo del vincolo violato.
      *
-     * @param message descrizione del problema (es. "maxHp deve essere positivo")
+     * @param message descrizione del problema
      */
     public InvalidStatsException(String message) {
         super(message);

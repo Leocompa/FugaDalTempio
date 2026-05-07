@@ -59,7 +59,7 @@ public class CombatController {
         return switch (type) {
             case ATTACK  -> new CombatAction("attack",  "Attacca",      CombatActionType.ATTACK,  0);
             case SPECIAL -> new CombatAction("special", "Lama d'ombra", CombatActionType.SPECIAL, 5);
-            case HEAL    -> new CombatAction("heal",    "Usa pozione",  CombatActionType.HEAL,   15);
+            case HEAL    -> new CombatAction("heal",    "Usa pozione",  CombatActionType.HEAL,    0);
             case FLEE    -> new CombatAction("flee",    "Fuggi",        CombatActionType.FLEE,    0);
         };
     }

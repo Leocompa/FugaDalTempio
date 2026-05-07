@@ -19,18 +19,21 @@ public class Potion extends Item {
     @Override
     public ItemType getType() { return ItemType.POTION; }
 
+    @Override
+    public boolean isHealing() { return true; }
+
     /**
      * Ripristina HP al giocatore e rimuove la pozione dall'inventario.
      * Il contesto non viene utilizzato: l'effetto agisce direttamente sul giocatore.
      *
      * @param player  il giocatore che usa la pozione
      * @param context non utilizzato
-     * @return stringa vuota (il messaggio viene generato dalla view)
+     * @return messaggio descrittivo dell'effetto
      */
     @Override
     public String applyInCombat(Player player, CombatItemContext context) {
         player.heal(getValue());
         player.getInventory().removeItem(this);
-        return "";
+        return "Pozione usata — +" + getValue() + " HP!";
     }
 }

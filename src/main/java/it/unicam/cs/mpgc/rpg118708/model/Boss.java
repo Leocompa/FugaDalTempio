@@ -3,7 +3,7 @@ package it.unicam.cs.mpgc.rpg118708.model;
 import java.util.List;
 
 /**
- * Nemico speciale che funge da boss di zona.
+ * Nemico speciale che funge da boss nella stanza.
  *
  * <p>Estende {@link Enemy} aggiungendo il meccanismo di <em>enrage</em>:
  * quando gli HP scendono sotto il 50% del massimo, il boss entra in stato
@@ -22,7 +22,7 @@ public class Boss extends Enemy {
      *
      * @param id               identificatore univoco
      * @param name             nome visualizzato
-     * @param title            titolo (es. "Signore del Caos")
+     * @param title            titolo
      * @param stats            statistiche di combattimento
      * @param xpReward         XP assegnati alla sconfitta
      * @param availableActions azioni disponibili durante il combattimento
@@ -56,7 +56,7 @@ public class Boss extends Enemy {
     @Override
     public void onDamageTaken() { checkEnrage(); }
 
-    /** Restituisce il titolo del boss (es. "Guardiano del Tempio"). @return titolo del boss */
+    /** Restituisce il titolo del boss. @return titolo del boss */
     public String getTitle() { return title; }
 
     /** Indica se il boss è entrato in stato di enrage. @return {@code true} se enraged è attivo */

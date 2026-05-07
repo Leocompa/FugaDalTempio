@@ -30,13 +30,13 @@ Il giocatore veste i panni di un ladro intrappolato nel Tempio di Persepoli e de
 ```bash
 git clone https://github.com/Leocompa/FugaDalTempio.git
 cd FugaDalTempio
-./gradlew run
+gradle run
 ```
 
 Su Windows:
 
 ```bat
-gradlew.bat run
+gradle run
 ```
 
 ---
@@ -44,10 +44,10 @@ gradlew.bat run
 ## Come eseguire i test
 
 ```bash
-./gradlew test
+gradle test
 ```
 
-La suite JUnit 5 copre i package `model` ed `engine` (110+ test). I risultati vengono salvati in `build/reports/tests/test/index.html`.
+La suite JUnit 5 copre i package `model` ed `engine` (118 test). I risultati vengono salvati in `build/reports/tests/test/index.html`.
 
 ---
 
@@ -66,7 +66,7 @@ src/main/java/it/unicam/cs/mpgc/rpg118708/
 ├── persistence/            # GamePersistence (interfaccia), XmlGamePersistence, SlotInfo
 └── view/
     │   GameScene           # interfaccia comune a tutte le scene
-    │   SceneBackground     # utility condivisa per il rendering dello sfondo
+    │   SceneBackground     # utility condivisa per il rendering del fondo di mattoni
     ├── combat/             # CombatScene, CombatSpriteRenderer, CombatVictoryScreen, CombatDefeatScreen
     ├── exploration/        # ExplorationScene, ExplorationRenderer, PlayerPhysics
     │                       # ExplorationInteractionHandler, HudRenderer, RoomEntityRenderer
@@ -80,7 +80,9 @@ src/main/java/it/unicam/cs/mpgc/rpg118708/
 
 Durante lo sviluppo è stato utilizzato **Claude (Anthropic)** tramite Claude Code CLI.
 
-Non essendo un appassionato di videogiochi, ho usato l'AI come primo supporto per scegliere il tipo di gioco da sviluppare. Nelle fasi successive ha operato come assistente tecnico per la revisione del codice, l'applicazione dei principi SOLID e la documentazione.
+Non essendo un appassionato di videogiochi, ho usato l'AI come primo supporto per scegliere il tipo di gioco da sviluppare.
+Nelle fasi successive ha operato come assistente tecnico per la revisione del codice, la verifica del rispetto dei principi SOLID, la documentazione e
+nelle problematiche riscontrate minori.
 
 Le scelte progettuali e il codice principale sono opera mia. Claude ha avuto il ruolo di revisore, non di autore.
 

@@ -46,16 +46,15 @@ public class CombatManager implements CombatItemContext {
     /**
      * Inizializza un nuovo combattimento contro il nemico specificato.
      *
-     * @param enemy     il nemico da affrontare
-     * @param roomIndex l'indice della stanza corrente, usato per determinare
-     *                  il numero di usi speciali disponibili
+     * @param enemy        il nemico da affrontare
+     * @param specialUses  il numero di mosse speciali disponibili per questo combattimento
      */
-    public void startCombat(Enemy enemy, int roomIndex) {
+    public void startCombat(Enemy enemy, int specialUses) {
         this.enemy = enemy;
         this.playerTurn = true;
         this.lastResult = CombatResult.ONGOING;
-        this.maxSpecialUses = Math.max(1, roomIndex);
-        this.specialUsesLeft = this.maxSpecialUses;
+        this.maxSpecialUses = specialUses;
+        this.specialUsesLeft = specialUses;
         this.enemyHealUsesLeft = MAX_ENEMY_HEAL_USES;
         this.lastEnemyAction = null;
     }
@@ -128,9 +127,9 @@ public class CombatManager implements CombatItemContext {
     }
 
     private void handlePlayerHeal(CombatAction action) {
-        Item potion = findPotion();
-        if (potion != null) {
-            potion.applyInCombat(player, this);
+        Item healingItem = findHealingItem();
+        if (healingItem != null) {
+            healingItem.applyInCombat(player, this);
         }
     }
 
@@ -216,10 +215,10 @@ public class CombatManager implements CombatItemContext {
         player.takeDamage(damage);
     }
 
-    /** Cerca la prima pozione disponibile nell'inventario del giocatore. */
-    private Item findPotion() {
+    /** Cerca il primo oggetto curativo disponibile nell'inventario del giocatore. */
+    private Item findHealingItem() {
         return player.getInventory().getItems().stream()
-                .filter(i -> i instanceof Potion)
+                .filter(Item::isHealing)
                 .findFirst()
                 .orElse(null);
     }

@@ -130,6 +130,12 @@ public class Stats {
     public int getXpToNextLevel() { return xpToNextLevel; }
 
     public void setCurrentHp(int currentHp) { this.currentHp = Math.max(0, Math.min(maxHp, currentHp)); }
+    /**
+     * Imposta gli HP massimi. Non aggiorna {@code currentHp}: invocare
+     * {@link #setCurrentHp} separatamente per mantenere la coerenza dei valori.
+     *
+     * @param maxHp i nuovi HP massimi
+     */
     public void setMaxHp(int maxHp) { this.maxHp = maxHp; }
     public void setAttack(int attack) { this.attack = attack; }
     public void setDefense(int defense) { this.defense = defense; }

@@ -17,7 +17,7 @@ public class Amulet extends Item {
      *
      * @param id    identificatore univoco
      * @param name  nome visualizzato
-     * @param value non utilizzato per questo tipo (convenzione: 0)
+     * @param value non utilizzato per questo tipo
      */
     public Amulet(String id, String name, int value) {
         super(id, name, value);
@@ -30,8 +30,8 @@ public class Amulet extends Item {
      * Gli amuleti si equipaggiano tramite flusso separato: questo metodo
      * non produce effetti e restituisce una stringa vuota.
      *
-     * @param player  il giocatore (non utilizzato)
-     * @param context il contesto di combattimento (non utilizzato)
+     * @param player  il giocatore
+     * @param context il contesto di combattimento
      * @return stringa vuota
      */
     @Override

@@ -372,10 +372,10 @@ public class CombatScene implements GameScene {
     }
 
     private void refreshHealButton(Player player) {
-        long potions = player.getInventory().getItems().stream()
-                .filter(i -> i instanceof Potion).count();
-        healButton.setText(potions > 0 ? "Usa pozione (" + potions + ")" : "Usa pozione");
-        applyButtonStyle(healButton, potions > 0, "#0F6E56", "#5DCAA5");
+        long healingItems = player.getInventory().getItems().stream()
+                .filter(Item::isHealing).count();
+        healButton.setText(healingItems > 0 ? "Usa pozione (" + healingItems + ")" : "Usa pozione");
+        applyButtonStyle(healButton, healingItems > 0, "#0F6E56", "#5DCAA5");
     }
 
     private void refreshEquipButton(Player player) {

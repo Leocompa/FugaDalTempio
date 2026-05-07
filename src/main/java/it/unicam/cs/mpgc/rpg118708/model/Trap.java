@@ -9,8 +9,10 @@ package it.unicam.cs.mpgc.rpg118708.model;
  */
 public class Trap {
 
-    private static final int TRAP_WIDTH = 16;
-    private static final int COOLDOWN = 90;
+    private static final int TRAP_WIDTH  = 16;
+    private static final int COOLDOWN    = 90;
+    private static final int PLAYER_W   = 24;
+    private static final int PLAYER_H   = 32;
 
     private final String id;
     private final int damage;
@@ -44,14 +46,12 @@ public class Trap {
             return;
         }
 
-        int px = player.getX();
-        int py = player.getY();
-        int pw = 24;
-        int ph = 32;
+        int px    = player.getX();
+        int py    = player.getY();
         int trapH = 14;
 
-        boolean overlapsX = px + pw > trapX + 4 && px < trapX + TRAP_WIDTH - 4;
-        boolean overlapsY = py + ph > trapY && py < trapY + trapH;
+        boolean overlapsX = px + PLAYER_W > trapX + 4 && px < trapX + TRAP_WIDTH - 4;
+        boolean overlapsY = py + PLAYER_H > trapY && py < trapY + trapH;
 
         if (overlapsX && overlapsY) {
             player.takeDamage(damage);

@@ -11,7 +11,7 @@ public class Talisman extends Item {
      *
      * @param id    identificatore univoco
      * @param name  nome visualizzato
-     * @param value non utilizzato per questo tipo (convenzione: 0)
+     * @param value non utilizzato per questo tipo
      */
     public Talisman(String id, String name, int value) {
         super(id, name, value);

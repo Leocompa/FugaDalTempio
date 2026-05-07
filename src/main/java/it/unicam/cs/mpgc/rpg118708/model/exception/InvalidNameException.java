@@ -15,7 +15,7 @@ public class InvalidNameException extends RuntimeException {
     /**
      * Crea l'eccezione con un messaggio descrittivo del campo non valido.
      *
-     * @param message descrizione del problema (es. "il nome del giocatore non può essere vuoto")
+     * @param message descrizione del problema
      */
     public InvalidNameException(String message) {
         super(message);

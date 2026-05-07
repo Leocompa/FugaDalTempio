@@ -85,4 +85,14 @@ public abstract class Item {
 
     /** Restituisce il valore numerico dell'oggetto (es. HP curati, bonus attacco). @return valore dell'oggetto */
     public int getValue()   { return value; }
+
+    /**
+     * Indica se questo oggetto è un consumabile curativo.
+     * Usato dal motore di combattimento per trovare oggetti da utilizzare
+     * nell'azione {@link CombatActionType#HEAL}: aggiungere un nuovo tipo
+     * curativo richiede solo sovrascrivere questo metodo nella sottoclasse.
+     *
+     * @return {@code true} se l'oggetto cura il giocatore quando usato
+     */
+    public boolean isHealing() { return false; }
 }

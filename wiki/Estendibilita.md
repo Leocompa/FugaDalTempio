@@ -63,11 +63,13 @@ In tutti i casi, `GameController` riceve la factory tramite costruttore e non sa
 
 `Enemy` può essere estesa per aggiungere comportamenti speciali. `Boss` ne è già un esempio: aggiunge l'enrage senza modificare `Enemy` o `CombatManager`.
 
-Per un nuovo tipo di nemico con comportamento diverso (es. un nemico che schiva gli attacchi):
+Il meccanismo è il metodo hook `onDamageTaken()`, che `CombatManager` invoca dopo ogni danno inflitto. La classe base non fa nulla; `Boss` lo sovrascrive per attivare l'enrage. `CombatManager` non usa mai `instanceof`.
+
+Per un nuovo tipo di nemico con comportamento diverso (es. un nemico che si cura automaticamente):
 
 1. Estendere `Enemy`
-2. Sovrascrivere `chooseAction()` o aggiungere metodi specifici
-3. Aggiornare `CombatManager` per riconoscere il nuovo tipo tramite `instanceof` (come già avviene per `Boss`)
+2. Sovrascrivere `onDamageTaken()` per reagire ai danni ricevuti, e/o `chooseAction()` per una logica di scelta diversa
+3. `CombatManager` non richiede modifiche
 
 ---
 
