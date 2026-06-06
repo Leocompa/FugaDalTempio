@@ -3,17 +3,25 @@
 ## Struttura dei package
 
 ```
-it.unicam.cs.mpgc.rpg118708
-├── Main.java
-├── controller/
-├── engine/
-├── model/
-│   └── exception/
-├── persistence/
-└── view/
-    ├── combat/
-    ├── exploration/
-    └── menu/
+src/
+├── main/
+│   ├── java/it/unicam/cs/mpgc/rpg118708/
+│   │   ├── Main.java
+│   │   ├── controller/
+│   │   ├── engine/
+│   │   ├── model/
+│   │   │   └── exception/
+│   │   ├── persistence/
+│   │   └── view/
+│   │       ├── combat/
+│   │       ├── exploration/
+│   │       └── menu/
+│   └── resources/
+│       └── game.css
+└── test/
+    └── java/it/unicam/cs/mpgc/rpg118708/
+        ├── engine/
+        └── model/
 ```
 
 La separazione in package rispecchia la separazione delle responsabilità:

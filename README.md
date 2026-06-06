@@ -54,24 +54,32 @@ La suite JUnit 5 copre i package `model` ed `engine` (118 test). I risultati ven
 ## Struttura del progetto
 
 ```
-src/main/java/it/unicam/cs/mpgc/rpg118708/
-├── Main.java               # Punto di ingresso e composition root
-├── controller/             # GameController, CombatController, WorldBuilder, WorldFactory
-├── engine/                 # GameManager, CombatManager, GameState, CombatResult
-├── model/                  # Combatant, Player, Enemy, Boss, Stats, Inventory
-│                           # Item (astratta), Potion, Amulet, Scroll, Talisman
-│                           # Room, Zone, NPC, Trap
-│                           # CombatItemContext (interfaccia)
-│   └── exception/          # InvalidNameException, InvalidStatsException
-├── persistence/            # GamePersistence (interfaccia), XmlGamePersistence, SlotInfo
-└── view/
-    │   GameScene           # interfaccia comune a tutte le scene
-    │   SceneBackground     # utility condivisa per il rendering del fondo di mattoni
-    ├── combat/             # CombatScene, CombatSpriteRenderer, CombatVictoryScreen, CombatDefeatScreen
-    ├── exploration/        # ExplorationScene, ExplorationRenderer, PlayerPhysics
-    │                       # ExplorationInteractionHandler, HudRenderer, RoomEntityRenderer
-    │                       # SceneRenderer (interfaccia)
-    └── menu/               # StartScene, SaveSlotScene, VictoryScene
+src/
+├── main/
+│   ├── java/it/unicam/cs/mpgc/rpg118708/
+│   │   ├── Main.java               # Punto di ingresso e composition root
+│   │   ├── controller/             # GameController, CombatController, WorldBuilder, WorldFactory
+│   │   ├── engine/                 # GameManager, CombatManager, GameState, CombatResult
+│   │   ├── model/                  # Combatant, Player, Enemy, Boss, Stats, Inventory
+│   │   │                           # Item (astratta), Potion, Amulet, Scroll, Talisman
+│   │   │                           # Room, Zone, NPC, Trap, CombatItemContext (interfaccia)
+│   │   │   └── exception/          # InvalidNameException, InvalidStatsException
+│   │   ├── persistence/            # GamePersistence (interfaccia), XmlGamePersistence, SlotInfo
+│   │   └── view/
+│   │       │   GameScene           # interfaccia comune a tutte le scene
+│   │       │   SceneBackground     # utility condivisa per il rendering del fondo di mattoni
+│   │       ├── combat/             # CombatScene, CombatSpriteRenderer, CombatVictoryScreen, CombatDefeatScreen
+│   │       ├── exploration/        # ExplorationScene, ExplorationRenderer, PlayerPhysics
+│   │       │                       # ExplorationInteractionHandler, HudRenderer, RoomEntityRenderer
+│   │       │                       # SceneRenderer (interfaccia)
+│   │       └── menu/               # StartScene, SaveSlotScene, VictoryScene
+│   └── resources/
+│       └── game.css                # Stili grafici centralizzati per tutte le scene JavaFX
+└── test/
+    └── java/it/unicam/cs/mpgc/rpg118708/
+        ├── engine/                 # CombatManagerTest
+        └── model/                  # BossTest, InventoryTest, NPCTest, PlayerTest,
+                                    # RoomTest, StatsTest, TrapTest, ValidationTest, ZoneTest
 ```
 
 ---
