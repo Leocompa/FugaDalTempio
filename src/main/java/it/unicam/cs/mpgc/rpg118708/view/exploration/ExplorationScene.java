@@ -68,12 +68,13 @@ public class ExplorationScene implements GameScene {
 
     private void buildScene(Canvas canvas) {
         VBox root = new VBox();
-        root.setStyle("-fx-background-color: #0d0d14;");
+        root.getStyleClass().add("combat-root");
         root.getChildren().add(canvas);
 
         javafx.geometry.Rectangle2D screen =
                 javafx.stage.Screen.getPrimary().getVisualBounds();
         scene = new Scene(root, screen.getWidth(), screen.getHeight());
+        scene.getStylesheets().add(getClass().getResource("/game.css").toExternalForm());
 
         scene.setOnKeyPressed(e -> {
             keysPressed.add(e.getCode());
@@ -85,10 +86,15 @@ public class ExplorationScene implements GameScene {
         scene.setOnKeyReleased(e -> keysPressed.remove(e.getCode()));
 
         gameLoop = new AnimationTimer() {
+            private long lastNow = 0;
+
             @Override
             public void handle(long now) {
+                if (lastNow == 0) { lastNow = now; return; }
+                double dt = Math.min((now - lastNow) / 1_000_000_000.0, 0.05);
+                lastNow = now;
                 frame++;
-                update();
+                update(dt);
                 renderer.render(frame,
                         handler.isNearExit(), handler.isNearEntrance(),
                         physics.isOnGround(), keysPressed);
@@ -117,13 +123,13 @@ public class ExplorationScene implements GameScene {
         });
     }
 
-    private void update() {
+    private void update(double dt) {
         if (handleGameOverInput()) return;
         if (gameManager.getState() != GameState.EXPLORING) return;
 
         Player player = gameManager.getPlayer();
-        physics.handleMovement(player, keysPressed, W - PLAYER_W);
-        physics.applyPhysics(player, keysPressed, GROUND_Y);
+        physics.handleMovement(player, keysPressed, W - PLAYER_W, dt);
+        physics.applyPhysics(player, keysPressed, GROUND_Y, dt);
         if (handler.checkTrapCollision(player)) return;
         if (handler.checkEnemyCollision(player)) return;
         handler.updateNavigationHints(player);

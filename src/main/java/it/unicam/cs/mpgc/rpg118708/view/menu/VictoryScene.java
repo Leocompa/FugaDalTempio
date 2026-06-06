@@ -15,7 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Screen;
 
 /**
@@ -52,30 +51,21 @@ public class VictoryScene implements GameScene {
         CombatSpriteRenderer.drawPlayer(playerCanvas.getGraphicsContext2D(), stats.getLevel());
 
         Label levelBadge = new Label("LV. " + stats.getLevel());
-        levelBadge.setFont(new Font("Monospaced", 16));
-        levelBadge.setStyle("-fx-text-fill: #EF9F27;");
+        levelBadge.getStyleClass().add("label-gold");
 
         VBox spriteBox = new VBox(10, playerCanvas, levelBadge);
         spriteBox.setAlignment(Pos.CENTER);
         spriteBox.setPadding(new Insets(20));
-        spriteBox.setStyle("""
-                -fx-background-color: rgba(8, 20, 8, 0.80);
-                -fx-border-color: #1D9E75;
-                -fx-border-width: 1.5;
-                -fx-border-radius: 6;
-                -fx-background-radius: 6;
-                """);
+        spriteBox.getStyleClass().add("sprite-box-victory");
 
         Label title = new Label("Fuga riuscita!");
-        title.setFont(new Font("Monospaced", 30));
-        title.setStyle("-fx-text-fill: #EF9F27;");
+        title.getStyleClass().add("label-title-md");
 
         Label subtitle = new Label("Il ladro " + player.getName() + " è fuggito con il tesoro.");
-        subtitle.setFont(new Font("Monospaced", 15));
-        subtitle.setStyle("-fx-text-fill: #888780;");
+        subtitle.getStyleClass().add("label-subtitle");
 
         Label divider = new Label("──────────────────────");
-        divider.setStyle("-fx-text-fill: #2a2a42;");
+        divider.getStyleClass().add("label-divider");
 
         Label statsLabel = new Label(
                 "Livello finale:  " + stats.getLevel()          + "\n" +
@@ -84,19 +74,10 @@ public class VictoryScene implements GameScene {
                 "ATK:             " + stats.getAttack()          + "\n" +
                 "DEF:             " + stats.getDefense()
         );
-        statsLabel.setFont(new Font("Monospaced", 15));
-        statsLabel.setStyle("-fx-text-fill: #ccc;");
+        statsLabel.getStyleClass().add("label-body");
 
         Button menuBtn = new Button("Torna al menu  ▶");
-        menuBtn.setStyle("""
-                -fx-background-color: #854F0B;
-                -fx-text-fill: #FAEEDA;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 15px;
-                -fx-background-radius: 4;
-                -fx-padding: 12px 28px;
-                -fx-cursor: hand;
-                """);
+        menuBtn.getStyleClass().add("btn-gold");
         menuBtn.setOnAction(e -> { if (onMenu != null) onMenu.run(); });
 
         VBox infoBox = new VBox(16, title, subtitle, divider, statsLabel, menuBtn);
@@ -106,16 +87,12 @@ public class VictoryScene implements GameScene {
         mainRow.setAlignment(Pos.CENTER);
         mainRow.setPadding(new Insets(48));
         mainRow.setMaxWidth(720);
-        mainRow.setStyle("""
-                -fx-background-color: rgba(8, 8, 16, 0.90);
-                -fx-border-color: #2a2a42;
-                -fx-border-width: 2;
-                -fx-border-radius: 8;
-                -fx-background-radius: 8;
-                """);
+        mainRow.getStyleClass().add("game-panel");
 
         StackPane root = new StackPane(bg, mainRow);
-        return new Scene(root, W, H);
+        Scene scene = new Scene(root, W, H);
+        scene.getStylesheets().add(getClass().getResource("/game.css").toExternalForm());
+        return scene;
     }
 
     /** @return la scena JavaFX pronta per essere impostata sullo stage */

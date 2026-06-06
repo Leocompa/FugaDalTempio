@@ -15,7 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Screen;
 
 /**
@@ -50,37 +49,24 @@ public class CombatVictoryScreen implements GameScene {
         Stats ps = player.getStats();
 
         Label title = new Label("Nemico sconfitto!");
-        title.setFont(new Font("Monospaced", 22));
-        title.setStyle("-fx-text-fill: #5DCAA5;");
+        title.getStyleClass().add("label-title-victory");
 
         HBox contentRow = buildContentRow(player, enemy, leveledUp, ps);
 
         Button continueBtn = new Button("Continua  ▶");
-        continueBtn.setStyle("""
-                -fx-background-color: #1D9E75;
-                -fx-text-fill: #E1F5EE;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
-                -fx-background-radius: 4;
-                -fx-padding: 10px 24px;
-                -fx-cursor: hand;
-                """);
+        continueBtn.getStyleClass().add("btn-victory");
         continueBtn.setOnAction(e -> { if (onContinue != null) onContinue.run(); });
 
         VBox panel = new VBox(20, title, contentRow, continueBtn);
         panel.setAlignment(Pos.CENTER);
         panel.setPadding(new Insets(48));
         panel.setMaxWidth(640);
-        panel.setStyle("""
-                -fx-background-color: rgba(8, 8, 16, 0.90);
-                -fx-border-color: #1D9E75;
-                -fx-border-width: 2;
-                -fx-border-radius: 8;
-                -fx-background-radius: 8;
-                """);
+        panel.getStyleClass().add("game-panel-victory");
 
         StackPane root = new StackPane(bg, panel);
-        return new Scene(root, W, H);
+        Scene scene = new Scene(root, W, H);
+        scene.getStylesheets().add(getClass().getResource("/game.css").toExternalForm());
+        return scene;
     }
 
     private HBox buildContentRow(Player player, Enemy enemy, boolean leveledUp, Stats ps) {
@@ -88,21 +74,12 @@ public class CombatVictoryScreen implements GameScene {
         CombatSpriteRenderer.drawPlayer(playerCanvas.getGraphicsContext2D(), ps.getLevel());
 
         Label levelBadge = new Label("LV. " + ps.getLevel());
-        levelBadge.setFont(new Font("Monospaced", leveledUp ? 18 : 14));
-        levelBadge.setStyle(leveledUp
-                ? "-fx-text-fill: #FAC775;"
-                : "-fx-text-fill: #7F77DD;");
+        levelBadge.getStyleClass().add(leveledUp ? "label-levelup-badge" : "label-level-badge");
 
         VBox spriteBox = new VBox(8, playerCanvas, levelBadge);
         spriteBox.setAlignment(Pos.CENTER);
         spriteBox.setPadding(new Insets(16, 20, 16, 20));
-        spriteBox.setStyle("""
-                -fx-background-color: rgba(8, 20, 8, 0.75);
-                -fx-border-color: #1D9E75;
-                -fx-border-width: 1;
-                -fx-border-radius: 6;
-                -fx-background-radius: 6;
-                """);
+        spriteBox.getStyleClass().add("sprite-box-combat-victory");
 
         VBox statsBox = buildStatsBox(enemy, leveledUp, ps);
 
@@ -113,8 +90,7 @@ public class CombatVictoryScreen implements GameScene {
 
     private VBox buildStatsBox(Enemy enemy, boolean leveledUp, Stats ps) {
         Label xpLabel = new Label("+" + enemy.getXpReward() + " XP guadagnati");
-        xpLabel.setFont(new Font("Monospaced", 14));
-        xpLabel.setStyle("-fx-text-fill: #EF9F27;");
+        xpLabel.getStyleClass().add("label-gold-sm");
 
         VBox box = new VBox(10);
         box.setAlignment(Pos.CENTER_LEFT);
@@ -122,22 +98,19 @@ public class CombatVictoryScreen implements GameScene {
 
         if (leveledUp) {
             Label lvLabel = new Label("⬆  Livello aumentato!");
-            lvLabel.setFont(new Font("Monospaced", 16));
-            lvLabel.setStyle("-fx-text-fill: #FAC775;");
+            lvLabel.getStyleClass().add("label-levelup");
 
             Label statsLabel = new Label(
                     "HP max:  " + ps.getMaxHp()  + "\n" +
                     "ATK:     " + ps.getAttack()  + "\n" +
                     "DEF:     " + ps.getDefense() + "\n" +
                     "XP:      " + ps.getCurrentXp() + " / " + ps.getXpToNextLevel());
-            statsLabel.setFont(new Font("Monospaced", 14));
-            statsLabel.setStyle("-fx-text-fill: #ccc;");
+            statsLabel.getStyleClass().add("label-body-md");
             box.getChildren().addAll(lvLabel, statsLabel);
         } else {
             Label xpProgress = new Label(
                     "XP: " + ps.getCurrentXp() + " / " + ps.getXpToNextLevel());
-            xpProgress.setFont(new Font("Monospaced", 12));
-            xpProgress.setStyle("-fx-text-fill: #888;");
+            xpProgress.getStyleClass().add("label-xp-progress");
             box.getChildren().add(xpProgress);
         }
         return box;

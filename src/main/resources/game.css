@@ -1,0 +1,292 @@
+/* ============================================================
+   game.css  —  FugaDalTempio JavaFX stylesheet
+   Centralizza tutti gli stili inline della view in classi
+   semantiche riutilizzabili. Caricato da ogni buildScene().
+   ============================================================ */
+
+/* ---- Panels ---- */
+
+.game-panel {
+    -fx-background-color: rgba(8, 8, 16, 0.90);
+    -fx-border-color: #2a2a42;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.game-panel-victory {
+    -fx-background-color: rgba(8, 8, 16, 0.90);
+    -fx-border-color: #1D9E75;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.game-panel-defeat {
+    -fx-background-color: rgba(16, 4, 4, 0.92);
+    -fx-border-color: #5a2222;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.sprite-box-victory {
+    -fx-background-color: rgba(8, 20, 8, 0.80);
+    -fx-border-color: #1D9E75;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.sprite-box-combat-victory {
+    -fx-background-color: rgba(8, 20, 8, 0.75);
+    -fx-border-color: #1D9E75;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.sprite-box-defeat {
+    -fx-background-color: rgba(20, 8, 8, 0.75);
+    -fx-border-color: #5a2222;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.slot-card {
+    -fx-background-color: #13131f;
+    -fx-border-color: #2a2a40;
+    -fx-border-width: 0.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+/* ---- Combat layout regions ---- */
+
+.combat-root    { -fx-background-color: #0d0d14; }
+.combat-hud     { -fx-background-color: #13131f; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0; }
+.combat-battle  { -fx-background-color: #11111c; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0; }
+.combat-inv     { -fx-background-color: #0a0a12; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0; }
+.combat-log     { -fx-background-color: #0f0f1a; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0; }
+.combat-actions { -fx-background-color: #0d0d14; }
+
+/* ---- Buttons ---- */
+
+.btn-primary {
+    -fx-background-color: #534AB7;
+    -fx-text-fill: #EEEDFE;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 16px;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-primary-sm {
+    -fx-background-color: #534AB7;
+    -fx-text-fill: #EEEDFE;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 14px;
+    -fx-background-radius: 4;
+    -fx-padding: 10px 24px;
+    -fx-cursor: hand;
+}
+
+.btn-primary:disabled,
+.btn-primary-sm:disabled {
+    -fx-background-color: #2a2a40;
+    -fx-text-fill: #555;
+}
+
+.btn-secondary {
+    -fx-background-color: #1e1e30;
+    -fx-text-fill: #AFA9EC;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 16px;
+    -fx-border-color: #534AB7;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-secondary-sm {
+    -fx-background-color: #1e1e30;
+    -fx-text-fill: #AFA9EC;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 14px;
+    -fx-border-color: #534AB7;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 10px 24px;
+    -fx-cursor: hand;
+}
+
+.btn-danger {
+    -fx-background-color: #1e1e30;
+    -fx-text-fill: #E24B4A;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 16px;
+    -fx-border-color: #5a2222;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-victory {
+    -fx-background-color: #1D9E75;
+    -fx-text-fill: #E1F5EE;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 14px;
+    -fx-background-radius: 4;
+    -fx-padding: 10px 24px;
+    -fx-cursor: hand;
+}
+
+.btn-defeat {
+    -fx-background-color: #A32D2D;
+    -fx-text-fill: #FCEBEB;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 14px;
+    -fx-background-radius: 4;
+    -fx-padding: 10px 24px;
+    -fx-cursor: hand;
+}
+
+.btn-gold {
+    -fx-background-color: #854F0B;
+    -fx-text-fill: #FAEEDA;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 15px;
+    -fx-background-radius: 4;
+    -fx-padding: 12px 28px;
+    -fx-cursor: hand;
+}
+
+.btn-slot-action {
+    -fx-background-color: #534AB7;
+    -fx-text-fill: #EEEDFE;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 15px;
+    -fx-background-radius: 4;
+    -fx-padding: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-slot-action:disabled {
+    -fx-background-color: #2a2a40;
+    -fx-text-fill: #555;
+}
+
+/* Combat action buttons */
+
+.btn-combat-attack {
+    -fx-background-color: #534AB7;
+    -fx-text-fill: #EEEDFE;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 15px;
+    -fx-background-radius: 4;
+    -fx-padding: 10px;
+    -fx-cursor: hand;
+}
+
+.btn-combat-special {
+    -fx-background-color: #854F0B;
+    -fx-text-fill: #EF9F27;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 15px;
+    -fx-background-radius: 4;
+    -fx-padding: 10px;
+    -fx-cursor: hand;
+}
+
+.btn-combat-heal {
+    -fx-background-color: #0F6E56;
+    -fx-text-fill: #5DCAA5;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 15px;
+    -fx-background-radius: 4;
+    -fx-padding: 10px;
+    -fx-cursor: hand;
+}
+
+.btn-combat-flee {
+    -fx-background-color: #993C1D;
+    -fx-text-fill: #F0997B;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 15px;
+    -fx-background-radius: 4;
+    -fx-padding: 10px;
+    -fx-cursor: hand;
+}
+
+.btn-combat-equip {
+    -fx-background-color: #1e1e30;
+    -fx-text-fill: #AFA9EC;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 15px;
+    -fx-background-radius: 4;
+    -fx-padding: 10px;
+    -fx-cursor: hand;
+}
+
+.btn-combat-attack:disabled,
+.btn-combat-special:disabled,
+.btn-combat-heal:disabled,
+.btn-combat-flee:disabled,
+.btn-combat-equip:disabled {
+    -fx-background-color: #2a2a40;
+    -fx-text-fill: #555;
+}
+
+/* ---- Labels ---- */
+
+.label-title         { -fx-font-family: "Monospaced"; -fx-font-size: 38px; -fx-text-fill: #EF9F27; }
+.label-title-md      { -fx-font-family: "Monospaced"; -fx-font-size: 30px; -fx-text-fill: #EF9F27; }
+.label-title-slot    { -fx-font-family: "Monospaced"; -fx-font-size: 24px; -fx-text-fill: #EF9F27; }
+.label-title-victory { -fx-font-family: "Monospaced"; -fx-font-size: 22px; -fx-text-fill: #5DCAA5; }
+.label-title-defeat  { -fx-font-family: "Monospaced"; -fx-font-size: 26px; -fx-text-fill: #E24B4A; }
+.label-subtitle      { -fx-font-family: "Monospaced"; -fx-font-size: 16px; -fx-text-fill: #888780; }
+.label-body          { -fx-font-family: "Monospaced"; -fx-font-size: 15px; -fx-text-fill: #ccc; }
+.label-body-md       { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #ccc; }
+.label-body-sm       { -fx-font-family: "Monospaced"; -fx-font-size: 13px; -fx-text-fill: #ccc; }
+.label-error         { -fx-font-family: "Monospaced"; -fx-font-size: 13px; -fx-text-fill: #E24B4A; }
+.label-accent        { -fx-font-family: "Monospaced"; -fx-font-size: 16px; -fx-text-fill: #AFA9EC; }
+.label-accent-sm     { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #AFA9EC; }
+.label-muted         { -fx-font-family: "Monospaced"; -fx-font-size: 13px; -fx-text-fill: #555; }
+.label-muted-md      { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #888; }
+.label-divider       { -fx-text-fill: #2a2a42; }
+.label-gold          { -fx-font-family: "Monospaced"; -fx-font-size: 16px; -fx-text-fill: #EF9F27; }
+.label-gold-sm       { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #EF9F27; }
+.label-xp-progress   { -fx-font-family: "Monospaced"; -fx-font-size: 12px; -fx-text-fill: #888; }
+.label-levelup       { -fx-font-family: "Monospaced"; -fx-font-size: 16px; -fx-text-fill: #FAC775; }
+.label-levelup-badge { -fx-font-family: "Monospaced"; -fx-font-size: 18px; -fx-text-fill: #FAC775; }
+.label-level-badge   { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #7F77DD; }
+.label-player-hp     { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #7F77DD; }
+.label-enemy-hp      { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #D85A30; }
+.label-stats         { -fx-font-family: "Monospaced"; -fx-font-size: 13px; -fx-text-fill: #555; }
+.label-vs            { -fx-font-family: "Monospaced"; -fx-font-size: 24px; -fx-text-fill: #3a3a55; }
+.label-turn          { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #AFA9EC; }
+.label-inv-title     { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #534AB7; }
+.label-inv-text      { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #888; }
+.label-equipped-title { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #EF9F27; -fx-padding: 0 0 0 24; }
+.label-slot-empty    { -fx-font-family: "Monospaced"; -fx-font-size: 14px; -fx-text-fill: #3a3a55; }
+.label-defeat-msg    { -fx-font-family: "Monospaced"; -fx-font-size: 13px; -fx-text-fill: #888; }
+.label-defeated-icon { -fx-font-family: "Monospaced"; -fx-font-size: 22px; -fx-text-fill: #E24B4A; -fx-opacity: 0.7; }
+
+/* ---- Text Field ---- */
+
+.name-field {
+    -fx-background-color: #1e1e30;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #555;
+    -fx-border-color: #3a3a55;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 16px;
+    -fx-padding: 10px;
+}

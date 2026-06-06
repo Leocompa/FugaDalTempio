@@ -13,7 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -65,7 +64,7 @@ public class CombatScene implements GameScene {
 
     private void buildScene() {
         VBox root = new VBox(0);
-        root.setStyle("-fx-background-color: #0d0d14;");
+        root.getStyleClass().add("combat-root");
 
         HBox hudRow = buildHudRow();
         HBox battleArea = buildBattleArea();
@@ -77,17 +76,17 @@ public class CombatScene implements GameScene {
         javafx.geometry.Rectangle2D screen =
                 javafx.stage.Screen.getPrimary().getVisualBounds();
         scene = new Scene(root, screen.getWidth(), screen.getHeight());
+        scene.getStylesheets().add(getClass().getResource("/game.css").toExternalForm());
     }
 
     private HBox buildHudRow() {
         turnLabel = new Label("turno del ladro");
-        turnLabel.setFont(new Font("Monospaced", 14));
-        turnLabel.setStyle("-fx-text-fill: #AFA9EC;");
+        turnLabel.getStyleClass().add("label-turn");
 
         HBox hud = new HBox(turnLabel);
         hud.setAlignment(Pos.CENTER_LEFT);
         hud.setPadding(new Insets(10, 20, 10, 20));
-        hud.setStyle("-fx-background-color: #13131f; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0;");
+        hud.getStyleClass().add("combat-hud");
         return hud;
     }
 
@@ -100,20 +99,16 @@ public class CombatScene implements GameScene {
                 controller.getCombatManager().getEnemy());
 
         playerHpLabel = new Label("HP: 30 / 30");
-        playerHpLabel.setFont(new Font("Monospaced", 14));
-        playerHpLabel.setStyle("-fx-text-fill: #7F77DD;");
+        playerHpLabel.getStyleClass().add("label-player-hp");
 
         playerStatsLabel = new Label("ATK: 10  DEF: 3  LV: 1");
-        playerStatsLabel.setFont(new Font("Monospaced", 13));
-        playerStatsLabel.setStyle("-fx-text-fill: #555;");
+        playerStatsLabel.getStyleClass().add("label-stats");
 
         enemyHpLabel = new Label("HP: ?? / ??");
-        enemyHpLabel.setFont(new Font("Monospaced", 14));
-        enemyHpLabel.setStyle("-fx-text-fill: #D85A30;");
+        enemyHpLabel.getStyleClass().add("label-enemy-hp");
 
         enemyStatsLabel = new Label("ATK: ?  DEF: ?");
-        enemyStatsLabel.setFont(new Font("Monospaced", 13));
-        enemyStatsLabel.setStyle("-fx-text-fill: #555;");
+        enemyStatsLabel.getStyleClass().add("label-stats");
 
         VBox playerBox = new VBox(8, playerCanvas, playerHpLabel, playerStatsLabel);
         playerBox.setAlignment(Pos.CENTER);
@@ -122,61 +117,55 @@ public class CombatScene implements GameScene {
         enemyBox.setAlignment(Pos.CENTER);
 
         Label vsLabel = new Label("VS");
-        vsLabel.setFont(new Font("Monospaced", 24));
-        vsLabel.setStyle("-fx-text-fill: #3a3a55;");
+        vsLabel.getStyleClass().add("label-vs");
 
         HBox battle = new HBox(60, playerBox, vsLabel, enemyBox);
         battle.setAlignment(Pos.CENTER);
         battle.setPadding(new Insets(30));
-        battle.setStyle("-fx-background-color: #11111c; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0;");
+        battle.getStyleClass().add("combat-battle");
         battle.setPrefHeight(260);
         return battle;
     }
 
     private HBox buildInventoryArea() {
         Label invTitle = new Label("Inventario:");
-        invTitle.setFont(new Font("Monospaced", 14));
-        invTitle.setStyle("-fx-text-fill: #534AB7;");
+        invTitle.getStyleClass().add("label-inv-title");
 
         inventoryLabel = new Label("vuoto");
-        inventoryLabel.setFont(new Font("Monospaced", 14));
-        inventoryLabel.setStyle("-fx-text-fill: #888;");
+        inventoryLabel.getStyleClass().add("label-inv-text");
 
         Label equippedTitle = new Label("Equipaggiato:");
-        equippedTitle.setFont(new Font("Monospaced", 14));
-        equippedTitle.setStyle("-fx-text-fill: #EF9F27; -fx-padding: 0 0 0 24;");
+        equippedTitle.getStyleClass().add("label-equipped-title");
 
         Label equippedLabel = new Label("nessuno");
-        equippedLabel.setFont(new Font("Monospaced", 14));
-        equippedLabel.setStyle("-fx-text-fill: #888;");
+        equippedLabel.getStyleClass().add("label-inv-text");
         equippedLabel.setId("equipped-label");
 
         HBox row = new HBox(12, invTitle, inventoryLabel, equippedTitle, equippedLabel);
         row.setPadding(new Insets(8, 20, 8, 20));
         row.setAlignment(Pos.CENTER_LEFT);
-        row.setStyle("-fx-background-color: #0a0a12; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0;");
+        row.getStyleClass().add("combat-inv");
         return row;
     }
 
     private VBox buildLogArea() {
         logLabel = new Label("Il nemico ti fissa. Cosa fai?");
-        logLabel.setFont(new Font("Monospaced", 15));
-        logLabel.setStyle("-fx-text-fill: #ccc;");
+        logLabel.getStyleClass().add("label-body");
         logLabel.setWrapText(true);
 
         VBox log = new VBox(logLabel);
         log.setPadding(new Insets(16, 20, 16, 20));
         log.setPrefHeight(80);
-        log.setStyle("-fx-background-color: #0f0f1a; -fx-border-color: #2a2a40; -fx-border-width: 0 0 0.5 0;");
+        log.getStyleClass().add("combat-log");
         return log;
     }
 
     private HBox buildActionArea() {
-        attackButton = buildButton("Attacca", "#534AB7", "#EEEDFE");
-        specialButton = buildButton("Lama d'ombra", "#854F0B", "#EF9F27");
-        healButton = buildButton("Usa pozione", "#0F6E56", "#5DCAA5");
-        fleeButton = buildButton("Fuggi", "#993C1D", "#F0997B");
-        equipButton = buildButton("Equipaggia", "#1e1e30", "#AFA9EC");
+        attackButton = buildButton("Attacca", "btn-combat-attack");
+        specialButton = buildButton("Lama d'ombra", "btn-combat-special");
+        healButton = buildButton("Usa pozione", "btn-combat-heal");
+        fleeButton = buildButton("Fuggi", "btn-combat-flee");
+        equipButton = buildButton("Equipaggia", "btn-combat-equip");
 
         attackButton.setOnAction(e -> handleAction(CombatActionType.ATTACK));
         specialButton.setOnAction(e -> handleAction(CombatActionType.SPECIAL));
@@ -187,22 +176,14 @@ public class CombatScene implements GameScene {
         HBox actions = new HBox(12, attackButton, specialButton, healButton, fleeButton, equipButton);
         actions.setAlignment(Pos.CENTER);
         actions.setPadding(new Insets(16));
-        actions.setStyle("-fx-background-color: #0d0d14;");
+        actions.getStyleClass().add("combat-actions");
         return actions;
     }
 
-    private Button buildButton(String text, String bg, String fg) {
+    private Button buildButton(String text, String styleClass) {
         Button btn = new Button(text);
         btn.setPrefWidth(160);
-        btn.setStyle(String.format("""
-                -fx-background-color: %s;
-                -fx-text-fill: %s;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 15px;
-                -fx-background-radius: 4;
-                -fx-padding: 10px;
-                -fx-cursor: hand;
-                """, bg, fg));
+        btn.getStyleClass().add(styleClass);
         return btn;
     }
 
@@ -367,21 +348,20 @@ public class CombatScene implements GameScene {
     }
 
     private void refreshSpecialButton() {
-        boolean available = controller.getCombatManager().getSpecialUsesLeft() > 0;
-        applyButtonStyle(specialButton, available, "#854F0B", "#EF9F27");
+        applyButtonStyle(specialButton, controller.getCombatManager().getSpecialUsesLeft() > 0);
     }
 
     private void refreshHealButton(Player player) {
         long healingItems = player.getInventory().getItems().stream()
                 .filter(Item::isHealing).count();
         healButton.setText(healingItems > 0 ? "Usa pozione (" + healingItems + ")" : "Usa pozione");
-        applyButtonStyle(healButton, healingItems > 0, "#0F6E56", "#5DCAA5");
+        applyButtonStyle(healButton, healingItems > 0);
     }
 
     private void refreshEquipButton(Player player) {
         boolean hasUsable = player.getInventory().getItems().stream()
                 .anyMatch(i -> i instanceof Amulet || i instanceof Scroll || i instanceof Talisman);
-        applyButtonStyle(equipButton, hasUsable, "#1e1e30", "#AFA9EC");
+        applyButtonStyle(equipButton, hasUsable);
     }
 
     private void refreshInventoryLabel(Player player) {
@@ -398,25 +378,8 @@ public class CombatScene implements GameScene {
         }
     }
 
-    /**
-     * Applica lo stile a un pulsante di azione in base allo stato abilitato/disabilitato.
-     *
-     * @param btn       il pulsante da aggiornare
-     * @param enabled   {@code true} per abilitare il pulsante con i colori attivi
-     * @param activeBg  colore di sfondo quando abilitato
-     * @param activeFg  colore del testo quando abilitato
-     */
-    private void applyButtonStyle(Button btn, boolean enabled, String activeBg, String activeFg) {
+    private void applyButtonStyle(Button btn, boolean enabled) {
         btn.setDisable(!enabled);
-        btn.setStyle(String.format("""
-                -fx-background-color: %s;
-                -fx-text-fill: %s;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 15px;
-                -fx-background-radius: 4;
-                -fx-padding: 10px;
-                -fx-cursor: hand;
-                """, enabled ? activeBg : "#2a2a40", enabled ? activeFg : "#555"));
     }
 
     private void showEndButtons(boolean victory) {

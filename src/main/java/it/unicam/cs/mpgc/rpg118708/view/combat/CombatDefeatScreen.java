@@ -14,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Screen;
 
 /**
@@ -53,58 +52,32 @@ public class CombatDefeatScreen implements GameScene {
         playerCanvas.setOpacity(0.30);
 
         Label defeatedLabel = new Label("✝");
-        defeatedLabel.setFont(new Font("Monospaced", 22));
-        defeatedLabel.setStyle("-fx-text-fill: #E24B4A; -fx-opacity: 0.7;");
+        defeatedLabel.getStyleClass().add("label-defeated-icon");
 
         VBox spriteBox = new VBox(8, playerCanvas, defeatedLabel);
         spriteBox.setAlignment(Pos.CENTER);
         spriteBox.setPadding(new Insets(16, 20, 16, 20));
-        spriteBox.setStyle("""
-                -fx-background-color: rgba(20, 8, 8, 0.75);
-                -fx-border-color: #5a2222;
-                -fx-border-width: 1;
-                -fx-border-radius: 6;
-                -fx-background-radius: 6;
-                """);
+        spriteBox.getStyleClass().add("sprite-box-defeat");
 
         Label title = new Label("Sei caduto...");
-        title.setFont(new Font("Monospaced", 26));
-        title.setStyle("-fx-text-fill: #E24B4A;");
+        title.getStyleClass().add("label-title-defeat");
 
         Label msg = new Label("Il tempio ha inghiottito la tua anima.");
-        msg.setFont(new Font("Monospaced", 13));
-        msg.setStyle("-fx-text-fill: #888;");
+        msg.getStyleClass().add("label-defeat-msg");
 
         Label statsLabel = new Label(
                 "Livello raggiunto:  " + ps.getLevel()     + "\n" +
                 "XP accumulati:      " + ps.getCurrentXp());
-        statsLabel.setFont(new Font("Monospaced", 13));
-        statsLabel.setStyle("-fx-text-fill: #ccc;");
+        statsLabel.getStyleClass().add("label-body-sm");
 
         Button retryBtn = new Button("Ricomincia dall'inizio");
         retryBtn.setPrefWidth(260);
-        retryBtn.setStyle("""
-                -fx-background-color: #A32D2D;
-                -fx-text-fill: #FCEBEB;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
-                -fx-background-radius: 4;
-                -fx-padding: 10px 24px;
-                -fx-cursor: hand;
-                """);
+        retryBtn.getStyleClass().add("btn-defeat");
         retryBtn.setOnAction(e -> { if (onRetry != null) onRetry.run(); });
 
         Button loadBtn = new Button("Carica ultimo salvataggio");
         loadBtn.setPrefWidth(260);
-        loadBtn.setStyle("""
-                -fx-background-color: #534AB7;
-                -fx-text-fill: #EEEDFE;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
-                -fx-background-radius: 4;
-                -fx-padding: 10px 24px;
-                -fx-cursor: hand;
-                """);
+        loadBtn.getStyleClass().add("btn-primary-sm");
         loadBtn.setOnAction(e -> { if (onLoad != null) onLoad.run(); });
 
         VBox infoBox = new VBox(16, title, msg, statsLabel, retryBtn, loadBtn);
@@ -114,16 +87,12 @@ public class CombatDefeatScreen implements GameScene {
         mainRow.setAlignment(Pos.CENTER);
         mainRow.setPadding(new Insets(48));
         mainRow.setMaxWidth(680);
-        mainRow.setStyle("""
-                -fx-background-color: rgba(16, 4, 4, 0.92);
-                -fx-border-color: #5a2222;
-                -fx-border-width: 2;
-                -fx-border-radius: 8;
-                -fx-background-radius: 8;
-                """);
+        mainRow.getStyleClass().add("game-panel-defeat");
 
         StackPane root = new StackPane(bg, mainRow);
-        return new Scene(root, W, H);
+        Scene scene = new Scene(root, W, H);
+        scene.getStylesheets().add(getClass().getResource("/game.css").toExternalForm());
+        return scene;
     }
 
     /** @return la scena JavaFX pronta per essere impostata sullo stage */

@@ -12,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Screen;
 
 /**
@@ -47,95 +46,47 @@ public class StartScene implements GameScene {
         Canvas bg = SceneBackground.createCanvas(W, H);
 
         Label title = new Label("Fuga dal Tempio");
-        title.setFont(new Font("Monospaced", 38));
-        title.setStyle("-fx-text-fill: #EF9F27;");
+        title.getStyleClass().add("label-title");
 
         Label subtitle = new Label("Un ladro. Un tempio. Nessuna via d'uscita.");
-        subtitle.setFont(new Font("Monospaced", 16));
-        subtitle.setStyle("-fx-text-fill: #888780;");
+        subtitle.getStyleClass().add("label-subtitle");
 
         Label nameLabel = new Label("Inserisci il nome del tuo ladro:");
-        nameLabel.setFont(new Font("Monospaced", 15));
-        nameLabel.setStyle("-fx-text-fill: #ccc;");
+        nameLabel.getStyleClass().add("label-body");
 
         nameField = new TextField();
         nameField.setPromptText("nome...");
         nameField.setMaxWidth(240);
-        nameField.setStyle("""
-                -fx-background-color: #1e1e30;
-                -fx-text-fill: #ffffff;
-                -fx-prompt-text-fill: #555;
-                -fx-border-color: #3a3a55;
-                -fx-border-radius: 4;
-                -fx-background-radius: 4;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 16px;
-                -fx-padding: 10px;
-                """);
+        nameField.getStyleClass().add("name-field");
 
         newGameButton = new Button("Nuova partita");
         newGameButton.setPrefWidth(280);
-        newGameButton.setStyle("""
-                -fx-background-color: #534AB7;
-                -fx-text-fill: #EEEDFE;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 16px;
-                -fx-border-radius: 4;
-                -fx-background-radius: 4;
-                -fx-padding: 12px;
-                -fx-cursor: hand;
-                """);
+        newGameButton.getStyleClass().add("btn-primary");
 
         loadGameButton = new Button("Carica partita");
         loadGameButton.setPrefWidth(280);
-        loadGameButton.setStyle("""
-                -fx-background-color: #1e1e30;
-                -fx-text-fill: #AFA9EC;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 16px;
-                -fx-border-color: #534AB7;
-                -fx-border-radius: 4;
-                -fx-background-radius: 4;
-                -fx-padding: 12px;
-                -fx-cursor: hand;
-                """);
+        loadGameButton.getStyleClass().add("btn-secondary");
 
         exitButton = new Button("Esci");
         exitButton.setPrefWidth(280);
-        exitButton.setStyle("""
-                -fx-background-color: #1e1e30;
-                -fx-text-fill: #E24B4A;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 16px;
-                -fx-border-color: #5a2222;
-                -fx-border-radius: 4;
-                -fx-background-radius: 4;
-                -fx-padding: 12px;
-                -fx-cursor: hand;
-                """);
+        exitButton.getStyleClass().add("btn-danger");
         exitButton.setOnAction(e -> javafx.application.Platform.exit());
 
         errorLabel = new Label();
-        errorLabel.setFont(new Font("Monospaced", 13));
-        errorLabel.setStyle("-fx-text-fill: #E24B4A;");
+        errorLabel.getStyleClass().add("label-error");
         errorLabel.setVisible(false);
 
         VBox panel = new VBox(20);
         panel.setAlignment(Pos.CENTER);
         panel.setPadding(new Insets(48));
-        panel.setMaxWidth(440);
-        panel.setStyle("""
-                -fx-background-color: rgba(8, 8, 16, 0.90);
-                -fx-border-color: #2a2a42;
-                -fx-border-width: 2;
-                -fx-border-radius: 6;
-                -fx-background-radius: 6;
-                """);
+        panel.setMaxWidth(500);
+        panel.getStyleClass().add("game-panel");
         panel.getChildren().addAll(title, subtitle, nameLabel, nameField,
                 errorLabel, newGameButton, loadGameButton, exitButton);
 
         StackPane root = new StackPane(bg, panel);
         scene = new Scene(root, W, H);
+        scene.getStylesheets().add(getClass().getResource("/game.css").toExternalForm());
     }
 
     /** @return la scena JavaFX pronta per essere impostata sullo stage */

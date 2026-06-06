@@ -14,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Screen;
 
 import java.util.function.Consumer;
@@ -55,8 +54,7 @@ public class SaveSlotScene implements GameScene {
         Canvas bg = SceneBackground.createCanvas(W, H);
 
         Label title = new Label(isSaveMode ? "Scegli uno slot di salvataggio" : "Scegli una partita da caricare");
-        title.setFont(new Font("Monospaced", 24));
-        title.setStyle("-fx-text-fill: #EF9F27;");
+        title.getStyleClass().add("label-title-slot");
 
         VBox content = new VBox(20);
         content.setAlignment(Pos.CENTER);
@@ -67,17 +65,7 @@ public class SaveSlotScene implements GameScene {
         }
 
         Button backBtn = new Button("← Indietro");
-        backBtn.setStyle("""
-                -fx-background-color: #1e1e30;
-                -fx-text-fill: #AFA9EC;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 14px;
-                -fx-border-color: #534AB7;
-                -fx-border-radius: 4;
-                -fx-background-radius: 4;
-                -fx-padding: 10px 24px;
-                -fx-cursor: hand;
-                """);
+        backBtn.getStyleClass().add("btn-secondary-sm");
         backBtn.setOnAction(e -> { if (onSlotSelected != null) onSlotSelected.accept(-1); });
         content.getChildren().add(backBtn);
 
@@ -85,17 +73,12 @@ public class SaveSlotScene implements GameScene {
         panel.setAlignment(Pos.CENTER);
         panel.setPadding(new Insets(48));
         panel.setMaxWidth(700);
-        panel.setStyle("""
-                -fx-background-color: rgba(8, 8, 16, 0.88);
-                -fx-border-color: #2a2a42;
-                -fx-border-width: 2;
-                -fx-border-radius: 6;
-                -fx-background-radius: 6;
-                """);
+        panel.getStyleClass().add("game-panel");
         panel.getChildren().add(content);
 
         StackPane root = new StackPane(bg, panel);
         scene = new Scene(root, W, H);
+        scene.getStylesheets().add(getClass().getResource("/game.css").toExternalForm());
     }
 
     /**
@@ -114,24 +97,20 @@ public class SaveSlotScene implements GameScene {
         details.setAlignment(Pos.CENTER_LEFT);
 
         Label slotLabel = new Label("Slot " + slot);
-        slotLabel.setFont(new Font("Monospaced", 16));
-        slotLabel.setStyle("-fx-text-fill: #AFA9EC;");
+        slotLabel.getStyleClass().add("label-accent");
 
         if (info != null) {
             Label nameLabel = new Label(info.getPlayerName() + "  —  LV." + info.getLevel()
                     + "  —  Stanza " + info.getRoomNumber());
-            nameLabel.setFont(new Font("Monospaced", 14));
-            nameLabel.setStyle("-fx-text-fill: #ccc;");
+            nameLabel.getStyleClass().add("label-body-md");
 
             Label timeLabel = new Label(info.getTimestamp());
-            timeLabel.setFont(new Font("Monospaced", 13));
-            timeLabel.setStyle("-fx-text-fill: #555;");
+            timeLabel.getStyleClass().add("label-muted");
 
             details.getChildren().addAll(slotLabel, nameLabel, timeLabel);
         } else {
             Label emptyLabel = new Label("— vuoto —");
-            emptyLabel.setFont(new Font("Monospaced", 14));
-            emptyLabel.setStyle("-fx-text-fill: #3a3a55;");
+            emptyLabel.getStyleClass().add("label-slot-empty");
             details.getChildren().addAll(slotLabel, emptyLabel);
         }
 
@@ -139,17 +118,7 @@ public class SaveSlotScene implements GameScene {
         actionBtn.setPrefWidth(140);
         boolean disabled = !isSaveMode && info == null;
         actionBtn.setDisable(disabled);
-        actionBtn.setStyle(String.format("""
-                -fx-background-color: %s;
-                -fx-text-fill: %s;
-                -fx-font-family: Monospaced;
-                -fx-font-size: 15px;
-                -fx-background-radius: 4;
-                -fx-padding: 12px;
-                -fx-cursor: hand;
-                """,
-                disabled ? "#2a2a40" : "#534AB7",
-                disabled ? "#555" : "#EEEDFE"));
+        actionBtn.getStyleClass().add("btn-slot-action");
 
         int finalSlot = slot;
         actionBtn.setOnAction(e -> {
@@ -181,13 +150,7 @@ public class SaveSlotScene implements GameScene {
         card.setAlignment(Pos.CENTER_LEFT);
         card.setPadding(new Insets(16, 24, 16, 24));
         card.setPrefWidth(580);
-        card.setStyle("""
-                -fx-background-color: #13131f;
-                -fx-border-color: #2a2a40;
-                -fx-border-width: 0.5;
-                -fx-border-radius: 8;
-                -fx-background-radius: 8;
-                """);
+        card.getStyleClass().add("slot-card");
         HBox.setHgrow(details, javafx.scene.layout.Priority.ALWAYS);
         return card;
     }
