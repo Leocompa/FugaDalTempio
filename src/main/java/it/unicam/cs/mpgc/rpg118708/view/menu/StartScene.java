@@ -50,6 +50,8 @@ public class StartScene implements GameScene {
 
         Label subtitle = new Label("Un ladro. Un tempio. Nessuna via d'uscita.");
         subtitle.getStyleClass().add("label-subtitle");
+        subtitle.setWrapText(true);
+        subtitle.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
         Label nameLabel = new Label("Inserisci il nome del tuo ladro:");
         nameLabel.getStyleClass().add("label-body");

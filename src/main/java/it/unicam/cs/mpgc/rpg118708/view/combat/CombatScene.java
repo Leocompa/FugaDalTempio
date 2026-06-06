@@ -380,6 +380,7 @@ public class CombatScene implements GameScene {
 
     private void applyButtonStyle(Button btn, boolean enabled) {
         btn.setDisable(!enabled);
+        btn.setStyle(enabled ? "" : "-fx-background-color: #2a2a40; -fx-text-fill: #555;");
     }
 
     private void showEndButtons(boolean victory) {
