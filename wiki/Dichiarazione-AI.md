@@ -24,6 +24,7 @@ Durante lo sviluppo ho usato Claude come strumento di revisione:
 - **Rimozione di codice inutilizzato**: Claude ha segnalato metodi e variabili non più usati dopo refactoring successivi
 - **Ottimizzazione**: suggerimenti su come semplificare logica ridondante o migliorare la leggibilità
 - **Refactoring**: estrazione di metodi privati da metodi troppo lunghi, separazione di responsabilità, suddivisione del package `view` in sotto-package (`combat`, `exploration`, `menu`)
+- **Refactoring grafico**: migrazione degli stili inline della view verso un foglio di stile CSS centralizzato (`game.css`), con definizione delle classi semantiche per pulsanti, label e pannelli
 
 ### Fase di testing
 

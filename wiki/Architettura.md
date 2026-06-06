@@ -206,6 +206,9 @@ Contratto comune a tutte le scene dell'interfaccia grafica. Espone `getScene()` 
 #### `SceneBackground`
 Utility condivisa per il rendering dello sfondo a mattoncini. Espone `createCanvas(w, h)` e `render(gc, w, h)` come metodi statici. Tutte le scene (menu, vittoria, sconfitta) la usano per mantenere la stessa griglia grafica dell'esplorazione e centralizzare il codice di disegno evitando duplicazioni (DRY).
 
+#### `game.css` *(risorsa in `src/main/resources`)*
+Foglio di stile JavaFX che centralizza tutti gli stili grafici delle scene: colori, font, padding e stati `:disabled` dei pulsanti. Le classi della view applicano gli stili tramite `getStyleClass()` anziché usare stili inline con `setStyle()`/`setFont()`. Modificare il tema grafico richiede interventi solo su questo file.
+
 ---
 
 #### `view.exploration`
@@ -214,7 +217,7 @@ Utility condivisa per il rendering dello sfondo a mattoncini. Espone `createCanv
 Orchestratore della scena di esplorazione: gestisce il game loop (`AnimationTimer`) e l'input da tastiera. Delega la fisica del personaggio a `PlayerPhysics`, le interazioni e le collisioni a `ExplorationInteractionHandler` e il rendering a `ExplorationRenderer` (tramite l'interfaccia `SceneRenderer`). Notifica il `GameController` tramite callback.
 
 ##### `PlayerPhysics`
-Responsabilità unica: aggiornare posizione e velocità verticale del giocatore in base all'input e alla gravità. Gestisce le costanti fisiche (GRAVITY, JUMP\_FORCE, PLAYER\_SPEED) e lo stato `onGround`. Non conosce la scena né il renderer.
+Responsabilità unica: aggiornare posizione e velocità verticale del giocatore in base all'input e alla gravità. Gestisce le costanti fisiche espresse in px/s e px/s² (indipendenti dal frame-rate) e lo stato `onGround`. Tiene traccia della posizione come `double` internamente per evitare errori di arrotondamento accumulati; si riallinea automaticamente se il modello viene spostato esternamente (es. respawn). Riceve il delta-time da `ExplorationScene` ad ogni tick del game loop. Non conosce la scena né il renderer.
 
 ##### `ExplorationInteractionHandler`
 Responsabilità unica: rilevare collisioni con trappole e nemici, aggiornare i flag di prossimità a uscite e ingressi, rispondere all'input [E] per raccolta oggetti, dialoghi NPC e navigazione tra stanze. Utilizza `SceneRenderer` per notifiche visive (warning nemico, dialogo).
