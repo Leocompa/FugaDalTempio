@@ -149,10 +149,10 @@ public class WorldBuilder implements WorldFactory {
      * @param roomIndex l'indice 0-based della stanza nella progressione globale
      */
     private void applyScaling(Enemy enemy, int roomIndex) {
-        Stats s = enemy.getStats();
-        s.setAttack(s.getAttack() + roomIndex);
-        s.setDefense(s.getDefense() + roomIndex);
-        s.setMaxHp(s.getMaxHp() + roomIndex * 3);
-        s.setCurrentHp(s.getMaxHp());
+        Stats enemyStats = enemy.getStats();
+        enemyStats.setAttack(enemyStats.getAttack() + roomIndex);
+        enemyStats.setDefense(enemyStats.getDefense() + roomIndex);
+        enemyStats.setMaxHp(enemyStats.getMaxHp() + roomIndex * 3);
+        enemyStats.setCurrentHp(enemyStats.getMaxHp());
     }
 }

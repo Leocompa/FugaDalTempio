@@ -23,7 +23,7 @@ class ExplorationRenderer implements SceneRenderer {
 
     private final GraphicsContext    gc;
     private final GameManager        gameManager;
-    private final int                W, H, GROUND_Y;
+    private final int                sceneWidth, sceneHeight, GROUND_Y;
     private final HudRenderer        hudRenderer;
     private final RoomEntityRenderer roomRenderer;
 
@@ -47,8 +47,8 @@ class ExplorationRenderer implements SceneRenderer {
     ExplorationRenderer(GraphicsContext gc, GameManager gameManager, int w, int h, int groundY) {
         this.gc          = gc;
         this.gameManager = gameManager;
-        this.W           = w;
-        this.H           = h;
+        this.sceneWidth  = w;
+        this.sceneHeight = h;
         this.GROUND_Y    = groundY;
         this.hudRenderer  = new HudRenderer(gc, gameManager, w, h);
         this.roomRenderer = new RoomEntityRenderer(gc, gameManager, w, h, groundY);
@@ -85,7 +85,7 @@ class ExplorationRenderer implements SceneRenderer {
     public void render(long frame, boolean nearExit, boolean nearEntrance,
                 boolean onGround, Set<KeyCode> keysPressed) {
         gc.setFill(Color.web("#080810"));
-        gc.fillRect(0, 0, W, H);
+        gc.fillRect(0, 0, sceneWidth, sceneHeight);
 
         renderBackground();
         renderGround();
@@ -107,7 +107,7 @@ class ExplorationRenderer implements SceneRenderer {
         for (int row = 0; row * (bH + gap) < GROUND_Y + PLAYER_H + bH; row++) {
             int y = row * (bH + gap);
             int offsetX = (row % 2 == 0) ? 0 : (bW + gap) / 2;
-            for (int col = -1; col * (bW + gap) - offsetX < W + bW; col++) {
+            for (int col = -1; col * (bW + gap) - offsetX < sceneWidth + bW; col++) {
                 int x = col * (bW + gap) - offsetX;
                 gc.setFill(Color.web(shades[Math.abs((row * 3 + col * 2) % shades.length)]));
                 gc.fillRect(x, y, bW, bH);
@@ -118,37 +118,37 @@ class ExplorationRenderer implements SceneRenderer {
 
     private void renderWallTorches() {
         int torchY = GROUND_Y + PLAYER_H - 90;
-        int[] tX   = {(int)(W * 0.2), (int)(W * 0.5), (int)(W * 0.8)};
-        for (int tx : tX) {
+        int[] torchPositionsX = {(int)(sceneWidth * 0.2), (int)(sceneWidth * 0.5), (int)(sceneWidth * 0.8)};
+        for (int torchX : torchPositionsX) {
             gc.setFill(Color.web("#EF9F27", 0.06));
-            gc.fillOval(tx - 90, torchY - 90, 180, 180);
+            gc.fillOval(torchX - 90, torchY - 90, 180, 180);
             gc.setFill(Color.web("#EF9F27", 0.05));
-            gc.fillOval(tx - 55, torchY - 55, 110, 110);
+            gc.fillOval(torchX - 55, torchY - 55, 110, 110);
             gc.setFill(Color.web("#3a2a10"));
-            gc.fillRect(tx - 6, torchY - 4, 12, 6);
-            gc.fillRect(tx - 2, torchY + 2, 4, 18);
+            gc.fillRect(torchX - 6, torchY - 4, 12, 6);
+            gc.fillRect(torchX - 2, torchY + 2, 4, 18);
             gc.setFill(Color.web("#EF9F27", 0.95));
-            gc.fillOval(tx - 6, torchY - 18, 12, 16);
+            gc.fillOval(torchX - 6, torchY - 18, 12, 16);
             gc.setFill(Color.web("#FACC5A", 0.85));
-            gc.fillOval(tx - 4, torchY - 14, 8, 10);
+            gc.fillOval(torchX - 4, torchY - 14, 8, 10);
             gc.setFill(Color.web("#FFFFFF", 0.45));
-            gc.fillOval(tx - 2, torchY - 11, 4, 5);
+            gc.fillOval(torchX - 2, torchY - 11, 4, 5);
         }
     }
 
     private void renderGround() {
         gc.setFill(Color.web("#161626"));
-        gc.fillRect(0, GROUND_Y + PLAYER_H, W, H - GROUND_Y - PLAYER_H);
+        gc.fillRect(0, GROUND_Y + PLAYER_H, sceneWidth, sceneHeight - GROUND_Y - PLAYER_H);
         gc.setFill(Color.web("#3a3a55"));
-        gc.fillRect(0, GROUND_Y + PLAYER_H, W, 3);
+        gc.fillRect(0, GROUND_Y + PLAYER_H, sceneWidth, 3);
         gc.setStroke(Color.web("#1e1e30"));
         gc.setLineWidth(1);
-        for (int y = GROUND_Y + PLAYER_H + 20; y < H; y += 20)
-            gc.strokeLine(0, y, W, y);
-        for (int x = 0; x < W; x += 80)
-            gc.strokeLine(x, GROUND_Y + PLAYER_H, x, H);
-        for (int x = 40; x < W; x += 80)
-            gc.strokeLine(x, GROUND_Y + PLAYER_H + 20, x, H);
+        for (int y = GROUND_Y + PLAYER_H + 20; y < sceneHeight; y += 20)
+            gc.strokeLine(0, y, sceneWidth, y);
+        for (int x = 0; x < sceneWidth; x += 80)
+            gc.strokeLine(x, GROUND_Y + PLAYER_H, x, sceneHeight);
+        for (int x = 40; x < sceneWidth; x += 80)
+            gc.strokeLine(x, GROUND_Y + PLAYER_H + 20, x, sceneHeight);
     }
 
     private void renderPlayer(long frame, boolean onGround, Set<KeyCode> keysPressed) {
@@ -245,43 +245,43 @@ class ExplorationRenderer implements SceneRenderer {
         if (enemyWarningTimer <= 0) return;
         enemyWarningTimer--;
         gc.setFill(Color.web("#D85A30", 0.85));
-        gc.fillRect(0, 0, W, H);
+        gc.fillRect(0, 0, sceneWidth, sceneHeight);
         gc.setFill(Color.WHITE);
         gc.setFont(new Font("Monospaced", 30));
-        gc.fillText("! NEMICO !", W / 2.0 - 90, H / 2.0);
+        gc.fillText("! NEMICO !", sceneWidth / 2.0 - 90, sceneHeight / 2.0);
         gc.setFont(new Font("Monospaced", 16));
-        gc.fillText("preparati al combattimento...", W / 2.0 - 130, H / 2.0 + 40);
+        gc.fillText("preparati al combattimento...", sceneWidth / 2.0 - 130, sceneHeight / 2.0 + 40);
     }
 
     private void renderSaveMessage() {
         if (saveMessageTimer <= 0) return;
         saveMessageTimer--;
         gc.setFill(Color.web("#1D9E75", 0.90));
-        gc.fillRoundRect(W / 2.0 - 110, 50, 220, 38, 8, 8);
+        gc.fillRoundRect(sceneWidth / 2.0 - 110, 50, 220, 38, 8, 8);
         gc.setFill(Color.web("#E1F5EE"));
         gc.setFont(new Font("Monospaced", 14));
-        gc.fillText(saveMessage, W / 2.0 - 65, 75);
+        gc.fillText(saveMessage, sceneWidth / 2.0 - 65, 75);
     }
 
     private void renderDialogue() {
         if (gameManager.getState() != GameState.DIALOGUE || dialogueText.isEmpty()) return;
         gc.setFill(Color.web("#13131f", 0.92));
-        gc.fillRoundRect(60, H - 160, W - 120, 100, 8, 8);
+        gc.fillRoundRect(60, sceneHeight - 160, sceneWidth - 120, 100, 8, 8);
         gc.setStroke(Color.web("#534AB7"));
         gc.setLineWidth(1);
-        gc.strokeRoundRect(60, H - 160, W - 120, 100, 8, 8);
+        gc.strokeRoundRect(60, sceneHeight - 160, sceneWidth - 120, 100, 8, 8);
         gc.setFill(Color.web("#AFA9EC"));
         gc.setFont(new Font("Monospaced", 13));
-        gc.fillText(dialogueText, 80, H - 120, W - 160);
+        gc.fillText(dialogueText, 80, sceneHeight - 120, sceneWidth - 160);
     }
 
     private void renderOverlay(String title, String subtitle, String color) {
         gc.setFill(Color.web(color, 0.7));
-        gc.fillRect(0, 0, W, H);
+        gc.fillRect(0, 0, sceneWidth, sceneHeight);
         gc.setFill(Color.WHITE);
         gc.setFont(new Font("Monospaced", 34));
-        gc.fillText(title, W / 2.0 - 90, H / 2.0);
+        gc.fillText(title, sceneWidth / 2.0 - 90, sceneHeight / 2.0);
         gc.setFont(new Font("Monospaced", 16));
-        gc.fillText(subtitle, W / 2.0 - 110, H / 2.0 + 40);
+        gc.fillText(subtitle, sceneWidth / 2.0 - 110, sceneHeight / 2.0 + 40);
     }
 }

@@ -20,7 +20,7 @@ class HudRenderer {
 
     private final GraphicsContext gc;
     private final GameManager     gameManager;
-    private final int             W, H;
+    private final int             sceneWidth, sceneHeight;
 
     /**
      * Costruisce il renderer del HUD.
@@ -33,8 +33,8 @@ class HudRenderer {
     HudRenderer(GraphicsContext gc, GameManager gameManager, int w, int h) {
         this.gc          = gc;
         this.gameManager = gameManager;
-        this.W           = w;
-        this.H           = h;
+        this.sceneWidth  = w;
+        this.sceneHeight = h;
     }
 
     /**
@@ -54,9 +54,9 @@ class HudRenderer {
         Zone   zone   = gameManager.getCurrentZone();
 
         gc.setFill(Color.web("#0e0e1a", 0.96));
-        gc.fillRect(0, 0, W, 58);
+        gc.fillRect(0, 0, sceneWidth, 58);
         gc.setFill(Color.web("#534AB7", 0.5));
-        gc.fillRect(0, 56, W, 2);
+        gc.fillRect(0, 56, sceneWidth, 2);
 
         gc.setFont(new Font("Monospaced", 15));
         gc.setFill(Color.web("#EEEDFE"));
@@ -104,7 +104,7 @@ class HudRenderer {
         double titleW = zoneName.length() * 9.5;
         gc.setFont(new Font("Monospaced", 15));
         gc.setFill(Color.web("#FAC775"));
-        gc.fillText(zoneName, W / 2.0 - titleW / 2, 34);
+        gc.fillText(zoneName, sceneWidth / 2.0 - titleW / 2, 34);
     }
 
     private void renderRoomInfo(Zone zone) {
@@ -113,20 +113,20 @@ class HudRenderer {
         int totalRooms  = zone.getRooms().size();
         gc.setFont(new Font("Monospaced", 14));
         gc.setFill(Color.web("#AFA9EC"));
-        gc.fillText("Stanza " + currentRoom + " / " + totalRooms, W - 230, 22);
+        gc.fillText("Stanza " + currentRoom + " / " + totalRooms, sceneWidth - 230, 22);
         gc.setFont(new Font("Monospaced", 12));
         gc.setFill(Color.web("#9990dd"));
-        gc.fillText(room.getName(), W - 230, 42);
+        gc.fillText(room.getName(), sceneWidth - 230, 42);
     }
 
     private void renderBottomHud(boolean nearExit, boolean nearEntrance) {
         gc.setFill(Color.web("#0e0e1a", 0.96));
-        gc.fillRect(0, H - 46, W, 46);
+        gc.fillRect(0, sceneHeight - 46, sceneWidth, 46);
         gc.setFill(Color.web("#534AB7", 0.5));
-        gc.fillRect(0, H - 46, W, 2);
+        gc.fillRect(0, sceneHeight - 46, sceneWidth, 2);
 
-        int hudY    = H - 16;
-        int spacing = W / 8;
+        int hudY    = sceneHeight - 16;
+        int spacing = sceneWidth / 8;
         gc.setFont(new Font("Monospaced", 13));
 
         renderHudKey("← →",     "muoviti",    12,          hudY, 40);
@@ -147,8 +147,8 @@ class HudRenderer {
 
     private boolean isNearInteractable(boolean nearExit, boolean nearEntrance) {
         int px    = gameManager.getPlayer().getX();
-        int itemX = W / 2;
-        int npcX  = (int)(W * 0.65);
+        int itemX = sceneWidth / 2;
+        int npcX  = (int)(sceneWidth * 0.65);
         boolean nearItem = gameManager.getCurrentRoom().getItems().stream()
                 .anyMatch(i -> Math.abs(px - itemX) < INTERACT_RANGE);
         boolean nearNpc  = gameManager.getCurrentRoom().getNpcs().stream()

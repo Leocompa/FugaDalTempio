@@ -181,10 +181,10 @@ public class CombatSpriteRenderer {
         gc.setFill(Color.web("#5C1A1A"));
         gc.fillRoundRect(30, 20, 60, 26, 6, 6);
         gc.setFill(Color.web("#EF9F27"));
-        int[] cx  = {34, 42, 52, 60, 68, 76};
-        int[] chs = {8, 14, 10, 14, 10, 8};
-        for (int i = 0; i < cx.length; i++) {
-            gc.fillRect(cx[i], 20 - chs[i], 5, chs[i]);
+        int[] crownBarX       = {34, 42, 52, 60, 68, 76};
+        int[] crownBarHeights = {8, 14, 10, 14, 10, 8};
+        for (int i = 0; i < crownBarX.length; i++) {
+            gc.fillRect(crownBarX[i], 20 - crownBarHeights[i], 5, crownBarHeights[i]);
         }
         gc.setFill(Color.web("#FCDE5A"));
         gc.fillOval(43, 4, 8, 8);

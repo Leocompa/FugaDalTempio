@@ -24,10 +24,10 @@ class PlayerPhysics {
     private static final double GRAVITY   = 3600.0;  // px/s²
     private static final double JUMP_VY   = -840.0;  // px/s
 
-    private double  posX     = Double.NaN;
-    private double  posY     = Double.NaN;
-    private double  vy       = 0.0;
-    private boolean onGround = true;
+    private double  posX             = Double.NaN;
+    private double  posY             = Double.NaN;
+    private double  verticalVelocity = 0.0;
+    private boolean onGround         = true;
 
     /** @return {@code true} se il giocatore è attualmente a terra */
     boolean isOnGround() { return onGround; }
@@ -38,16 +38,16 @@ class PlayerPhysics {
      * @param player      il giocatore da aggiornare
      * @param keysPressed insieme dei tasti premuti
      * @param maxX        limite destro dello schermo (larghezza canvas - PLAYER_W)
-     * @param dt          tempo trascorso dall'ultimo frame in secondi
+     * @param deltaTime   tempo trascorso dall'ultimo frame in secondi
      */
-    void handleMovement(Player player, Set<KeyCode> keysPressed, int maxX, double dt) {
+    void handleMovement(Player player, Set<KeyCode> keysPressed, int maxX, double deltaTime) {
         syncIfExternal(player.getX(), player.getY());
         if (keysPressed.contains(KeyCode.LEFT) || keysPressed.contains(KeyCode.A)) {
-            posX -= SPEED * dt;
+            posX -= SPEED * deltaTime;
             player.setDirection(Direction.LEFT);
         }
         if (keysPressed.contains(KeyCode.RIGHT) || keysPressed.contains(KeyCode.D)) {
-            posX += SPEED * dt;
+            posX += SPEED * deltaTime;
             player.setDirection(Direction.RIGHT);
         }
         posX = Math.max(0, Math.min(maxX, posX));
@@ -60,20 +60,20 @@ class PlayerPhysics {
      * @param player      il giocatore da aggiornare
      * @param keysPressed insieme dei tasti premuti
      * @param groundY     coordinata Y del suolo
-     * @param dt          tempo trascorso dall'ultimo frame in secondi
+     * @param deltaTime   tempo trascorso dall'ultimo frame in secondi
      */
-    void applyPhysics(Player player, Set<KeyCode> keysPressed, int groundY, double dt) {
+    void applyPhysics(Player player, Set<KeyCode> keysPressed, int groundY, double deltaTime) {
         if ((keysPressed.contains(KeyCode.UP)    || keysPressed.contains(KeyCode.W)
           || keysPressed.contains(KeyCode.SPACE)) && onGround) {
-            vy = JUMP_VY;
+            verticalVelocity = JUMP_VY;
             onGround = false;
         }
-        vy   += GRAVITY * dt;
-        posY += vy * dt;
+        verticalVelocity += GRAVITY * deltaTime;
+        posY             += verticalVelocity * deltaTime;
         if (posY >= groundY) {
-            posY     = groundY;
-            vy       = 0;
-            onGround = true;
+            posY             = groundY;
+            verticalVelocity = 0;
+            onGround         = true;
         }
         player.moveTo((int) Math.round(posX), (int) Math.round(posY));
     }
@@ -82,6 +82,6 @@ class PlayerPhysics {
     // (es. respawn, cambio stanza), rilevato da una differenza > 2 px.
     private void syncIfExternal(int modelX, int modelY) {
         if (Double.isNaN(posX) || Math.abs(posX - modelX) > 2) posX = modelX;
-        if (Double.isNaN(posY) || Math.abs(posY - modelY) > 2) { posY = modelY; vy = 0; }
+        if (Double.isNaN(posY) || Math.abs(posY - modelY) > 2) { posY = modelY; verticalVelocity = 0; }
     }
 }

@@ -24,7 +24,7 @@ class ExplorationInteractionHandler {
 
     private final GameManager         gameManager;
     private final SceneRenderer renderer;
-    private final int                 W;
+    private final int                 sceneWidth;
     private final int                 GROUND_Y;
 
     private boolean  nearExit     = false;
@@ -44,7 +44,7 @@ class ExplorationInteractionHandler {
                                   int w, int groundY) {
         this.gameManager = gameManager;
         this.renderer    = renderer;
-        this.W           = w;
+        this.sceneWidth  = w;
         this.GROUND_Y    = groundY;
     }
 
@@ -67,7 +67,7 @@ class ExplorationInteractionHandler {
      * @return {@code true} se il giocatore è morto per una trappola
      */
     boolean checkTrapCollision(Player player) {
-        int trapX = W / 4;
+        int trapX = sceneWidth / 4;
         for (Trap trap : gameManager.getCurrentRoom().getTraps()) {
             trap.setTrapX(trapX);
             trap.setTrapY(GROUND_Y + PLAYER_H - 14);
@@ -88,7 +88,7 @@ class ExplorationInteractionHandler {
      * @return {@code true} se è scattato un combattimento
      */
     boolean checkEnemyCollision(Player player) {
-        int enemyX = (int)(W * 0.55);
+        int enemyX = (int)(sceneWidth * 0.55);
         for (Enemy enemy : gameManager.getCurrentRoom().getEnemies()) {
             if (enemy.isAlive() && collides(
                     player.getX(), player.getY(), PLAYER_W, PLAYER_H,
@@ -114,7 +114,7 @@ class ExplorationInteractionHandler {
      * @param player il giocatore
      */
     void updateNavigationHints(Player player) {
-        nearExit     = player.getX() >= W - PLAYER_W - 80
+        nearExit     = player.getX() >= sceneWidth - PLAYER_W - 80
                     && gameManager.getCurrentRoom().isCleared();
         nearEntrance = player.getX() <= 50
                     && gameManager.getCurrentZone().getCurrentRoomIndex() > 0;
@@ -144,7 +144,7 @@ class ExplorationInteractionHandler {
             keysPressed.clear();
             nearEntrance = false;
             gameManager.goBackRoom();
-            player.moveTo(W - 80, GROUND_Y);
+            player.moveTo(sceneWidth - 80, GROUND_Y);
             return;
         }
 
@@ -156,7 +156,7 @@ class ExplorationInteractionHandler {
     }
 
     private void collectNearbyItems(Player player) {
-        int itemX = W / 2;
+        int itemX = sceneWidth / 2;
         for (Item item : new ArrayList<>(gameManager.getCurrentRoom().getItems())) {
             if (Math.abs(player.getX() - itemX) < INTERACT_RANGE) {
                 gameManager.collectItem(item);
@@ -165,7 +165,7 @@ class ExplorationInteractionHandler {
     }
 
     private void interactWithNearbyNPCs(Player player) {
-        int npcX = (int)(W * 0.65);
+        int npcX = (int)(sceneWidth * 0.65);
         for (NPC npc : gameManager.getCurrentRoom().getNpcs()) {
             if (Math.abs(player.getX() - npcX) < INTERACT_RANGE) {
                 Item reward = npc.collectReward();

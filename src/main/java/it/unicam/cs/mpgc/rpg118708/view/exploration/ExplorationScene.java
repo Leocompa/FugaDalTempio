@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class ExplorationScene implements GameScene {
 
-    private final int W, H, GROUND_Y;
+    private final int sceneWidth, sceneHeight, GROUND_Y;
     private static final int PLAYER_W = 24;
 
     private final GameManager                  gameManager;
@@ -52,16 +52,16 @@ public class ExplorationScene implements GameScene {
     public ExplorationScene(GameManager gameManager) {
         javafx.geometry.Rectangle2D screen =
                 javafx.stage.Screen.getPrimary().getVisualBounds();
-        this.W        = (int) screen.getWidth();
-        this.H        = (int) (screen.getHeight() * 0.80);
-        this.GROUND_Y = this.H - 100;
+        this.sceneWidth  = (int) screen.getWidth();
+        this.sceneHeight = (int) (screen.getHeight() * 0.80);
+        this.GROUND_Y    = this.sceneHeight - 100;
         this.gameManager = gameManager;
 
-        Canvas canvas = new Canvas(W, H);
+        Canvas canvas = new Canvas(sceneWidth, sceneHeight);
         this.renderer = new ExplorationRenderer(
-                canvas.getGraphicsContext2D(), gameManager, W, H, GROUND_Y);
+                canvas.getGraphicsContext2D(), gameManager, sceneWidth, sceneHeight, GROUND_Y);
         this.physics  = new PlayerPhysics();
-        this.handler  = new ExplorationInteractionHandler(gameManager, renderer, W, GROUND_Y);
+        this.handler  = new ExplorationInteractionHandler(gameManager, renderer, sceneWidth, GROUND_Y);
 
         buildScene(canvas);
     }
@@ -91,10 +91,10 @@ public class ExplorationScene implements GameScene {
             @Override
             public void handle(long now) {
                 if (lastNow == 0) { lastNow = now; return; }
-                double dt = Math.min((now - lastNow) / 1_000_000_000.0, 0.05);
+                double deltaTime = Math.min((now - lastNow) / 1_000_000_000.0, 0.05);
                 lastNow = now;
                 frame++;
-                update(dt);
+                update(deltaTime);
                 renderer.render(frame,
                         handler.isNearExit(), handler.isNearEntrance(),
                         physics.isOnGround(), keysPressed);
@@ -123,13 +123,13 @@ public class ExplorationScene implements GameScene {
         });
     }
 
-    private void update(double dt) {
+    private void update(double deltaTime) {
         if (handleGameOverInput()) return;
         if (gameManager.getState() != GameState.EXPLORING) return;
 
         Player player = gameManager.getPlayer();
-        physics.handleMovement(player, keysPressed, W - PLAYER_W, dt);
-        physics.applyPhysics(player, keysPressed, GROUND_Y, dt);
+        physics.handleMovement(player, keysPressed, sceneWidth - PLAYER_W, deltaTime);
+        physics.applyPhysics(player, keysPressed, GROUND_Y, deltaTime);
         if (handler.checkTrapCollision(player)) return;
         if (handler.checkEnemyCollision(player)) return;
         handler.updateNavigationHints(player);
