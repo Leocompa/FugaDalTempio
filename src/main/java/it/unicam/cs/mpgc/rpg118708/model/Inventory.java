@@ -17,7 +17,6 @@ public class Inventory {
     private static final int MAX_SIZE = 10;
     private final List<Item> items;
 
-    /** Crea un inventario vuoto. */
     public Inventory() {
         this.items = new ArrayList<>();
     }
@@ -44,39 +43,19 @@ public class Inventory {
         return items.remove(item);
     }
 
-    /**
-     * Verifica se un oggetto è presente nell'inventario.
-     *
-     * @param item l'oggetto da cercare
-     * @return {@code true} se l'oggetto è presente
-     */
     public boolean hasItem(Item item) {
         return items.contains(item);
     }
 
-    /**
-     * Restituisce una vista non modificabile degli oggetti correnti.
-     *
-     * @return lista non modificabile degli oggetti nell'inventario
-     */
+    /** @return lista non modificabile degli oggetti nell'inventario */
     public List<Item> getItems() {
         return Collections.unmodifiableList(items);
     }
 
-    /**
-     * Verifica se l'inventario ha raggiunto la capienza massima.
-     *
-     * @return {@code true} se non è possibile aggiungere altri oggetti
-     */
     public boolean isFull() {
         return items.size() >= MAX_SIZE;
     }
 
-    /**
-     * Restituisce il numero di oggetti attualmente nell'inventario.
-     *
-     * @return numero di oggetti presenti
-     */
     public int size() {
         return items.size();
     }

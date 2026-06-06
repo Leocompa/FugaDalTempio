@@ -71,19 +71,15 @@ public class NPC {
      */
     public boolean hasReward() { return reward != null && !rewardGiven; }
 
-    /** Restituisce l'identificatore univoco dell'NPC. @return id dell'NPC */
     public String getId() { return id; }
 
-    /** Restituisce il nome visualizzato dell'NPC. @return nome dell'NPC */
     public String getName() { return name; }
 
-    /** Restituisce il testo del dialogo mostrato al giocatore. @return testo del dialogo */
     public String getDialogue() { return dialogue; }
 
-    /** Restituisce l'oggetto ricompensa, anche se già consegnato. @return la ricompensa, o {@code null} */
+    /** @return la ricompensa, o {@code null} — anche se già consegnata */
     public Item getReward() { return reward; }
 
-    /** Indica se la ricompensa è già stata consegnata. @return {@code true} se già consegnata */
     public boolean isRewardGiven() { return rewardGiven; }
 
     /**

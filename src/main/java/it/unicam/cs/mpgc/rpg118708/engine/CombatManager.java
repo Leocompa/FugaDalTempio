@@ -178,17 +178,9 @@ public class CombatManager implements CombatItemContext {
         return item.applyInCombat(player, this);
     }
 
-    /**
-     * Aggiunge un bonus temporaneo all'attacco del giocatore per il turno corrente.
-     *
-     * @param bonus il valore del bonus
-     */
     @Override
     public void addTemporaryAttackBonus(int bonus) { temporaryAttackBonus = bonus; }
 
-    /**
-     * Attiva la riduzione del danno per il prossimo attacco nemico.
-     */
     @Override
     public void activateDamageReduction() { damageReductionActive = true; }
 
@@ -215,7 +207,6 @@ public class CombatManager implements CombatItemContext {
         player.takeDamage(damage);
     }
 
-    /** Cerca il primo oggetto curativo disponibile nell'inventario del giocatore. */
     private Item findHealingItem() {
         return player.getInventory().getItems().stream()
                 .filter(Item::isHealing)
@@ -223,74 +214,26 @@ public class CombatManager implements CombatItemContext {
                 .orElse(null);
     }
 
-    /**
-     * Restituisce il giocatore associato a questo manager.
-     *
-     * @return il giocatore
-     */
     public Player getPlayer() { return player; }
 
-    /**
-     * Restituisce il nemico del combattimento corrente.
-     *
-     * @return il nemico, o {@code null} se il combattimento non è ancora iniziato
-     */
+    /** @return il nemico, o {@code null} se il combattimento non è ancora iniziato */
     public Enemy getEnemy() { return enemy; }
 
-    /**
-     * Indica se è il turno del giocatore.
-     *
-     * @return {@code true} se è il turno del giocatore
-     */
     public boolean isPlayerTurn() { return playerTurn; }
 
-    /**
-     * Restituisce l'esito più recente del combattimento.
-     *
-     * @return l'ultimo {@link CombatResult} calcolato
-     */
     public CombatResult getLastResult() { return lastResult; }
 
-    /**
-     * Restituisce il numero di mosse speciali ancora disponibili per il giocatore.
-     *
-     * @return usi speciali rimanenti nel combattimento corrente
-     */
     public int getSpecialUsesLeft() { return specialUsesLeft; }
 
-    /**
-     * Restituisce il numero massimo di mosse speciali per il combattimento corrente.
-     *
-     * @return limite di usi speciali assegnato all'inizio del combattimento
-     */
     public int getMaxSpecialUses() { return maxSpecialUses; }
 
-    /**
-     * Restituisce il bonus di attacco temporaneo attivo (da pergamena).
-     * Il valore viene azzerato automaticamente dopo l'uso.
-     *
-     * @return il bonus temporaneo corrente
-     */
+    /** @return il bonus corrente — viene azzerato automaticamente dopo l'uso in {@link #computeDamage} */
     public int getTemporaryAttackBonus() { return temporaryAttackBonus; }
 
-    /**
-     * Indica se il talismano è attivo e dimezzerà il prossimo attacco nemico.
-     *
-     * @return {@code true} se la riduzione del danno è attiva
-     */
     public boolean isDamageReductionActive() { return damageReductionActive; }
 
-    /**
-     * Restituisce il numero di cure ancora disponibili per il nemico.
-     *
-     * @return cure rimanenti al nemico nel combattimento corrente
-     */
     public int getEnemyHealUsesLeft() { return enemyHealUsesLeft; }
 
-    /**
-     * Restituisce l'ultima azione eseguita dal nemico.
-     *
-     * @return l'ultima {@link CombatAction} del nemico, o {@code null} se non ha ancora agito
-     */
+    /** @return l'ultima azione del nemico, o {@code null} se non ha ancora agito */
     public CombatAction getLastEnemyAction() { return lastEnemyAction; }
 }

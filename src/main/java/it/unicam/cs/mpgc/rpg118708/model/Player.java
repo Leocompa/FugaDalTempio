@@ -99,31 +99,23 @@ public class Player implements Combatant {
         return false;
     }
 
-    /** Rimuove l'oggetto attualmente equipaggiato. */
     public void unequip() { this.equippedItem = null; }
 
-    /** Restituisce l'oggetto attualmente equipaggiato. @return l'oggetto equipaggiato, o {@code null} */
+    /** @return l'oggetto equipaggiato, o {@code null} se nessuno */
     public Item getEquippedItem() { return equippedItem; }
 
-    /** Indica se il giocatore ha un oggetto equipaggiato. @return {@code true} se è equipaggiato qualcosa */
     public boolean hasEquipped() { return equippedItem != null; }
 
-    /** Restituisce il nome del personaggio. @return nome del giocatore */
     public String getName() { return name; }
 
-    /** Restituisce le statistiche di combattimento del giocatore. @return le statistiche */
     public Stats getStats() { return stats; }
 
-    /** Restituisce l'inventario del giocatore. @return l'inventario */
     public Inventory getInventory() { return inventory; }
 
-    /** Restituisce la coordinata X del giocatore nella scena. @return posizione orizzontale */
     public int getX() { return x; }
 
-    /** Restituisce la coordinata Y del giocatore nella scena. @return posizione verticale */
     public int getY() { return y; }
 
-    /** Restituisce la direzione corrente del personaggio. @return la direzione */
     public Direction getDirection() { return direction; }
 
     /**

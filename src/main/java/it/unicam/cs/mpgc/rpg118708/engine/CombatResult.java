@@ -12,14 +12,11 @@ package it.unicam.cs.mpgc.rpg118708.engine;
  * </ul>
  */
 public enum CombatResult {
-    /** Combattimento ancora in corso. */
     ONGOING,
     /** Giocatore ha sconfitto il nemico senza salire di livello. */
     VICTORY,
     /** Vittoria con almeno un level-up del giocatore. */
     VICTORY_LEVELUP,
-    /** Giocatore sconfitto. */
     DEFEAT,
-    /** Giocatore fuggito con successo dal combattimento. */
     FLED
 }

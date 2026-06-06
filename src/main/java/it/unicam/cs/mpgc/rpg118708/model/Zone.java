@@ -37,11 +37,6 @@ public class Zone {
         this.currentRoomIndex = 0;
     }
 
-    /**
-     * Aggiunge una stanza in coda alla sequenza della zona.
-     *
-     * @param room la stanza da aggiungere
-     */
     public void addRoom(Room room) { rooms.add(room); }
 
     /**
@@ -100,16 +95,12 @@ public class Zone {
         return false;
     }
 
-    /** Restituisce l'identificatore univoco della zona. @return id della zona */
     public String getId() { return id; }
 
-    /** Restituisce il nome visualizzato della zona. @return nome della zona */
     public String getName() { return name; }
 
-    /** Restituisce la lista di stanze della zona. @return lista di stanze */
     public List<Room> getRooms() { return rooms; }
 
-    /** Indica se la zona è stata marcata come completata. @return {@code true} se completata */
     public boolean isCompleted() { return completed; }
 
     /**
@@ -119,7 +110,6 @@ public class Zone {
      */
     public void setCompleted(boolean completed) { this.completed = completed; }
 
-    /** Restituisce l'indice della stanza corrente. @return indice 0-based della stanza corrente */
     public int getCurrentRoomIndex() { return currentRoomIndex; }
 
     /**

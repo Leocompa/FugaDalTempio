@@ -66,7 +66,6 @@ public class Stats {
         currentHp = Math.min(maxHp, currentHp + amount);
     }
 
-    /** @return {@code true} se gli HP correnti sono zero o meno */
     public boolean isDead() {
         return currentHp <= 0;
     }

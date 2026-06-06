@@ -87,18 +87,13 @@ public class Enemy implements Combatant {
         return availableActions.get(RANDOM.nextInt(availableActions.size()));
     }
 
-    /** Restituisce l'identificatore univoco del nemico. @return id del nemico */
     public String getId() { return id; }
 
-    /** Restituisce il nome visualizzato del nemico. @return nome del nemico */
     public String getName() { return name; }
 
-    /** Restituisce le statistiche di combattimento del nemico. @return le statistiche */
     public Stats getStats() { return stats; }
 
-    /** Restituisce gli XP assegnati al giocatore alla sconfitta del nemico. @return ricompensa XP */
     public int getXpReward() { return xpReward; }
 
-    /** Restituisce la lista delle azioni disponibili per questo nemico. @return azioni disponibili */
     public List<CombatAction> getAvailableActions() { return availableActions; }
 }
