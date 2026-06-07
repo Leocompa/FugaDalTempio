@@ -306,6 +306,3 @@ I test coprono esclusivamente il layer `model` e `engine`, che contengono tutta 
 | `ZoneTest` | Navigazione stanze, allRoomsCleared, completamento |
 | `CombatManagerTest` | Attacco, fuga, vittoria, sconfitta, mosse speciali, oggetti, limite cure nemico |
 
-### Perché il layer view non è testato
-
-Le classi del package `view` dipendono da JavaFX e richiedono un toolkit grafico inizializzato (runtime JavaFX). Testarle richiederebbe `TestFX` o simili framework di test UI, che esulano dagli obiettivi del corso. La correttezza della view è verificata manualmente durante l'esecuzione del gioco.

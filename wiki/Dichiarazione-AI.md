@@ -14,30 +14,27 @@ Non essendo un appassionato di videogiochi, avevo poche idee di partenza su cosa
 
 ### Fase di progettazione
 
-Prima di scrivere codice ho discusso con Claude l'organizzazione dei package e la distribuzione delle responsabilità tra le classi, verificando che l'architettura rispettasse i principi SOLID. Le domande erano del tipo: *"Questa classe ha troppe responsabilità?"*, *"Dove è meglio mettere questa logica?"*. Le decisioni finali sono state prese da me.
+Dopo aver abbozzato il progetto su carta — struttura dei package, distribuzione delle responsabilità, flusso principale del gioco — ho usato Claude per verificare se le idee avessero senso prima di passare al codice. Le proposte dell'AI sono state valutate criticamente: alcune sono state adottate, altre scartate perché non coerenti con l'intenzione originale o con i requisiti del corso.
 
 ### Fase di sviluppo
 
-Durante lo sviluppo ho usato Claude come strumento di revisione:
+Durante lo sviluppo ho usato Claude come strumento di supporto nei momenti in cui avevo già analizzato il problema ma volevo una conferma prima di intervenire sul codice:
 
-- **Identificazione di bug**: ho mostrato porzioni di codice chiedendo di individuare errori logici o comportamenti inattesi
-- **Rimozione di codice inutilizzato**: Claude ha segnalato metodi e variabili non più usati dopo refactoring successivi
-- **Ottimizzazione**: suggerimenti su come semplificare logica ridondante o migliorare la leggibilità
-- **Refactoring**: estrazione di metodi privati da metodi troppo lunghi, separazione di responsabilità, suddivisione del package `view` in sotto-package (`combat`, `exploration`, `menu`)
-- **Refactoring grafico**: migrazione degli stili inline della view verso un foglio di stile CSS centralizzato (`game.css`), con definizione delle classi semantiche per pulsanti, label e pannelli
+- **Bug e correzioni**: dopo aver individuato autonomamente la zona di codice dove sospettavo l'errore, ho chiesto conferma sui punti che mi risultavano più difficili da interpretare, per evitare di correggere nella direzione sbagliata
+- **Refactoring**: estrazione di metodi privati da metodi diventati troppo lunghi, per migliorare la leggibilità senza alterare il comportamento
+- **Refactoring grafico**: richiesta di un file CSS centralizzato (`game.css`) per raccogliere gli stili della view, sostituendo la definizione inline sparsa tra le classi JavaFX
 
 ### Fase di testing
 
-Ho usato Claude per definire i casi di test significativi da coprire e per scrivere le classi JUnit 5 corrispondenti (package `src/test`). I test coprono le classi del layer `model` e `engine`, che contengono tutta la logica di gioco verificabile senza dipendenze da JavaFX. I casi da testare (es. limite cure nemico, enrage del boss, capienza inventario) li ho individuati io; Claude ha tradotto i requisiti in codice di test.
+La fase di test non era esplicitamente richiesta dal progetto, ma ho scelto di implementarla per avere una verifica più solida del comportamento delle classi principali. Ho usato Claude come supporto per la scrittura delle classi JUnit 5 (package `src/test`), che coprono il layer `model` e `engine` — logica di gioco verificabile senza dipendenze da JavaFX. I casi da testare (es. limite cure nemico, enrage del boss, capienza inventario) li ho individuati io; Claude ha aiutato a tradurli in codice di test.
 
 ### Fase di documentazione
 
-Ho usato Claude per strutturare la Javadoc delle classi principali e per organizzare le pagine di questa Wiki. I contenuti descrivono scelte progettuali che avevo già preso; l'AI ha aiutato a renderle più chiare e complete.
+Ho richiesto a Claude di verificare che il testo fosse scritto in modo chiaro e corretto, senza alterarne il significato o le scelte descritte.
 
 ---
 
-## Ruolo dello studente
+### Conclusione
 
-Le funzionalità del gioco, l'architettura generale, il codice implementato e le scelte progettuali sono opera mia. Ogni modifica suggerita dall'AI è stata letta, compresa e validata prima di essere applicata — alcune sono state scartate o modificate perché non corrispondevano all'intenzione originale.
+Le funzionalità del gioco, l'architettura generale, il codice implementato e le scelte progettuali sono opera mia. Ogni proposta dell'AI è stata valutata criticamente prima di essere accettata: alcune sono state scartate o modificate perché non coerenti con l'intenzione originale, con il design già definito o con i requisiti del corso.
 
-Claude ha avuto il ruolo di revisore e assistente tecnico, non di autore.
